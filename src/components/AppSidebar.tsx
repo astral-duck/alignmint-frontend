@@ -51,13 +51,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen bg-sidebar dark:bg-[#1A1A1A] border-r border-sidebar-border dark:border-[#2A2A2A] transition-all duration-300 ${
+        data-sidebar="sidebar"
+        className={`fixed top-0 left-0 z-50 h-screen bg-sidebar dark:bg-[#1a2235] border-r border-sidebar-border dark:border-[#2a3345] transition-all duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         } ${sidebarCollapsed ? 'md:w-16' : 'md:w-64'} w-64`}
       >
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border dark:border-[#2A2A2A] flex-shrink-0">
+          <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border dark:border-[#2a3345] flex-shrink-0">
             <div className={`flex-1 flex items-center ${sidebarCollapsed ? 'md:justify-center' : 'justify-center md:justify-start'}`}>
               {!sidebarCollapsed && (
                 <h2 className="text-gray-700 dark:text-gray-300 leading-tight text-center">{displayName}</h2>
@@ -133,8 +134,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                       sidebarCollapsed ? 'md:justify-center md:px-0 px-4' : 'px-4'
                     } py-2.5 ${
                       item.page === currentPage
-                        ? 'bg-[#f5f3f0] dark:bg-white/10 text-gray-900 dark:text-white border-l-4 border-[#6e6b68] dark:border-white font-medium shadow-[0_1px_3px_rgba(42,40,38,0.1)]'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-[#ddd9d4] dark:hover:bg-white/5 border-l-4 border-transparent'
+                        ? 'bg-[#f5f3f0] dark:bg-white/20 text-gray-900 dark:text-white border-l-4 border-[#6e6b68] dark:border-white font-medium shadow-[0_1px_3px_rgba(42,40,38,0.1)]'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-[#ddd9d4] dark:hover:bg-white/10 border-l-4 border-transparent'
                     } ${visibilityEditMode ? 'cursor-default' : 'cursor-pointer'}`}
                     title={sidebarCollapsed ? item.name : undefined}
                   >

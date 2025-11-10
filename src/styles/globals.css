@@ -80,13 +80,13 @@
   --chart-3: #fbbf24;
   --chart-4: #a78bfa;
   --chart-5: #fb7185;
-  --sidebar: #0d1128;
+  --sidebar: #2d3454;
   --sidebar-foreground: #e8edf4;
   --sidebar-primary: #7c8db5;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1e2337;
+  --sidebar-accent: #3d4463;
   --sidebar-accent-foreground: #e8edf4;
-  --sidebar-border: #2d3454;
+  --sidebar-border: #3d4463;
   --sidebar-ring: #7c8db5;
 }
 
@@ -330,10 +330,10 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   }
   
-  /* Sidebar gradient and styling */
+  /* Sidebar gradient and styling - Darker blue */
   .dark [data-sidebar="sidebar"] {
-    background: linear-gradient(180deg, #0d1128 0%, #0a0e27 100%) !important;
-    border-right: 1px solid rgba(124, 141, 181, 0.15) !important;
+    background: linear-gradient(180deg, #1a2235 0%, #0f1628 100%) !important;
+    border-right: 1px solid rgba(124, 141, 181, 0.2) !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
   }
   
@@ -345,12 +345,15 @@
   
   .dark [data-sidebar="sidebar"] a:hover,
   .dark [data-sidebar="sidebar"] button:hover {
-    background: rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
   }
   
-  .dark [data-sidebar="sidebar"] [data-active="true"] {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border-left: 3px solid #ffffff !important;
+  /* Selected sidebar item - WHITE HIGHLIGHT (like light mode) */
+  .dark [data-sidebar="sidebar"] [data-active="true"],
+  .dark [data-sidebar="sidebar"] button[class*="bg-[#f5f3f0]"] {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-left: 4px solid #ffffff !important;
+    box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.08) !important;
   }
   
   /* Enhanced inputs */
