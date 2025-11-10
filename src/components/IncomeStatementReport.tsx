@@ -13,6 +13,7 @@ import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { MultiNonprofitExportDialog } from './MultiNonprofitExportDialog';
 import { exportToExcel, exportToPDF, prepareIncomeStatementForExport } from '../lib/exportUtils';
+import { PageHeader } from './PageHeader';
 
 interface Transaction {
   id: string;
@@ -451,12 +452,10 @@ export const IncomeStatementReport: React.FC = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Income Statement</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {isInFocus ? 'Consolidated view across all nonprofits' : entityName}
-          </p>
-        </div>
+        <PageHeader 
+          title="Income Statement"
+          subtitle={isInFocus ? 'Consolidated view across all nonprofits' : entityName}
+        />
         <Button variant="outline" onClick={handleExport} className="gap-2">
           <Download className="h-4 w-4" />
           Export

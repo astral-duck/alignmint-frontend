@@ -3,6 +3,7 @@ import { useApp, entities } from '../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { PageHeader } from './PageHeader';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import {
@@ -387,12 +388,10 @@ export const JournalEntryManager: React.FC = () => {
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Journal Entries</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Create and manage manual journal entries for adjustments and corrections
-          </p>
-        </div>
+        <PageHeader 
+          title="Journal Entries"
+          subtitle="Create and manage manual journal entries for adjustments and corrections"
+        />
         <div className="flex gap-2">
           <Button onClick={handleExport} variant="outline" className="gap-2">
             <Download className="h-4 w-4" />

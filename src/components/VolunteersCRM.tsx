@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Input } from './ui/input';
+import { PageHeader } from './PageHeader';
 import {
   Dialog,
   DialogContent,
@@ -288,20 +289,6 @@ export const VolunteersCRM: React.FC = () => {
           <Card>
             <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-100 dark:bg-purple-950 rounded-lg flex-shrink-0">
-                  <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Engagement</p>
-                  <p className="text-sm sm:text-xl">{volunteerProfile.engagementScore}%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
-              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-1.5 sm:p-2 bg-orange-100 dark:bg-orange-950 rounded-lg flex-shrink-0">
                   <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 dark:text-orange-400" />
                 </div>
@@ -465,12 +452,10 @@ export const VolunteersCRM: React.FC = () => {
           Back to Personnel Hub
         </Button>
         
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Volunteers</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage volunteer information and hours
-          </p>
-        </div>
+        <PageHeader 
+          title="Volunteers"
+          subtitle="Manage volunteer information and hours"
+        />
       </div>
 
       {/* Search and Filter Bar */}
@@ -643,13 +628,12 @@ export const VolunteersCRM: React.FC = () => {
                   <TableHead className="min-w-[80px]">Sessions</TableHead>
                   <TableHead className="hidden md:table-cell min-w-[100px]">Last Visit</TableHead>
                   <TableHead className="hidden lg:table-cell min-w-[90px]">Type</TableHead>
-                  <TableHead className="hidden xl:table-cell min-w-[120px]">Engagement</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredAndSortedVolunteers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-gray-500 text-sm">
+                    <TableCell colSpan={7} className="text-center py-8 text-gray-500 text-sm">
                       No volunteers found matching your criteria.
                     </TableCell>
                   </TableRow>
@@ -684,19 +668,6 @@ export const VolunteersCRM: React.FC = () => {
                         <Badge variant="outline" className="capitalize">
                           {volunteer.volunteerType}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 min-w-[60px]">
-                            <div
-                              className="bg-purple-600 h-2 rounded-full"
-                              style={{ width: `${volunteer.engagementScore}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                            {volunteer.engagementScore}%
-                          </span>
-                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -752,18 +723,6 @@ export const VolunteersCRM: React.FC = () => {
                   <div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">Last Visit</div>
                     <div className="text-sm">{volunteer.lastVolunteered}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Engagement</div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div
-                          className="bg-purple-600 h-2 rounded-full"
-                          style={{ width: `${volunteer.engagementScore}%` }}
-                        />
-                      </div>
-                      <span className="text-xs">{volunteer.engagementScore}%</span>
-                    </div>
                   </div>
                 </div>
               </div>

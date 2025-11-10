@@ -2,6 +2,7 @@ import React from 'react';
 import { Users2, Building2, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useApp } from '../contexts/AppContext';
+import { PageHeader } from './PageHeader';
 
 interface AdministrationHubProps {
   onSelectTool: (tool: 'users' | 'donor-management' | 'nonprofit-management' | 'chart-of-accounts') => void;
@@ -58,12 +59,10 @@ export const AdministrationHub: React.FC<AdministrationHubProps> = ({ onSelectTo
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Administration</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage users and system configuration
-        </p>
-      </div>
+      <PageHeader 
+        title="Administration"
+        subtitle="Manage users and system configuration"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => (
@@ -73,9 +72,6 @@ export const AdministrationHub: React.FC<AdministrationHubProps> = ({ onSelectTo
             onClick={() => onSelectTool(tool.id)}
           >
             <CardHeader>
-              <div className={`w-12 h-12 rounded-lg ${tool.bgColor} flex items-center justify-center mb-4`}>
-                <tool.icon className={`h-6 w-6 ${tool.color}`} />
-              </div>
               <CardTitle className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {tool.title}
               </CardTitle>

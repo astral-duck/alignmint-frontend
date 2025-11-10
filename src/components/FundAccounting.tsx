@@ -50,6 +50,7 @@ import {
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner@2.0.3';
+import { PageHeader } from './PageHeader';
 
 export const FundAccounting: React.FC = () => {
   const { selectedEntity } = useApp();
@@ -181,12 +182,10 @@ export const FundAccounting: React.FC = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl">Accounting</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Manage transactions, expenses, and reimbursements
-          </p>
-        </div>
+        <PageHeader 
+          title="Accounting"
+          subtitle="Manage transactions, expenses, and reimbursements"
+        />
       </div>
 
       {/* Stats Cards */}

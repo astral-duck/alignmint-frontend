@@ -62,6 +62,7 @@ import {
 } from './ui/select';
 import { Label } from './ui/label';
 import { toast } from 'sonner@2.0.3';
+import { PageHeader } from './PageHeader';
 
 type SortOption = 'name-asc' | 'name-desc' | 'amount-high' | 'amount-low' | 'date-newest' | 'date-oldest';
 type DonationTypeFilter = 'all' | 'one-time' | 'recurring' | 'both' | 'event-attended';
@@ -331,20 +332,6 @@ export const DonorsCRM: React.FC = () => {
                 <div className="min-w-0">
                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Donations</p>
                   <p className="text-sm sm:text-xl">{donorProfile.donationCount}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="p-1.5 sm:p-2 bg-purple-100 dark:bg-purple-950 rounded-lg flex-shrink-0">
-                  <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Engagement</p>
-                  <p className="text-sm sm:text-xl">{donorProfile.engagementScore}%</p>
                 </div>
               </div>
             </CardContent>
@@ -642,6 +629,12 @@ export const DonorsCRM: React.FC = () => {
         {administrationTool === 'donor-management' ? 'Back to Administration Hub' : 'Back to Donor Hub'}
       </Button>
 
+      {/* Page Header */}
+      <PageHeader 
+        title="Donors"
+        subtitle="Manage donor relationships and track giving history"
+      />
+
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         {/* Search Input */}
@@ -839,13 +832,12 @@ export const DonorsCRM: React.FC = () => {
                   <TableHead className="hidden md:table-cell min-w-[80px]"># Gifts</TableHead>
                   <TableHead className="hidden md:table-cell min-w-[100px]">Last Gift</TableHead>
                   <TableHead className="hidden lg:table-cell min-w-[90px]">Type</TableHead>
-                  <TableHead className="hidden xl:table-cell min-w-[120px]">Engagement</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredAndSortedDonors.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-gray-500 text-sm">
+                    <TableCell colSpan={7} className="text-center py-8 text-gray-500 text-sm">
                       No donors found matching your criteria.
                     </TableCell>
                   </TableRow>
@@ -880,19 +872,6 @@ export const DonorsCRM: React.FC = () => {
                         <Badge variant="outline" className="capitalize">
                           {donor.donationType}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 min-w-[60px]">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{ width: `${donor.engagementScore}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                            {donor.engagementScore}%
-                          </span>
-                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -950,18 +929,6 @@ export const DonorsCRM: React.FC = () => {
                   <div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">Last Gift</div>
                     <div className="text-sm">{donor.lastDonation}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Engagement</div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div
-                          className="bg-blue-600 h-2 rounded-full"
-                          style={{ width: `${donor.engagementScore}%` }}
-                        />
-                      </div>
-                      <span className="text-xs">{donor.engagementScore}%</span>
-                    </div>
                   </div>
                 </div>
               </div>

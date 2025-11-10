@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
+import { PageHeader } from './PageHeader';
 import {
   Select,
   SelectContent,
@@ -147,7 +148,7 @@ export const HourTracking: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="space-y-6">
       {/* Back Button */}
       <Button
         variant="ghost"
@@ -158,55 +159,42 @@ export const HourTracking: React.FC = () => {
         Back to Personnel
       </Button>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Hour Tracking</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Submit and manage your volunteer hours
-          </p>
-        </div>
-      </div>
+      <PageHeader 
+        title="Hour Tracking"
+        subtitle="Submit and manage your volunteer hours"
+        centered={true}
+      />
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm">Total Hours</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-gray-900 dark:text-gray-100">{totalHours} hours</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              All time volunteer hours
-            </p>
-          </CardContent>
-        </Card>
+      <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="text-2xl sm:text-3xl font-semibold text-foreground">{totalHours} hours</div>
+                <p className="text-sm text-muted-foreground">All time volunteer hours</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm">This Month</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-gray-900 dark:text-gray-100">{thisMonthHours} hours</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Hours logged this month
-            </p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="text-2xl sm:text-3xl font-semibold text-foreground">{thisMonthHours} hours</div>
+                <p className="text-sm text-muted-foreground">Hours logged this month</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm">Pending Review</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-gray-900 dark:text-gray-100">{pendingHours} hours</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Awaiting approval
-            </p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="text-2xl sm:text-3xl font-semibold text-foreground">{pendingHours} hours</div>
+                <p className="text-sm text-muted-foreground">Awaiting approval</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Submit Hours Section */}
@@ -219,7 +207,7 @@ export const HourTracking: React.FC = () => {
             </div>
             <Dialog open={showForm} onOpenChange={setShowForm}>
               <DialogTrigger asChild>
-                <Button className="gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
+                <Button className="gap-2">
                   <Plus className="h-4 w-4" />
                   Add Hours
                 </Button>
@@ -365,7 +353,7 @@ export const HourTracking: React.FC = () => {
                     </Button>
                     <Button 
                       type="submit"
-                      className="min-w-[100px] bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
+                      className="min-w-[100px]"
                     >
                       Submit Hours
                     </Button>

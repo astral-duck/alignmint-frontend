@@ -2,6 +2,7 @@ import React from 'react';
 import { Banknote, DollarSign, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { PageHeader } from './PageHeader';
 
 interface DepositHubProps {
   onSelectTool: (tool: 'regular' | 'check') => void;
@@ -40,12 +41,10 @@ export const DepositHub: React.FC<DepositHubProps> = ({ onSelectTool, onBack }) 
         Back to Accounting Hub
       </Button>
 
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Deposits</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Record deposits into the general ledger
-        </p>
-      </div>
+      <PageHeader 
+        title="Deposits"
+        subtitle="Record deposits into the general ledger"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => (
@@ -55,9 +54,6 @@ export const DepositHub: React.FC<DepositHubProps> = ({ onSelectTool, onBack }) 
             onClick={() => onSelectTool(tool.id)}
           >
             <CardHeader>
-              <div className={`w-12 h-12 rounded-lg ${tool.bgColor} flex items-center justify-center mb-4`}>
-                <tool.icon className={`h-6 w-6 ${tool.color}`} />
-              </div>
               <CardTitle className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {tool.title}
               </CardTitle>

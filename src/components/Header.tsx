@@ -129,7 +129,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
+                  <AvatarFallback className="bg-blue-100 dark:bg-[#3d4d6b] text-blue-600 dark:text-white">
                     JD
                   </AvatarFallback>
                 </Avatar>

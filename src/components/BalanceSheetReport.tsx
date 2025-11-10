@@ -9,6 +9,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { toast } from 'sonner@2.0.3';
 import { exportToExcel, exportToPDF, prepareBalanceSheetForExport } from '../lib/exportUtils';
+import { PageHeader } from './PageHeader';
 import {
   Sheet,
   SheetContent,
@@ -470,12 +471,10 @@ export const BalanceSheetReport: React.FC = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Balance Sheet</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {isInFocus ? 'Consolidated view across all nonprofits' : entityName}
-          </p>
-        </div>
+        <PageHeader 
+          title="Balance Sheet"
+          subtitle={isInFocus ? 'Consolidated view across all nonprofits' : entityName}
+        />
         <Button variant="outline" onClick={handleExport} className="gap-2">
           <Download className="h-4 w-4" />
           Export

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp, entities } from '../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { PageHeader } from './PageHeader';
 import { Download, Clock, TrendingUp, Users, Award, ArrowLeft } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -143,12 +144,10 @@ export const VolunteerHoursReport: React.FC = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Volunteer Hours Report</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {isInFocus ? 'Consolidated view across all nonprofits' : entityName}
-          </p>
-        </div>
+        <PageHeader 
+          title="Volunteer Hours Report"
+          subtitle={isInFocus ? 'Consolidated view across all nonprofits' : entityName}
+        />
         <Button variant="outline" onClick={handleExport} className="gap-2">
           <Download className="h-4 w-4" />
           Export

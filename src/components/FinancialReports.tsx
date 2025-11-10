@@ -18,6 +18,7 @@ import {
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { toast } from 'sonner@2.0.3';
+import { PageHeader } from './PageHeader';
 
 export const FinancialReports: React.FC = () => {
   const { selectedEntity } = useApp();
@@ -68,12 +69,10 @@ export const FinancialReports: React.FC = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl">Financial Reports</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {entityName} - Financial Statements
-          </p>
-        </div>
+        <PageHeader 
+          title="Financial Reports"
+          subtitle={`${entityName} - Financial Statements`}
+        />
         <div className="flex gap-2">
           <Button variant="outline" onClick={handlePrint} className="gap-2">
             <Printer className="h-4 w-4" />

@@ -94,7 +94,7 @@ export const RecentDonationsTable: React.FC = () => {
                   </Button>
                 </TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Cause</TableHead>
+                <TableHead>Purpose</TableHead>
                 <TableHead>Date</TableHead>
               </TableRow>
             </TableHeader>
@@ -109,7 +109,7 @@ export const RecentDonationsTable: React.FC = () => {
                   <TableCell>{donation.donor}</TableCell>
                   <TableCell>{donation.amount}</TableCell>
                   <TableCell>{getTypeBadge(donation.type)}</TableCell>
-                  <TableCell>{donation.cause}</TableCell>
+                  <TableCell>{donation.purpose}</TableCell>
                   <TableCell>{donation.date}</TableCell>
                 </TableRow>
               ))}
@@ -144,8 +144,8 @@ export const RecentDonationsTable: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-sm">
-                  <div className="text-gray-500 dark:text-gray-400">Cause</div>
-                  <div>{donation.cause}</div>
+                  <div className="text-gray-500 dark:text-gray-400">Purpose</div>
+                  <div>{donation.purpose}</div>
                 </div>
               </div>
             </Card>

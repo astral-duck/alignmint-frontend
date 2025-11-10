@@ -1,49 +1,63 @@
 # Styling Quick Reference
 
-Quick reference for common styling patterns in the IFM MVP Frontend.
+Quick reference for the IFM MVP Frontend styling system.
 
-**IMPORTANT:** Light and Dark modes use COMPLETELY DIFFERENT color palettes.
+## 🎨 Typography (Claude-Inspired)
 
-## Color Variables
-
-### Backgrounds
-```tsx
-bg-background      // Main page (#0a0e27 dark, #f0ede9 light)
-bg-card           // Card surfaces (#1a1f3a dark, #faf9f7 light)
-bg-primary        // Primary buttons (#6366f1 dark, #030213 light)
-bg-secondary      // Secondary elements (#252b47 dark, #e8e4df light)
-bg-muted          // Muted backgrounds (#1e2337 dark, #ddd9d4 light)
-bg-accent         // Highlights (#2d3454 dark, #d4cfc9 light)
+### Font Stack
+```css
+--font-sans: 'Inter'     // Body text, UI elements
+--font-serif: 'Lora'     // Headings (h1, h2, h3)
 ```
 
-### Text
-```tsx
-text-foreground          // Main text (#e8edf4 dark, #2a2826 light)
-text-muted-foreground    // Muted text (#94a3b8 dark, #6e6b68 light)
-text-primary            // Primary colored text
-text-destructive        // Error text (#f43f5e dark, #d4183d light)
+### Usage
+- **Body/UI**: Inter (clean, modern sans-serif)
+- **Headings**: Lora (elegant serif for visual hierarchy)
+- **Numbers**: Tabular figures for perfect alignment
+
+### Font Features
+```css
+font-variant-numeric: tabular-nums;  // Monospaced numbers
+font-feature-settings: 'tnum' 1;     // Enable tabular figures
 ```
 
-### Borders
-```tsx
-border-border    // Standard borders (#2d3454 dark, rgba(195,190,185,0.4) light)
-border-input     // Input borders
-```
+---
 
-## Critical Rules
+## 🎨 Color System
+
+**CRITICAL:** Light and Dark modes are COMPLETELY SEPARATE
 
 ### Light Mode
 - ❌ **NO BLUE COLORS** (except focus states)
 - ✅ Neutral warm grays/beiges only
+- ✅ Primary buttons: `#5a5550` (warm gray-brown)
 - ✅ Sidebar hover: `hover:bg-[#ddd9d4]`
 - ✅ Sidebar selected: `bg-[#f5f3f0]`
-- ✅ Icons: Neutral gray (#6e6b68)
 
 ### Dark Mode
 - ✅ Blue/indigo accents (#6366f1)
+- ✅ Primary buttons: Blue gradient
 - ✅ Sidebar hover: `hover:bg-[#6366f1]/10`
 - ✅ Sidebar selected: `bg-[#6366f1]/25`
-- ✅ Glowing borders and shadows
+
+---
+
+## 📦 Common Patterns
+
+### Backgrounds
+```tsx
+bg-background      // Main page
+bg-card           // Card surfaces
+bg-primary        // Primary buttons
+bg-muted          // Muted backgrounds
+```
+
+### Text
+```tsx
+text-foreground          // Main text
+text-muted-foreground    // Muted text
+font-serif              // Use serif font (headings)
+```
 
 ## Common Components
 

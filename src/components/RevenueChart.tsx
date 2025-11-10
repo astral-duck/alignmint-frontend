@@ -9,7 +9,7 @@ export const RevenueChart: React.FC = () => {
   const data = getDonationsData(selectedEntity, timePeriod);
 
   const chartConfig = {
-    stroke: theme === 'dark' ? '#60A5FA' : '#3B82F6',
+    stroke: theme === 'dark' ? '#60A5FA' : '#8B7355',
     grid: theme === 'dark' ? '#374151' : '#E5E7EB',
     text: theme === 'dark' ? '#9CA3AF' : '#6B7280',
   };

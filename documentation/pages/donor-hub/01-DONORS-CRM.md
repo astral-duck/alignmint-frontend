@@ -39,11 +39,11 @@ The Donors CRM is a comprehensive donor management system that allows users to v
   - Date, amount, type, cause, payment method
   - Status badges (Completed, Pending, Failed, Refunded)
   - Refund functionality
-- **Engagement Metrics:**
+- **Donor Insights:**
   - Donation frequency
   - Preferred payment method
   - Preferred causes/campaigns
-- **Communication History:**
+- **Communication History:
   - Emails sent
   - Thank you notes
   - Receipts
@@ -74,7 +74,6 @@ All of the above, plus:
 - **notes** (text) - Internal notes about donor
 - **preferred_payment_method** (string) - Most used payment method
 - **preferred_causes** (array) - Most donated to causes
-- **engagement_score** (integer) - Calculated engagement metric
 
 ### Data Mutations
 - **Create Donor:** Add new donor to system
@@ -166,7 +165,6 @@ Response: {
     notes: "Prefers email communication",
     preferred_payment_method: "credit_card",
     preferred_causes: ["Education", "Youth Programs"],
-    engagement_score: 85,
     donation_history: [
       {
         id: "uuid",
@@ -362,7 +360,6 @@ interface Donor {
   notes?: string;
   preferred_payment_method?: string;
   preferred_causes?: string[];
-  engagement_score?: number;
   created_at: string;
   updated_at: string;
 }
@@ -431,7 +428,6 @@ interface CommunicationHistoryItem {
 - Deleting a donor is soft delete (status = 'inactive')
 - Donor's total_donated and donation_count are calculated fields, updated via database triggers or background jobs
 - Refunds create negative donation entries
-- Engagement score calculated based on donation frequency, recency, and amount
 - Lapsed donors: No donation in past 12 months
 - Major donors: Total donated > $10,000 (configurable)
 

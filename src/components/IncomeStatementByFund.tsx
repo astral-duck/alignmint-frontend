@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp, entities } from '../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { PageHeader } from './PageHeader';
 import { Badge } from './ui/badge';
 import { ArrowLeft, Download, CheckCircle, ChevronDown, ChevronUp, Edit } from 'lucide-react';
 import {
@@ -162,14 +163,12 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Sponsor Fee Allocation</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {isInFocus
-              ? 'Review and confirm monthly admin fees across all nonprofits'
-              : 'Review your monthly admin fee calculation'}
-          </p>
-        </div>
+        <PageHeader 
+          title="Sponsor Fee Allocation"
+          subtitle={isInFocus
+            ? 'Review and confirm monthly admin fees across all nonprofits'
+            : 'Review your monthly admin fee calculation'}
+        />
         <div className="flex gap-2">
           {isInFocus && !readOnly && (
             <Button onClick={handleConfirmAll} className="gap-2">

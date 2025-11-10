@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from './ui/dialog';
 import { toast } from 'sonner@2.0.3';
+import { PageHeader } from './PageHeader';
 
 export const VideoBombManager: React.FC = () => {
   const { selectedEntity, videoBombs, addVideoBomb, deleteVideoBomb, setMarketingTool } = useApp();
@@ -234,12 +235,10 @@ export const VideoBombManager: React.FC = () => {
         Back to Marketing Hub
       </Button>
 
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Video Bomb</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Create engaging video donation pages
-        </p>
-      </div>
+      <PageHeader 
+        title="Video Bomb"
+        subtitle="Create engaging video donation pages"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Record Video Card */}

@@ -3,6 +3,7 @@ import { useApp, entities } from '../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { PageHeader } from './PageHeader';
 
 // Expense Categories
 const EXPENSE_CATEGORIES = [
@@ -243,12 +244,10 @@ export const ReimbursementsManager: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Submit Reimbursement</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Take photos of your receipts to submit for reimbursement
-        </p>
-      </div>
+      <PageHeader 
+        title="Submit Reimbursement"
+        subtitle="Take photos of your receipts to submit for reimbursement"
+      />
 
       {/* Capture Step */}
       {step === 'capture' && (

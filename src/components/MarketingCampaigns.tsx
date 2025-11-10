@@ -65,6 +65,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { PageHeader } from './PageHeader';
 
 interface Campaign {
   id: string;
@@ -332,12 +333,10 @@ export const MarketingCampaigns: React.FC = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl">Marketing & Email Campaigns</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Create and send email campaigns to donors and volunteers
-          </p>
-        </div>
+        <PageHeader 
+          title="Marketing & Email Campaigns"
+          subtitle="Create and send email campaigns to donors and volunteers"
+        />
         <Dialog open={composeOpen} onOpenChange={setComposeOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2 w-full sm:w-auto">

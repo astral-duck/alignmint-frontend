@@ -4,6 +4,7 @@ import { getReimbursementRequests, ReimbursementRequest } from '../lib/mockData'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { PageHeader } from './PageHeader';
 import {
   Table,
   TableBody,
@@ -76,12 +77,10 @@ export const DistributionManager: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Fund Distribution</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Distribute funds to nonprofits via ACH
-        </p>
-      </div>
+      <PageHeader 
+        title="Fund Distribution"
+        subtitle="Distribute funds to nonprofits via ACH"
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

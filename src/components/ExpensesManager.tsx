@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { PageHeader } from './PageHeader';
 import {
   ArrowLeft,
   Plus,
@@ -259,12 +260,10 @@ export const ExpensesManager: React.FC = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Expense Management</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track and approve manual expense entries
-          </p>
-        </div>
+        <PageHeader 
+          title="Expense Management"
+          subtitle="Track and approve manual expense entries"
+        />
         <Button onClick={handleAddExpense} className="gap-2">
           <Plus className="h-4 w-4" />
           Add Expense

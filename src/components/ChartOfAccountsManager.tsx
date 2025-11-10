@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { PageHeader } from './PageHeader';
 import {
   Table,
   TableBody,
@@ -451,12 +452,10 @@ export const ChartOfAccountsManager: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Chart of Accounts</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage account categories and bank accounts for your organization
-        </p>
-      </div>
+      <PageHeader 
+        title="Chart of Accounts"
+        subtitle="Manage account categories and bank accounts for your organization"
+      />
 
       {/* Tabs */}
       <Tabs defaultValue="accounts" className="w-full">

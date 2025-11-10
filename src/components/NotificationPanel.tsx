@@ -58,11 +58,11 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
   return (
     <div
       ref={panelRef}
-      className="absolute right-0 top-12 w-80 sm:w-96 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg shadow-lg overflow-hidden"
+      className="absolute right-0 top-12 w-80 sm:w-96 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-border">
-        <h3>Notifications</h3>
+      <div className="flex items-center justify-between p-4 border-b border-border bg-card">
+        <h3 className="text-foreground">Notifications</h3>
         <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
           <X className="h-4 w-4" />
         </Button>
@@ -81,8 +81,8 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
                 key={notification.id}
                 className={`p-3 mb-2 rounded-lg cursor-pointer transition-colors ${
                   notification.isRead
-                    ? 'bg-gray-50 dark:bg-muted'
-                    : 'bg-blue-50 dark:bg-accent hover:bg-blue-100 dark:hover:bg-secondary'
+                    ? 'bg-muted/50'
+                    : 'bg-card/50 hover:bg-accent border border-border'
                 }`}
                 onClick={() => markNotificationAsRead(notification.id)}
               >

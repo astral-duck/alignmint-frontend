@@ -16,6 +16,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Badge } from './ui/badge';
+import { PageHeader } from './PageHeader';
 import {
   User,
   Bell,
@@ -74,12 +75,10 @@ export const Settings: React.FC = () => {
       )}
 
       {/* Header */}
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Settings</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage your account settings and preferences
-        </p>
-      </div>
+      <PageHeader 
+        title="Settings"
+        subtitle="Manage your account settings and preferences"
+      />
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">

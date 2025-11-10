@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { PageHeader } from './PageHeader';
 import {
   Select,
   SelectContent,
@@ -697,12 +698,10 @@ export const GeneralLedger: React.FC = () => {
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">General Ledger</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Complete transaction history with reconciliation status - showing unreconciled items by default
-          </p>
-        </div>
+        <PageHeader 
+          title="General Ledger"
+          subtitle="Complete transaction history with reconciliation status - showing unreconciled items by default"
+        />
         <Button onClick={handleExport} className="gap-2">
           <Download className="h-4 w-4" />
           Export to Excel

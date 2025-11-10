@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Checkbox } from './ui/checkbox';
+import { PageHeader } from './PageHeader';
 import {
   ArrowLeft,
   Upload,
@@ -380,12 +381,10 @@ export const ReconciliationManager: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Bank Reconciliation</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Upload bank statements, match transactions, and reconcile balances
-        </p>
-      </div>
+      <PageHeader 
+        title="Bank Reconciliation"
+        subtitle="Upload bank statements, match transactions, and reconcile balances"
+      />
 
       {!hasUploadedFile ? (
         /* Upload State */

@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { PageHeader } from './PageHeader';
 import {
   Table,
   TableBody,
@@ -173,12 +174,10 @@ export const ProspectsList: React.FC = () => {
       </Button>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Prospects</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage potential donors who haven't donated yet
-          </p>
-        </div>
+        <PageHeader 
+          title="Prospects"
+          subtitle="Manage potential donors who haven't donated yet"
+        />
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => setShowUploadDialog(true)}>
             <Upload className="h-4 w-4 mr-2" />

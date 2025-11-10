@@ -65,6 +65,7 @@ import {
   CommandList,
 } from './ui/command';
 import { toast } from 'sonner@2.0.3';
+import { PageHeader } from './PageHeader';
 
 type SortOption = 'date-newest' | 'date-oldest' | 'amount-high' | 'amount-low' | 'donor-asc' | 'donor-desc';
 type StatusFilter = 'all' | 'completed' | 'pending' | 'failed' | 'refunded';
@@ -91,7 +92,7 @@ export const DonationsManager: React.FC = () => {
     date: new Date().toISOString().split('T')[0],
     type: 'one-time' as const,
     method: 'credit-card' as const,
-    cause: '',
+    purpose: '',
     campaign: '',
     notes: '',
     receiptSent: false,
@@ -121,7 +122,7 @@ export const DonationsManager: React.FC = () => {
       const matchesSearch =
         (donation.donorName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
         donation.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        donation.cause.toLowerCase().includes(searchQuery.toLowerCase());
+        donation.purpose.toLowerCase().includes(searchQuery.toLowerCase());
 
       // Status filter
       const matchesStatus = statusFilter === 'all' || donation.status === statusFilter;
@@ -172,8 +173,8 @@ export const DonationsManager: React.FC = () => {
   };
 
   const handleAddDonation = () => {
-    if (!newDonation.amount || !newDonation.cause) {
-      toast.error('Please fill in required fields (Amount and Cause)');
+    if (!newDonation.amount || !newDonation.purpose) {
+      toast.error('Please fill in required fields (Amount and Purpose)');
       return;
     }
 
@@ -191,7 +192,7 @@ export const DonationsManager: React.FC = () => {
       date: new Date().toISOString().split('T')[0],
       type: 'one-time',
       method: 'credit-card',
-      cause: '',
+      purpose: '',
       campaign: '',
       notes: '',
       receiptSent: false,
@@ -294,46 +295,43 @@ export const DonationsManager: React.FC = () => {
         Back to Donor Hub
       </Button>
 
+      {/* Page Header */}
+      <PageHeader 
+        title="Donations"
+        subtitle="Track and manage all donation transactions"
+      />
+
       {/* Header with Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 dark:bg-green-950 rounded-lg">
-                <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Amount</p>
-                <p className="text-2xl">${totalAmount.toLocaleString()}</p>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Amount</p>
+              <p className="text-2xl sm:text-3xl font-semibold text-foreground mt-1">
+                ${totalAmount.toLocaleString()}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-950 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Completed</p>
-                <p className="text-2xl">{completedCount}</p>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Completed</p>
+              <p className="text-2xl sm:text-3xl font-semibold text-foreground mt-1">
+                {completedCount}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 dark:bg-orange-950 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Unassigned</p>
-                <p className="text-2xl">{unassignedCount}</p>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Unassigned</p>
+              <p className="text-2xl sm:text-3xl font-semibold text-foreground mt-1">
+                {unassignedCount}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -429,57 +427,65 @@ export const DonationsManager: React.FC = () => {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="h-auto p-0 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                      className="h-auto p-0 gap-1"
                       onClick={() => setAddNewDonorOpen(true)}
                     >
-                      <UserPlus className="h-3.5 w-3.5 mr-1" />
+                      <UserPlus className="h-3.5 w-3.5" />
                       Add New
                     </Button>
                   </div>
-                  <Popover open={donorSearchOpen} onOpenChange={setDonorSearchOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={donorSearchOpen}
-                        className="w-full justify-between"
-                      >
-                        {newDonation.donorName || "Search donors..."}
-                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-                      <Command>
-                        <CommandInput placeholder="Search donors..." />
-                        <CommandList>
-                          <CommandEmpty>No donor found.</CommandEmpty>
-                          <CommandGroup>
-                            <CommandItem
-                              value="__none__"
-                              onSelect={() => {
-                                setNewDonation({ ...newDonation, donorName: '' });
-                                setDonorSearchOpen(false);
-                              }}
-                            >
-                              <span className="text-muted-foreground italic">None (Unassigned)</span>
-                            </CommandItem>
-                            {allDonors.map((donor) => (
+                  <div className="relative">
+                    <Input
+                      placeholder="Search donors..."
+                      value={newDonation.donorName}
+                      onChange={(e) => {
+                        setNewDonation({ ...newDonation, donorName: e.target.value });
+                        setDonorSearchOpen(e.target.value.length > 0);
+                      }}
+                      onBlur={() => setTimeout(() => setDonorSearchOpen(false), 200)}
+                      className="h-11"
+                    />
+                    {donorSearchOpen && newDonation.donorName && (
+                      <div className="absolute z-50 w-full mt-1 bg-popover border rounded-lg shadow-lg max-h-[300px] overflow-auto">
+                        <Command>
+                          <CommandList>
+                            <CommandEmpty>No donor found.</CommandEmpty>
+                            <CommandGroup>
                               <CommandItem
-                                key={donor.id}
-                                value={donor.name}
-                                onSelect={(currentValue) => {
-                                  setNewDonation({ ...newDonation, donorName: currentValue });
+                                value="__none__"
+                                onSelect={() => {
+                                  setNewDonation({ ...newDonation, donorName: '' });
                                   setDonorSearchOpen(false);
                                 }}
                               >
-                                {donor.name}
+                                <span className="text-muted-foreground italic">Clear selection</span>
                               </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                              {allDonors
+                                .filter((donor) =>
+                                  donor.name.toLowerCase().includes(newDonation.donorName.toLowerCase()) ||
+                                  donor.email.toLowerCase().includes(newDonation.donorName.toLowerCase())
+                                )
+                                .map((donor) => (
+                                  <CommandItem
+                                    key={donor.id}
+                                    value={donor.name}
+                                    onSelect={() => {
+                                      setNewDonation({ ...newDonation, donorName: donor.name });
+                                      setDonorSearchOpen(false);
+                                    }}
+                                  >
+                                    <div className="flex flex-col py-1">
+                                      <span className="font-medium">{donor.name}</span>
+                                      <span className="text-xs text-muted-foreground">{donor.email}</span>
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="amount">Amount *</Label>
@@ -542,12 +548,12 @@ export const DonationsManager: React.FC = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cause">Cause/Fund *</Label>
+                  <Label htmlFor="purpose">Purpose/Fund *</Label>
                   <Input
-                    id="cause"
+                    id="purpose"
                     placeholder="General Fund"
-                    value={newDonation.cause}
-                    onChange={(e) => setNewDonation({ ...newDonation, cause: e.target.value })}
+                    value={newDonation.purpose}
+                    onChange={(e) => setNewDonation({ ...newDonation, purpose: e.target.value })}
                   />
                 </div>
               </div>
@@ -740,7 +746,7 @@ export const DonationsManager: React.FC = () => {
                   <TableHead className="hidden md:table-cell min-w-[100px]">Date</TableHead>
                   <TableHead className="hidden lg:table-cell min-w-[90px]">Type</TableHead>
                   <TableHead className="hidden lg:table-cell min-w-[120px]">Method</TableHead>
-                  <TableHead className="hidden xl:table-cell min-w-[120px]">Cause</TableHead>
+                  <TableHead className="hidden xl:table-cell min-w-[120px]">Purpose</TableHead>
                   <TableHead className="min-w-[100px]">Status</TableHead>
                   <TableHead className="min-w-[80px]">Actions</TableHead>
                 </TableRow>
@@ -760,7 +766,7 @@ export const DonationsManager: React.FC = () => {
                         {donation.donorName ? (
                           <button
                             onClick={() => handleDonorClick(donation.donorName)}
-                            className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[150px] block"
+                            className="text-foreground hover:underline truncate max-w-[150px] block"
                           >
                             {donation.donorName}
                           </button>
@@ -780,7 +786,7 @@ export const DonationsManager: React.FC = () => {
                       <TableCell className="hidden lg:table-cell">{getTypeBadge(donation.type)}</TableCell>
                       <TableCell className="hidden lg:table-cell">{getMethodBadge(donation.method)}</TableCell>
                       <TableCell className="hidden xl:table-cell truncate max-w-[120px]">
-                        {donation.cause}
+                        {donation.purpose}
                       </TableCell>
                       <TableCell>{getStatusBadge(donation.status)}</TableCell>
                       <TableCell>
@@ -821,7 +827,7 @@ export const DonationsManager: React.FC = () => {
                     {donation.donorName ? (
                       <button
                         onClick={() => handleDonorClick(donation.donorName)}
-                        className="text-blue-600 dark:text-blue-400 hover:underline text-lg font-medium truncate block"
+                        className="text-foreground hover:underline text-lg font-medium truncate block"
                       >
                         {donation.donorName}
                       </button>
@@ -858,8 +864,8 @@ export const DonationsManager: React.FC = () => {
                 {/* Details Grid */}
                 <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t border-gray-200 dark:border-gray-700">
                   <div>
-                    <div className="text-gray-500 dark:text-gray-400">Cause</div>
-                    <div className="font-medium truncate">{donation.cause}</div>
+                    <div className="text-gray-500 dark:text-gray-400">Purpose</div>
+                    <div className="font-medium truncate">{donation.purpose}</div>
                   </div>
                   <div>
                     <div className="text-gray-500 dark:text-gray-400">Method</div>
@@ -896,29 +902,87 @@ export const DonationsManager: React.FC = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="assignDonor">Select Donor</Label>
-              <Select
-                value={selectedDonorForAssignment}
-                onValueChange={setSelectedDonorForAssignment}
-              >
-                <SelectTrigger id="assignDonor">
-                  <SelectValue placeholder="Choose a donor..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {allDonors.map((donor) => (
-                    <SelectItem key={donor.id} value={donor.name}>
-                      {donor.name} - {donor.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center justify-between">
+                <Label>Select Donor</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto p-0 gap-1"
+                  onClick={() => setAddNewDonorOpen(true)}
+                >
+                  <UserPlus className="h-3.5 w-3.5" />
+                  Add New Donor
+                </Button>
+              </div>
+              <div className="relative">
+                <Input
+                  placeholder="Search donors..."
+                  value={selectedDonorForAssignment}
+                  onChange={(e) => {
+                    setSelectedDonorForAssignment(e.target.value);
+                    setDonorSearchOpen(e.target.value.length > 0);
+                  }}
+                  onBlur={() => setTimeout(() => setDonorSearchOpen(false), 200)}
+                  className="h-11"
+                />
+                {donorSearchOpen && selectedDonorForAssignment && (
+                  <div className="absolute z-50 w-full mt-1 bg-popover border rounded-lg shadow-lg max-h-[300px] overflow-auto">
+                    <Command>
+                      <CommandList>
+                        <CommandEmpty>No donor found.</CommandEmpty>
+                        <CommandGroup>
+                          {allDonors
+                            .filter((donor) =>
+                              donor.name.toLowerCase().includes(selectedDonorForAssignment.toLowerCase()) ||
+                              donor.email.toLowerCase().includes(selectedDonorForAssignment.toLowerCase())
+                            )
+                            .map((donor) => (
+                              <CommandItem
+                                key={donor.id}
+                                value={donor.name}
+                                onSelect={() => {
+                                  setSelectedDonorForAssignment(donor.name);
+                                  setDonorSearchOpen(false);
+                                }}
+                              >
+                                <div className="flex flex-col py-1">
+                                  <span className="font-medium">{donor.name}</span>
+                                  <span className="text-sm text-muted-foreground">{donor.email}</span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </div>
+                )}
+              </div>
+              {selectedDonorForAssignment && (
+                <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {selectedDonorForAssignment}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Selected donor</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedDonorForAssignment('')}
+                    className="h-8 w-8 p-0"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              )}
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Don't see the donor? Add them from the Donors page first.
-            </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAssignDonorOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setAssignDonorOpen(false);
+              setSelectedDonorForAssignment('');
+            }}>
               Cancel
             </Button>
             <Button onClick={handleAssignDonor}>Assign Donor</Button>

@@ -1,14 +1,19 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Claude-inspired typography system */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  --font-serif: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', serif;
   --font-size: 16px;
+  /* Font feature settings for better number rendering like Claude */
+  --font-feature-settings: 'tnum' 1, 'cv02' 1, 'cv03' 1, 'cv04' 1;
   --background: #f0ede9;
   --foreground: #2a2826;
   --card: #faf9f7;
   --card-foreground: #2a2826;
   --popover: #faf9f7;
   --popover-foreground: #2a2826;
-  --primary: #030213;
+  --primary: #5a5550;
   --primary-foreground: #ffffff;
   --secondary: #e8e4df;
   --secondary-foreground: #2a2826;
@@ -24,6 +29,7 @@
   --switch-background: #c9c4be;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
+  --font-weight-light: 300;
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -33,7 +39,7 @@
   --radius: 0.625rem;
   --sidebar: #e8e4df;
   --sidebar-foreground: #2a2826;
-  --sidebar-primary: #030213;
+  --sidebar-primary: #5a5550;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #ddd9d4;
   --sidebar-accent-foreground: #2a2826;
@@ -42,14 +48,16 @@
 }
 
 .dark {
-  /* Modern Navy Blue Dark Mode */
+  /* Modern Navy Blue Dark Mode - Mature & Professional */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  --font-serif: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', serif;
   --background: #0a0e27;
   --foreground: #e8edf4;
   --card: #1a1f3a;
   --card-foreground: #e8edf4;
   --popover: #1a1f3a;
   --popover-foreground: #e8edf4;
-  --primary: #6366f1;
+  --primary: #7c8db5;
   --primary-foreground: #ffffff;
   --secondary: #252b47;
   --secondary-foreground: #e8edf4;
@@ -63,22 +71,23 @@
   --input: #2d3454;
   --input-background: #151a2e;
   --switch-background: #3d4463;
-  --ring: #6366f1;
+  --ring: #7c8db5;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: #6366f1;
+  --font-weight-light: 300;
+  --chart-1: #7c8db5;
   --chart-2: #22d3ee;
   --chart-3: #fbbf24;
   --chart-4: #a78bfa;
   --chart-5: #fb7185;
   --sidebar: #0d1128;
   --sidebar-foreground: #e8edf4;
-  --sidebar-primary: #6366f1;
+  --sidebar-primary: #7c8db5;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1e2337;
   --sidebar-accent-foreground: #e8edf4;
   --sidebar-border: #2d3454;
-  --sidebar-ring: #6366f1;
+  --sidebar-ring: #7c8db5;
 }
 
 @theme inline {
@@ -127,8 +136,26 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+    font-feature-settings: 'tnum' 1;  /* Tabular numbers for alignment */
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Ensure all numbers use tabular figures like Claude */
+  input[type="number"],
+  .currency,
+  .price,
+  .amount,
+  td,
+  th {
+    font-feature-settings: 'tnum' 1;
+    font-variant-numeric: tabular-nums;
   }
   
   /* Light Mode Glassmorphism Styling - Soft Neutral Tones */
@@ -150,7 +177,19 @@
     backdrop-filter: blur(20px) saturate(180%);
   }
   
-  html:not(.dark) .bg-card:hover:not(header) {
+  /* DISABLED - Only hub tiles should have fancy hover */
+  /* html:not(.dark) .bg-card:hover:not(header) {
+    border-color: rgba(110, 107, 104, 0.45) !important;
+    box-shadow: 
+      0 8px 16px -4px rgba(42, 40, 38, 0.12),
+      0 4px 8px -2px rgba(42, 40, 38, 0.08),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
+      0 0 24px rgba(74, 71, 68, 0.06) !important;
+  } */
+  
+  /* Only apply fancy hover to clickable hub tiles */
+  html:not(.dark) .bg-card.cursor-pointer:hover:not(header),
+  html:not(.dark) .bg-card.group:hover:not(header) {
     border-color: rgba(110, 107, 104, 0.45) !important;
     box-shadow: 
       0 8px 16px -4px rgba(42, 40, 38, 0.12),
@@ -240,15 +279,15 @@
   /* Dark mode visual enhancements */
   .dark body {
     background-image: 
-      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(124, 141, 181, 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(124, 141, 181, 0.06) 0px, transparent 50%);
     background-attachment: fixed;
   }
   
   /* Enhanced cards in dark mode */
   .dark .bg-card {
     background: linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(21, 26, 46, 0.95) 100%) !important;
-    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border: 1px solid rgba(124, 141, 181, 0.15) !important;
     box-shadow: 
       0 4px 6px -1px rgba(0, 0, 0, 0.4),
       0 2px 4px -1px rgba(0, 0, 0, 0.3),
@@ -256,44 +295,37 @@
     backdrop-filter: blur(12px);
   }
   
-  .dark .bg-card:hover:not(header) {
-    border-color: rgba(99, 102, 241, 0.35) !important;
+  /* Only apply fancy hover to clickable hub tiles */
+  .dark .bg-card.cursor-pointer:hover:not(header),
+  .dark .bg-card.group:hover:not(header) {
+    border-color: rgba(124, 141, 181, 0.25) !important;
     box-shadow: 
       0 8px 16px -4px rgba(0, 0, 0, 0.5),
       0 4px 8px -2px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-      0 0 20px rgba(99, 102, 241, 0.15) !important;
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
   }
   
-  /* Primary buttons with gradient */
+  /* Primary buttons - prominent dark navy */
   .dark .bg-primary {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%) !important;
+    background: linear-gradient(135deg, #4a5a7a 0%, #3d4d6b 100%) !important;
     box-shadow: 
-      0 4px 14px 0 rgba(99, 102, 241, 0.5),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
-    position: relative;
-  }
-  
-  .dark .bg-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-    pointer-events: none;
+      0 4px 12px 0 rgba(58, 77, 107, 0.5),
+      0 2px 4px 0 rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
   }
   
   .dark .bg-primary:hover {
-    background: linear-gradient(135deg, #7c7ff6 0%, #6366f1 50%, #5b52ee 100%) !important;
+    background: linear-gradient(135deg, #5a6a8a 0%, #4a5a7a 100%) !important;
     box-shadow: 
-      0 6px 20px 0 rgba(99, 102, 241, 0.6),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.25) !important;
+      0 6px 16px 0 rgba(58, 77, 107, 0.6),
+      0 3px 6px 0 rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
   }
   
   /* Header styling in dark mode */
   .dark header {
     background: rgba(26, 31, 58, 0.8) !important;
-    border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-bottom: 1px solid rgba(124, 141, 181, 0.15) !important;
     backdrop-filter: blur(12px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   }
@@ -301,7 +333,7 @@
   /* Sidebar gradient and styling */
   .dark [data-sidebar="sidebar"] {
     background: linear-gradient(180deg, #0d1128 0%, #0a0e27 100%) !important;
-    border-right: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-right: 1px solid rgba(124, 141, 181, 0.15) !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
   }
   
@@ -313,13 +345,12 @@
   
   .dark [data-sidebar="sidebar"] a:hover,
   .dark [data-sidebar="sidebar"] button:hover {
-    background: rgba(99, 102, 241, 0.1) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
   }
   
   .dark [data-sidebar="sidebar"] [data-active="true"] {
-    background: rgba(99, 102, 241, 0.25) !important;
-    border-left: 3px solid #6366f1 !important;
-    box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.15) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-left: 3px solid #ffffff !important;
   }
   
   /* Enhanced inputs */
@@ -327,7 +358,7 @@
   .dark textarea,
   .dark select {
     background: rgba(21, 26, 46, 0.6) !important;
-    border: 1px solid rgba(99, 102, 241, 0.25) !important;
+    border: 1px solid rgba(124, 141, 181, 0.2) !important;
     backdrop-filter: blur(8px);
     transition: all 0.2s ease;
   }
@@ -336,19 +367,18 @@
   .dark textarea:focus,
   .dark select:focus {
     background: rgba(21, 26, 46, 0.8) !important;
-    border-color: rgba(99, 102, 241, 0.5) !important;
+    border-color: rgba(124, 141, 181, 0.4) !important;
     box-shadow: 
-      0 0 0 3px rgba(99, 102, 241, 0.15),
+      0 0 0 2px rgba(124, 141, 181, 0.1),
       0 1px 3px 0 rgba(0, 0, 0, 0.4) !important;
   }
   
-  /* Metric cards glow effect */
+  /* Metric cards - no glow effect */
   .dark .bg-blue-50,
   .dark .bg-green-50,
   .dark .bg-orange-50,
   .dark .bg-purple-50 {
     position: relative;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
   }
   
   /* Light mode overrides - neutral tones only, no blue */
@@ -400,21 +430,26 @@
 @layer base {
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
     h1 {
+      font-family: var(--font-serif);
       font-size: var(--text-2xl);
       font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
     }
 
     h2 {
+      font-family: var(--font-serif);
       font-size: var(--text-xl);
       font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
     }
 
     h3 {
+      font-family: var(--font-serif);
       font-size: var(--text-lg);
       font-weight: var(--font-weight-medium);
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     h4 {
@@ -445,4 +480,97 @@
 
 html {
   font-size: var(--font-size);
+}
+
+/* Light mode primary buttons - warm gray-brown instead of black */
+/* CRITICAL: Override Tailwind's bg-primary class in light mode */
+/* Force the CSS variable AND the utility class */
+html:not(.dark) {
+  --color-primary: #5a5550 !important;
+}
+
+@layer utilities {
+  html:not(.dark) .bg-primary {
+    background: #5a5550 !important;
+    background-color: #5a5550 !important;
+    color: #ffffff !important;
+  }
+
+  html:not(.dark) .hover\:bg-primary\/90:hover,
+  html:not(.dark) .bg-primary:hover {
+    background: #4a4540 !important;
+    background-color: #4a4540 !important;
+  }
+
+  html:not(.dark) .text-primary {
+    color: #5a5550 !important;
+  }
+  
+  html:not(.dark) .text-primary-foreground {
+    color: #ffffff !important;
+  }
+
+  /* Dark mode - soft, non-glowing buttons */
+  .dark .bg-primary {
+    background: #7c8db5 !important;
+    background-color: #7c8db5 !important;
+    color: #ffffff !important;
+  }
+
+  .dark .hover\:bg-primary\/90:hover,
+  .dark .bg-primary:hover {
+    background: #8a9bc4 !important;
+    background-color: #8a9bc4 !important;
+  }
+
+  .dark .text-primary {
+    color: #7c8db5 !important;
+  }
+}
+
+/* Remove all glowing effects and box shadows */
+* {
+  box-shadow: none !important;
+}
+
+/* Allow only subtle shadows on cards and dialogs */
+.bg-card,
+[role="dialog"],
+.shadow-lg {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+}
+
+.dark .bg-card,
+.dark [role="dialog"],
+.dark .shadow-lg {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2) !important;
+}
+
+/* Table container cards no longer need special handling */
+/* Global card hover is now disabled - only hub tiles get fancy hover */
+
+/* Force all h1 elements to use serif font */
+h1 {
+  font-family: var(--font-serif) !important;
+}
+
+h2 {
+  font-family: var(--font-serif) !important;
+}
+
+h3 {
+  font-family: var(--font-serif) !important;
+}
+
+/* Add hover states to outline buttons (Sort, Filter, etc.) */
+html:not(.dark) button[class*="outline"]:hover,
+html:not(.dark) .variant-outline:hover {
+  background-color: rgba(110, 107, 104, 0.08) !important;
+  border-color: rgba(110, 107, 104, 0.3) !important;
+}
+
+.dark button[class*="outline"]:hover,
+.dark .variant-outline:hover {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
 }

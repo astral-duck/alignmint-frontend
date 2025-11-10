@@ -6,13 +6,113 @@ This document outlines the comprehensive styling system for the IFM MVP Frontend
 
 ## Table of Contents
 
-1. [Color System](#color-system)
-2. [Light Mode Implementation](#light-mode-implementation)
-3. [Dark Mode Implementation](#dark-mode-implementation)
-4. [Sidebar Styling](#sidebar-styling)
-5. [Component Styling Patterns](#component-styling-patterns)
-6. [CSS Architecture](#css-architecture)
-7. [Best Practices](#best-practices)
+1. [Typography System](#typography-system)
+2. [Color System](#color-system)
+3. [Light Mode Implementation](#light-mode-implementation)
+4. [Dark Mode Implementation](#dark-mode-implementation)
+5. [Sidebar Styling](#sidebar-styling)
+6. [Component Styling Patterns](#component-styling-patterns)
+7. [CSS Architecture](#css-architecture)
+8. [Best Practices](#best-practices)
+
+---
+
+## Typography System
+
+### Design Philosophy: Claude-Inspired Typography
+
+Our typography system is inspired by Claude.ai's elegant, readable design:
+
+- **Serif headings** (Lora) for visual hierarchy and sophistication
+- **Sans-serif body** (Inter) for clean, modern UI elements  
+- **Tabular numbers** for perfect alignment in tables and metrics
+
+**CRITICAL:** All h1, h2, and h3 elements MUST use Lora serif font. This is enforced globally with `!important` to ensure consistency across the entire application.
+
+### Font Stack
+
+```css
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  --font-serif: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', serif;
+}
+```
+
+**Note:** The actual implementation uses 'Lora' as the serif font (not 'Crimson Pro').
+
+### Font Usage
+
+| Element | Font | Weight | Purpose |
+|---------|------|--------|---------|
+| **h1, h2, h3** | Lora (serif) | 500-600 | Visual hierarchy, elegance |
+| **Body text** | Inter (sans-serif) | 400 | Readability, modern feel |
+| **UI elements** | Inter (sans-serif) | 400-600 | Clean, professional |
+| **Numbers** | Inter (tabular) | 400-600 | Perfect alignment |
+
+### Tabular Numbers
+
+**Critical for data-heavy applications:**
+
+```css
+body {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Apply to specific elements */
+input[type="number"],
+.currency,
+.price,
+.amount,
+td,
+th {
+  font-feature-settings: 'tnum' 1;
+  font-variant-numeric: tabular-nums;
+}
+```
+
+**Benefits:**
+- All numbers have the same width (monospaced)
+- Perfect alignment in columns
+- No layout shifts when numbers change
+- Professional appearance for financial data
+
+### Typography Scale
+
+```css
+--text-xs: 0.75rem;    /* 12px */
+--text-sm: 0.875rem;   /* 14px */
+--text-base: 1rem;     /* 16px */
+--text-lg: 1.125rem;   /* 18px */
+--text-xl: 1.25rem;    /* 20px */
+--text-2xl: 1.5rem;    /* 24px */
+--text-3xl: 1.875rem;  /* 30px */
+```
+
+### Font Weights
+
+```css
+--font-weight-light: 300;
+--font-weight-normal: 400;
+--font-weight-medium: 500;
+--font-weight-semibold: 600;
+--font-weight-bold: 700;
+```
+
+### Implementation Example
+
+```tsx
+// Heading with serif font
+<h1 className="text-2xl font-medium">Welcome Back</h1>
+
+// Body text with sans-serif
+<p className="text-base text-muted-foreground">
+  Your dashboard overview
+</p>
+
+// Numbers with tabular figures (automatic)
+<span className="text-xl font-semibold">$48,830.75</span>
+```
 
 ---
 
@@ -66,12 +166,12 @@ All colors are defined as CSS variables in `src/styles/globals.css`. The system 
 
 ```css
 .dark {
-  /* Modern Navy Blue Dark Mode */
+  /* Modern Navy Blue Dark Mode - Mature & Professional */
   --background: #0a0e27;              /* Deep navy background */
   --foreground: #e8edf4;              /* Light blue-white text */
   --card: #1a1f3a;                    /* Elevated navy cards */
   --card-foreground: #e8edf4;
-  --primary: #6366f1;                 /* Vibrant indigo */
+  --primary: #7c8db5;                 /* Soft muted blue (not vibrant indigo) */
   --primary-foreground: #ffffff;
   --secondary: #252b47;               /* Muted navy */
   --muted: #1e2337;                   /* Subtle navy backgrounds */
@@ -88,16 +188,24 @@ All colors are defined as CSS variables in `src/styles/globals.css`. The system 
 
 **Key Characteristics:**
 - Cool, blue-tinted palette
-- Glowing indigo accents (#6366f1)
+- Soft muted blue accents (#7c8db5) - mature and professional, not glowing
 - High contrast for readability
-- Blue glow effects on hover
+- Subtle hover effects (no glow)
 
 ### Chart Colors
 
 Vibrant, accessible colors for data visualization:
 
 ```css
---chart-1: #6366f1;  /* Indigo */
+/* Light Mode Charts */
+--chart-1: oklch(0.646 0.222 41.116);  /* Orange */
+--chart-2: oklch(0.6 0.118 184.704);    /* Teal */
+--chart-3: oklch(0.398 0.07 227.392);   /* Blue */
+--chart-4: oklch(0.828 0.189 84.429);   /* Yellow */
+--chart-5: oklch(0.769 0.188 70.08);    /* Coral */
+
+/* Dark Mode Charts */
+--chart-1: #7c8db5;  /* Muted Blue */
 --chart-2: #22d3ee;  /* Cyan */
 --chart-3: #fbbf24;  /* Amber */
 --chart-4: #a78bfa;  /* Purple */
@@ -154,9 +262,14 @@ html:not(.dark) .bg-card {
 - Backdrop blur for glassmorphism
 - Inner white highlight
 
-**Hover State (Cards ONLY, not header):**
+**Hover State (ONLY for clickable hub tiles):**
+
+**IMPORTANT:** Fancy hover effects are ONLY applied to clickable cards (hub tiles). Regular cards (tables, forms, content) do NOT have hover effects.
+
 ```css
-html:not(.dark) .bg-card:hover:not(header) {
+/* Only hub tiles with cursor-pointer or group class get fancy hover */
+html:not(.dark) .bg-card.cursor-pointer:hover:not(header),
+html:not(.dark) .bg-card.group:hover:not(header) {
   border-color: rgba(110, 107, 104, 0.45) !important;
   box-shadow: 
     0 8px 16px -4px rgba(42, 40, 38, 0.12),
@@ -165,6 +278,11 @@ html:not(.dark) .bg-card:hover:not(header) {
     0 0 24px rgba(74, 71, 68, 0.06) !important;
 }
 ```
+
+**Why this approach:**
+- Tables, forms, and content cards remain static
+- Only interactive navigation tiles get visual feedback
+- Prevents confusing hover effects on non-clickable elements
 
 ### Header Styling
 
@@ -278,48 +396,51 @@ html:not(.dark) .bg-blue-100 {
 - Backdrop blur for glassmorphism
 - Inner highlight for 3D effect
 
-**Hover State:**
+**Hover State (only for clickable hub tiles):**
 ```css
-.dark .bg-card:hover {
-  border-color: rgba(99, 102, 241, 0.35) !important;
+.dark .bg-card.cursor-pointer:hover:not(header),
+.dark .bg-card.group:hover:not(header) {
+  border-color: rgba(124, 141, 181, 0.25) !important;
   box-shadow: 
     0 8px 16px -4px rgba(0, 0, 0, 0.5),
     0 4px 8px -2px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-    0 0 20px rgba(99, 102, 241, 0.15) !important;
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
 }
 ```
+
+**Note:** Regular cards (tables, forms) do NOT have hover effects - only interactive hub tiles.
 
 ### Primary Buttons
 
 ```css
 .dark .bg-primary {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%) !important;
+  background: linear-gradient(135deg, #4a5a7a 0%, #3d4d6b 100%) !important;
   box-shadow: 
-    0 4px 14px 0 rgba(99, 102, 241, 0.5),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+    0 4px 12px 0 rgba(58, 77, 107, 0.5),
+    0 2px 4px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
 }
 ```
 
 **Features:**
-- Triple-color gradient (indigo → purple → deep purple)
-- Glowing shadow effect
-- Inner white gradient for shine
-- Enhanced glow on hover
+- Soft muted blue gradient (mature, professional)
+- Subtle shadow (no glow)
+- Inner white highlight for depth
+- Slightly brighter on hover
 
 ### Sidebar Styling
 
 ```css
 .dark [data-sidebar="sidebar"] {
   background: linear-gradient(180deg, #0d1128 0%, #0a0e27 100%) !important;
-  border-right: 1px solid rgba(99, 102, 241, 0.2) !important;
+  border-right: 1px solid rgba(124, 141, 181, 0.15) !important;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
 }
 ```
 
 **Features:**
 - Vertical gradient (darker at top)
-- Glowing indigo border
+- Soft muted blue border (not glowing)
 - Deep shadow for separation
 - Darker than main background for hierarchy
 
@@ -327,18 +448,17 @@ html:not(.dark) .bg-blue-100 {
 
 **Dark Mode:**
 ```css
-.dark [data-sidebar="sidebar"] button[class*="bg-[#f5f3f0]"] {
-  background: rgba(99, 102, 241, 0.25) !important;
-  border-left: 3px solid #6366f1 !important;
-  box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.15) !important;
+.dark [data-sidebar="sidebar"] [data-active="true"] {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-left: 3px solid #ffffff !important;
 }
 ```
 
 **Features:**
-- Blue background (25% opacity)
-- 3px indigo left border
-- Inner blue glow
-- White/blue text
+- White background (10% opacity)
+- 3px white left border
+- No glow effects
+- Clean, simple highlight
 
 **Light Mode:**
 ```css
@@ -351,28 +471,28 @@ html:not(.dark) [data-sidebar="sidebar"] button[class*="bg-[#f5f3f0]"] {
 - Solid light cream background (#f5f3f0)
 - Darker than sidebar background for visibility
 - NO blue colors
-- Neutral gray left border
+- Neutral gray left border (#6e6b68)
 
 ### Sidebar Navigation - Hover State
 
 **Dark Mode:**
 ```css
+.dark [data-sidebar="sidebar"] a:hover,
 .dark [data-sidebar="sidebar"] button:hover {
-  background: rgba(99, 102, 241, 0.1) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 ```
 
 **Light Mode:**
 ```css
 /* Component handles hover with inline class: hover:bg-[#ddd9d4] */
-/* CSS only applies if NO inline class present */
-html:not(.dark) [data-sidebar="sidebar"] button:not([class*="bg-["]):hover {
-  background: rgba(74, 71, 68, 0.08) !important;
+html:not(.dark) [data-sidebar="sidebar"] button[class*="hover:bg-[#ddd9d4]"]:hover {
+  background-color: #ddd9d4 !important;
 }
 ```
 
 **Key Difference:**
-- Dark mode: Blue tint hover
+- Dark mode: White tint hover (5% opacity)
 - Light mode: Neutral gray hover (#ddd9d4)
 
 ### Header Styling

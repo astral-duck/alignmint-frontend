@@ -3,6 +3,7 @@ import { UsersRound, Heart, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { useApp } from '../contexts/AppContext';
+import { PageHeader } from './PageHeader';
 
 interface PersonnelHubProps {
   onSelectTool: (tool: 'groups' | 'volunteers' | 'hour-tracking') => void;
@@ -41,12 +42,10 @@ export const PersonnelHub: React.FC<PersonnelHubProps> = ({ onSelectTool }) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">People</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage your teams and volunteers
-        </p>
-      </div>
+      <PageHeader 
+        title="People"
+        subtitle="Manage your teams and volunteers"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => {
@@ -64,9 +63,6 @@ export const PersonnelHub: React.FC<PersonnelHubProps> = ({ onSelectTool }) => {
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
-                  <div className={`w-12 h-12 rounded-lg ${tool.bgColor} flex items-center justify-center mb-4`}>
-                    <tool.icon className={`h-6 w-6 ${tool.color}`} />
-                  </div>
                   {visibilityEditMode && (
                     <Switch
                       checked={isVisible}

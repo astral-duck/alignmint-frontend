@@ -23,6 +23,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { Input } from './ui/input';
+import { PageHeader } from './PageHeader';
 import {
   Dialog,
   DialogContent,
@@ -350,16 +351,12 @@ export const UserManagement: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">User Management</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {isInFocusAdmin
-              ? 'Manage all users across all nonprofits'
-              : 'Manage users for your nonprofit'}
-          </p>
-        </div>
-      </div>
+      <PageHeader 
+        title="User Management"
+        subtitle={isInFocusAdmin
+          ? 'Manage all users across all nonprofits'
+          : 'Manage users for your nonprofit'}
+      />
 
       {/* Admin Notice */}
       {isInFocusAdmin && (

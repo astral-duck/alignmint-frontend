@@ -6,6 +6,7 @@ import { Badge } from './ui/badge';
 import { Globe, Plus, ArrowLeft } from 'lucide-react';
 import { DonorPageBuilder, DonorPageConfig } from './DonorPageBuilder';
 import { DonorPagePreview } from './DonorPagePreview';
+import { PageHeader } from './PageHeader';
 
 type ViewMode = 'list' | 'builder' | 'preview';
 
@@ -62,12 +63,10 @@ export const DonorPageManager: React.FC = () => {
       </Button>
 
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Donor Pages</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Create and manage custom donation pages
-          </p>
-        </div>
+        <PageHeader 
+          title="Donor Pages"
+          subtitle="Create and manage custom donation pages"
+        />
         <Button onClick={() => setViewMode('builder')} className="gap-2">
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Create Donor Page</span>

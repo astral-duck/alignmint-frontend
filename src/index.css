@@ -62,7 +62,8 @@
 
 @layer theme {
   :root, :host {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --font-serif: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', 'Times', serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --color-red-50: oklch(.971 .013 17.38);
     --color-red-100: oklch(.936 .032 17.717);
@@ -5001,10 +5002,9 @@ aside nav a.bg-blue-50,
 aside nav button.bg-blue-50,
 aside nav a[data-active="true"],
 aside nav button[data-active="true"] {
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.02) 100%) !important;
+  background: rgba(90, 85, 80, 0.08) !important;
   color: #030213 !important;
-  border-left: 3px solid #6366f1 !important;
-  box-shadow: inset 0 0 16px rgba(99, 102, 241, 0.04);
+  border-left: 3px solid #6e6b68 !important;
 }
 
 /* Notifications dropdown light mode */
@@ -5024,7 +5024,7 @@ aside nav button[data-active="true"] {
   --card-foreground: #e8edf4;
   --popover: #1a1f3a;
   --popover-foreground: #e8edf4;
-  --primary: #6366f1;
+  --primary: #7c8db5;
   --primary-foreground: #ffffff;
   --secondary: #252b47;
   --secondary-foreground: #e8edf4;
@@ -5038,27 +5038,27 @@ aside nav button[data-active="true"] {
   --input: #2d3454;
   --input-background: #151a2e;
   --switch-background: #3d4463;
-  --ring: #6366f1;
-  --chart-1: #6366f1;
+  --ring: #7c8db5;
+  --chart-1: #7c8db5;
   --chart-2: #22d3ee;
   --chart-3: #fbbf24;
   --chart-4: #a78bfa;
   --chart-5: #fb7185;
   --sidebar: #0a0e1f;
   --sidebar-foreground: #e8edf4;
-  --sidebar-primary: #6366f1;
+  --sidebar-primary: #7c8db5;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1a1f3a;
   --sidebar-accent-foreground: #e8edf4;
   --sidebar-border: #2d3454;
-  --sidebar-ring: #6366f1;
+  --sidebar-ring: #7c8db5;
 }
 
 .dark body {
   background-color: #0f1629 !important;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.12) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(124, 141, 181, 0.06) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 141, 181, 0.06) 0px, transparent 50%);
   background-attachment: fixed;
 }
 
@@ -5072,7 +5072,7 @@ aside nav button[data-active="true"] {
 
 .dark .bg-card {
   background: linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(21, 26, 46, 0.95) 100%) !important;
-  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  border: 1px solid rgba(124, 141, 181, 0.15) !important;
   box-shadow: 
     0 4px 6px -1px rgba(0, 0, 0, 0.4),
     0 2px 4px -1px rgba(0, 0, 0, 0.3),
@@ -5081,38 +5081,39 @@ aside nav button[data-active="true"] {
 }
 
 .dark .bg-card:hover {
-  border-color: rgba(99, 102, 241, 0.35) !important;
+  border-color: rgba(124, 141, 181, 0.25) !important;
   box-shadow: 
     0 8px 16px -4px rgba(0, 0, 0, 0.5),
     0 4px 8px -2px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-    0 0 20px rgba(99, 102, 241, 0.15) !important;
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 .dark .bg-primary {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%) !important;
+  background: linear-gradient(135deg, #4a5a7a 0%, #3d4d6b 100%) !important;
   box-shadow: 
-    0 4px 14px 0 rgba(99, 102, 241, 0.5),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+    0 4px 12px 0 rgba(58, 77, 107, 0.5),
+    0 2px 4px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
 }
 
 .dark .bg-primary:hover {
-  background: linear-gradient(135deg, #7c7ff6 0%, #6366f1 50%, #5b52ee 100%) !important;
+  background: linear-gradient(135deg, #5a6a8a 0%, #4a5a7a 100%) !important;
   box-shadow: 
-    0 6px 20px 0 rgba(99, 102, 241, 0.6),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.25) !important;
+    0 6px 16px 0 rgba(58, 77, 107, 0.6),
+    0 3px 6px 0 rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .dark header {
   background: rgba(26, 31, 58, 0.8) !important;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+  border-bottom: 1px solid rgba(124, 141, 181, 0.15) !important;
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
 .dark aside {
   background: linear-gradient(180deg, #0a0e1f 0%, #0d1225 100%) !important;
-  border-right: 1px solid rgba(99, 102, 241, 0.25) !important;
+  border-right: 1px solid rgba(124, 141, 181, 0.15) !important;
   box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
 }
 
@@ -5127,7 +5128,7 @@ aside nav button[data-active="true"] {
 
 .dark [data-sidebar="sidebar"] {
   background: linear-gradient(180deg, #0a0e1f 0%, #0d1225 100%) !important;
-  border-right: 1px solid rgba(99, 102, 241, 0.25) !important;
+  border-right: 1px solid rgba(124, 141, 181, 0.15) !important;
   box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
 }
 
@@ -5135,7 +5136,7 @@ aside nav button[data-active="true"] {
 .dark textarea,
 .dark select {
   background: rgba(21, 26, 46, 0.6) !important;
-  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  border: 1px solid rgba(124, 141, 181, 0.2) !important;
   backdrop-filter: blur(8px);
 }
 
@@ -5143,9 +5144,9 @@ aside nav button[data-active="true"] {
 .dark textarea:focus,
 .dark select:focus {
   background: rgba(21, 26, 46, 0.8) !important;
-  border-color: rgba(99, 102, 241, 0.5) !important;
+  border-color: rgba(124, 141, 181, 0.4) !important;
   box-shadow: 
-    0 0 0 3px rgba(99, 102, 241, 0.15),
+    0 0 0 2px rgba(124, 141, 181, 0.1),
     0 1px 3px 0 rgba(0, 0, 0, 0.4) !important;
 }
 
@@ -5157,18 +5158,17 @@ aside nav button[data-active="true"] {
 
 .dark aside nav a:hover,
 .dark aside nav button:hover {
-  background: rgba(99, 102, 241, 0.15) !important;
-  border-left-color: rgba(99, 102, 241, 0.4);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-left-color: rgba(255, 255, 255, 0.2);
 }
 
 .dark aside nav a.bg-blue-50,
 .dark aside nav button.bg-blue-50,
 .dark aside nav a[data-active="true"],
 .dark aside nav button[data-active="true"] {
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
-  border-left: 3px solid #6366f1 !important;
-  box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.1);
+  border-left: 3px solid #ffffff !important;
 }
 
 .dark .bg-gray-100,

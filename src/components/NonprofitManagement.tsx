@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { PageHeader } from './PageHeader';
 import {
   Table,
   TableBody,
@@ -188,12 +189,10 @@ export const NonprofitManagement: React.FC = () => {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-gray-900 dark:text-gray-100 mb-1">Nonprofit Management</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage nonprofits on the platform and control visibility
-          </p>
-        </div>
+        <PageHeader 
+          title="Nonprofit Management"
+          subtitle="Manage nonprofits on the platform and control visibility"
+        />
         <Button onClick={openAddDialog} className="gap-2 w-full sm:w-auto">
           <Plus className="h-4 w-4" />
           Add Nonprofit

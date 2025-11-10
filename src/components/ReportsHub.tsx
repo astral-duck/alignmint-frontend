@@ -1,6 +1,7 @@
 import React from 'react';
 import { FileText, TrendingUp, BarChart3, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { PageHeader } from './PageHeader';
 
 interface ReportsHubProps {
   onSelectReport: (report: 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours') => void;
@@ -44,12 +45,10 @@ export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Financial Reports</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          View and export comprehensive financial reports
-        </p>
-      </div>
+      <PageHeader 
+        title="Financial Reports"
+        subtitle="View and export comprehensive financial reports"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reports.map((report) => (
@@ -59,9 +58,6 @@ export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
             onClick={() => onSelectReport(report.id)}
           >
             <CardHeader>
-              <div className={`w-12 h-12 rounded-lg ${report.bgColor} flex items-center justify-center mb-4`}>
-                <report.icon className={`h-6 w-6 ${report.color}`} />
-              </div>
               <CardTitle className="group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {report.title}
               </CardTitle>

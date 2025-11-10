@@ -75,6 +75,7 @@ import {
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import { toast } from 'sonner@2.0.3';
+import { PageHeader } from './PageHeader';
 
 type SortOption = 'name-asc' | 'name-desc' | 'role-asc' | 'role-desc' | 'date-newest' | 'date-oldest';
 type EmploymentFilter = 'all' | 'full-time' | 'part-time' | 'contractor' | 'volunteer';
@@ -1008,6 +1009,12 @@ export const PersonnelCRM: React.FC = () => {
         <ArrowLeft className="h-4 w-4" />
         Back to Personnel Hub
       </Button>
+
+      {/* Page Header */}
+      <PageHeader 
+        title="Personnel"
+        subtitle="Manage staff, employees, and contractors"
+      />
 
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">

@@ -53,6 +53,7 @@ import {
 } from './ui/select';
 import { Switch } from './ui/switch';
 import { toast } from 'sonner@2.0.3';
+import { PageHeader } from './PageHeader';
 
 interface PaymentMethod {
   id: string;
@@ -462,12 +463,10 @@ export const DonorPaymentManagement: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Donor Payment Management</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage payment methods, subscriptions, and process refunds
-        </p>
-      </div>
+      <PageHeader 
+        title="Donor Payment Management"
+        subtitle="Manage payment methods, subscriptions, and process refunds"
+      />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

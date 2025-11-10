@@ -3,6 +3,7 @@ import { RefreshCw, Receipt, DollarSign, PieChart, Banknote, BookOpen, FileText 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { useApp } from '../contexts/AppContext';
+import { PageHeader } from './PageHeader';
 
 interface AccountingHubProps {
   onSelectTool: (tool: 'reconciliation' | 'expenses' | 'reimbursements' | 'income-by-fund' | 'deposits' | 'general-ledger' | 'journal-entry') => void;
@@ -73,12 +74,10 @@ export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) =>
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-gray-900 dark:text-gray-100 mb-1">Accounting</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Manage transactions, expenses, and fund distribution
-        </p>
-      </div>
+      <PageHeader 
+        title="Accounting"
+        subtitle="Manage transactions, expenses, and fund distribution"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => {
@@ -97,9 +96,6 @@ export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) =>
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
-                  <div className={`w-12 h-12 rounded-lg ${tool.bgColor} flex items-center justify-center mb-4`}>
-                    <tool.icon className={`h-6 w-6 ${tool.color}`} />
-                  </div>
                   {visibilityEditMode && (
                     <Switch
                       checked={isVisible}
