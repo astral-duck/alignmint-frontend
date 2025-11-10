@@ -62,20 +62,22 @@ export const DonorPageManager: React.FC = () => {
         Back to Donor Hub
       </Button>
 
-      <div className="flex items-center justify-between">
+      <div className="text-center">
         <PageHeader 
           title="Donor Pages"
           subtitle="Create and manage custom donation pages"
         />
-        <Button onClick={() => setViewMode('builder')} className="gap-2">
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Create Donor Page</span>
-          <span className="sm:hidden">Create</span>
-        </Button>
       </div>
 
       {donorPages.length === 0 ? (
         <Card>
+          <CardHeader className="flex flex-row items-center justify-end space-y-0 pb-4">
+            <Button onClick={() => setViewMode('builder')} className="gap-2">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Create Donor Page</span>
+              <span className="sm:hidden">Create</span>
+            </Button>
+          </CardHeader>
           <CardContent className="py-12 text-center">
             <div className="flex flex-col items-center gap-4">
               <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-full">
@@ -96,18 +98,23 @@ export const DonorPageManager: React.FC = () => {
         </Card>
       ) : (
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
               Active Donor Pages
             </CardTitle>
+            <Button onClick={() => setViewMode('builder')} className="gap-2">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Create Donor Page</span>
+              <span className="sm:hidden">Create</span>
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {donorPages.map((page) => (
                 <div
                   key={page.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-[#2E2E2E]"
+                  className="flex items-center justify-between p-3 border rounded-lg transition-colors hover:bg-muted/50"
                 >
                   <div className="flex-1">
                     <p className="font-medium">{page.title}</p>

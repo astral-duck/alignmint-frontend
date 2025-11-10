@@ -80,13 +80,13 @@
   --chart-3: #fbbf24;
   --chart-4: #a78bfa;
   --chart-5: #fb7185;
-  --sidebar: #2d3454;
+  --sidebar: #1a1f3a;
   --sidebar-foreground: #e8edf4;
   --sidebar-primary: #7c8db5;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #3d4463;
+  --sidebar-accent: #252b47;
   --sidebar-accent-foreground: #e8edf4;
-  --sidebar-border: #3d4463;
+  --sidebar-border: #2d3454;
   --sidebar-ring: #7c8db5;
 }
 
@@ -137,12 +137,12 @@
   }
 
   html {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+    font-family: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', serif !important;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+    font-family: 'Lora', 'Georgia', 'Cambria', 'Times New Roman', serif !important;
     font-feature-settings: 'tnum' 1;  /* Tabular numbers for alignment */
     font-variant-numeric: tabular-nums;
   }
@@ -330,10 +330,10 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   }
   
-  /* Sidebar gradient and styling - Darker blue */
+  /* Sidebar gradient and styling - matches card color */
   .dark [data-sidebar="sidebar"] {
-    background: linear-gradient(180deg, #1a2235 0%, #0f1628 100%) !important;
-    border-right: 1px solid rgba(124, 141, 181, 0.2) !important;
+    background: #1a1f3a !important;
+    border-right: 1px solid #2d3454 !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
   }
   
@@ -345,15 +345,15 @@
   
   .dark [data-sidebar="sidebar"] a:hover,
   .dark [data-sidebar="sidebar"] button:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(124, 141, 181, 0.1) !important;
   }
   
-  /* Selected sidebar item - WHITE HIGHLIGHT (like light mode) */
+  /* Selected sidebar item - soft blue highlight with white text */
   .dark [data-sidebar="sidebar"] [data-active="true"],
   .dark [data-sidebar="sidebar"] button[class*="bg-[#f5f3f0]"] {
-    background: rgba(255, 255, 255, 0.2) !important;
-    border-left: 4px solid #ffffff !important;
-    box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.08) !important;
+    background: rgba(124, 141, 181, 0.2) !important;
+    border-left: 4px solid #7c8db5 !important;
+    color: #ffffff !important;
   }
   
   /* Enhanced inputs */

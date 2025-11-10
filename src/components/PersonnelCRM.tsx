@@ -1007,12 +1007,12 @@ export const PersonnelCRM: React.FC = () => {
         className="gap-2 -ml-2"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Personnel Hub
+        Back to People
       </Button>
 
       {/* Page Header */}
       <PageHeader 
-        title="Personnel"
+        title="Groups & Teams"
         subtitle="Manage staff, employees, and contractors"
       />
 

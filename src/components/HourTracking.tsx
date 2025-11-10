@@ -199,7 +199,7 @@ export const HourTracking: React.FC = () => {
 
       {/* Submit Hours Section */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-6">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Submit Hours</CardTitle>
@@ -367,13 +367,7 @@ export const HourTracking: React.FC = () => {
 
       {/* Hours History - Desktop */}
       <Card className="hidden sm:block">
-        <CardHeader>
-          <CardTitle>Hours History</CardTitle>
-          <CardDescription>
-            View all your submitted volunteer hours
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Table>
             <TableHeader>
               <TableRow>
@@ -438,14 +432,6 @@ export const HourTracking: React.FC = () => {
 
       {/* Hours History - Mobile */}
       <div className="sm:hidden">
-        <Card className="mb-3">
-          <CardHeader className="pb-3">
-            <CardTitle>Hours History</CardTitle>
-            <CardDescription>
-              View all your submitted volunteer hours
-            </CardDescription>
-          </CardHeader>
-        </Card>
         {entries.length === 0 ? (
           <Card className="p-8">
             <div className="flex flex-col items-center gap-2 text-center">
