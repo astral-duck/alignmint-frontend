@@ -1,11 +1,12 @@
-# Income Statement By Fund (Admin Fee Calculator)
+# Sponsor Fee Allocation
 
+**Component Name:** `SponsorFeeAllocation`  
 **Component File:** `src/components/IncomeStatementByFund.tsx`  
-**Route:** `/accounting` (with tool='income-by-fund') or embedded in reports  
+**Route:** `/accounting` (with tool='income-by-fund')  
 **Access Level:** Fiscal Sponsor Admin Only
 
 ## Overview
-The Income Statement By Fund component is a specialized tool for fiscal sponsors to calculate and confirm administrative fees for each nonprofit entity. It displays total income for each nonprofit, allows adjustment of the allocated income amount and admin fee rate, calculates the admin fee, and tracks confirmation status. This is critical for fiscal sponsor revenue management and transparent fee billing.
+The Sponsor Fee Allocation component is a specialized tool for fiscal sponsors to calculate and confirm administrative fees for each nonprofit entity. It displays total income for each nonprofit, allows adjustment of the allocated income amount and admin fee rate, calculates the admin fee, and tracks confirmation status. This is critical for fiscal sponsor revenue management and transparent fee billing.
 
 ## UI Features
 
@@ -30,13 +31,18 @@ The Income Statement By Fund component is a specialized tool for fiscal sponsors
   - Cancel button
 - **Confirmation Actions:**
   - Confirm button (per nonprofit)
-  - Confirm All button
-  - Export button
+  - Confirm All button (solid styling)
+  - Export button (outline styling)
+- **Export Dialog:**
+  - Centered title and subtitle
+  - Format selection: CSV or Excel (.xlsx)
+  - No nonprofit selection (exports all visible allocations)
+  - Clean interface without emojis
 - **Back to Accounting Hub button**
 
 ### Table Layout
 ```
-Income Statement By Fund - October 2025
+Sponsor Fee Allocation - October 2025
 
 Total Income: $1,245,000  |  Total Admin Fees: $93,375  |  Confirmed: 12/34
 
@@ -170,15 +176,18 @@ Response: {
 Description: Export fund allocations
 Query Parameters:
   - month (required, string)
-  - format (optional, enum) - 'csv', 'xlsx', 'pdf'
+  - format (required, enum) - 'csv', 'xlsx'
 
 Response: {
   data: {
     download_url: "https://...",
-    filename: "fund-allocations-2025-10.xlsx",
+    filename: "Sponsor_Fee_Allocation_2025-10.xlsx",
     expires_at: "2025-10-20T18:00:00Z"
   }
 }
+
+Note: Export includes all visible allocations with columns:
+  - Nonprofit, Total Income, Rate, Admin Fee, Status
 ```
 
 ## Request/Response Schemas
@@ -257,6 +266,8 @@ interface AllocationSummary {
 - `allocations` - Array of fund allocations
 - `expandedRow` - Currently expanded entity ID
 - `editValues` - Edit form values (allocated income, rate)
+- `exportDialogOpen` - Export dialog visibility
+- `exportFormat` - Selected export format ('csv' | 'xlsx')
 
 ### Global State (AppContext)
 - `selectedEntity` - Should be fiscal sponsor
@@ -269,8 +280,9 @@ interface AllocationSummary {
 - UI components (Card, Button, Table, Input, etc.)
 
 ### External Libraries
-- `lucide-react` - Icons
+- `lucide-react` - Icons (Download, CheckCircle, Edit, ArrowLeft, ChevronUp, ChevronDown)
 - `sonner` - Toast notifications
+- `exportUtils` - Export functionality (exportToExcel)
 
 ## Error Handling
 
@@ -287,6 +299,11 @@ interface AllocationSummary {
 - **Month change:** Loading overlay
 - **Save:** Button loading state
 - **Confirm:** Button loading state
+
+## Component Export
+```typescript
+export const SponsorFeeAllocation: React.FC<SponsorFeeAllocationProps>
+```
 
 ## Mock Data to Remove
 - `IncomeStatementByFund.tsx` - Mock allocation generation
@@ -313,10 +330,18 @@ interface AllocationSummary {
 4. Add email notifications
 
 ### Phase 4: Reporting
-1. Implement export
+1. ✅ Implement export dialog with CSV/XLSX selection
 2. Add historical view
 3. Create summary reports
 4. Add analytics
+
+### UI Updates (Completed)
+- ✅ Renamed component to SponsorFeeAllocation
+- ✅ Updated export button to outline variant
+- ✅ Implemented export dialog with format selection
+- ✅ Centered dialog title and subtitle
+- ✅ Removed emoji icons from dialog
+- ✅ Export includes all allocations in selected format
 
 ## Related Documentation
 - [04-FUND-ACCOUNTING-REPORT.md](./04-FUND-ACCOUNTING-REPORT.md)

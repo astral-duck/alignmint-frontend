@@ -16,6 +16,16 @@ import {
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { toast } from 'sonner@2.0.3';
+import { exportToExcel } from '../lib/exportUtils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from './ui/dialog';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
 interface FundAllocation {
   entityId: string;
@@ -27,11 +37,11 @@ interface FundAllocation {
   confirmed: boolean;
 }
 
-interface IncomeStatementByFundProps {
+interface SponsorFeeAllocationProps {
   readOnly?: boolean;
 }
 
-export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ readOnly = false }) => {
+export const SponsorFeeAllocation: React.FC<SponsorFeeAllocationProps> = ({ readOnly = false }) => {
   const { selectedEntity, setAccountingTool } = useApp();
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
   const [allocations, setAllocations] = useState<FundAllocation[]>(() => {
@@ -60,6 +70,10 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
     allocatedIncome: '',
     rate: '',
   });
+
+  // Export dialog state
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'csv' | 'xlsx'>('csv');
 
   const isInFocus = selectedEntity === 'infocus';
 
@@ -128,8 +142,41 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
     toast.success('All admin fee allocations confirmed');
   };
 
+  const handleUnconfirm = (entityId: string) => {
+    setAllocations(prev =>
+      prev.map(alloc =>
+        alloc.entityId === entityId ? { ...alloc, confirmed: false } : alloc
+      )
+    );
+    toast.success('Admin fee allocation unconfirmed');
+  };
+
   const handleExport = () => {
-    toast.success('Exporting sponsor fee allocations as CSV...');
+    setExportDialogOpen(true);
+  };
+
+  const handleConfirmExport = () => {
+    // Prepare data for all allocations
+    const data = filteredAllocations.map(allocation => [
+      allocation.entityName,
+      formatCurrency(allocation.totalIncome),
+      `${(allocation.adminFeeRate * 100).toFixed(1)}%`,
+      formatCurrency(allocation.adminFeeAmount),
+      allocation.confirmed ? 'Confirmed' : 'Pending',
+    ]);
+
+    const headers = ['Nonprofit', 'Total Income', 'Rate', 'Admin Fee', 'Status'];
+    const filename = `Sponsor_Fee_Allocation_${month}`;
+    const sheetName = 'Sponsor Fee Allocation';
+
+    exportToExcel(data, headers, filename, sheetName);
+    
+    setExportDialogOpen(false);
+    const formatName = exportFormat === 'csv' ? 'CSV' : 'Excel';
+    toast.success(
+      `Exporting Sponsor Fee Allocation as ${formatName}...`,
+      { description: `Your file will be downloaded shortly` }
+    );
   };
 
   const totalIncome = allocations.reduce((sum, alloc) => sum + alloc.totalIncome, 0);
@@ -162,49 +209,52 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
       </Button>
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="text-center">
         <PageHeader 
           title="Sponsor Fee Allocation"
           subtitle={isInFocus
             ? 'Review and confirm monthly admin fees across all nonprofits'
             : 'Review your monthly admin fee calculation'}
         />
-        <div className="flex gap-2">
-          {isInFocus && !readOnly && (
-            <Button onClick={handleConfirmAll} className="gap-2">
-              <CheckCircle className="h-4 w-4" />
-              Confirm All
-            </Button>
-          )}
-          <Button variant="outline" onClick={handleExport} className="gap-2">
-            <Download className="h-4 w-4" />
-            Export CSV
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-center gap-2">
+        {isInFocus && !readOnly && (
+          <Button onClick={handleConfirmAll} className="gap-2">
+            <CheckCircle className="h-4 w-4" />
+            Confirm All
           </Button>
-        </div>
+        )}
+        <Button onClick={handleExport} variant="outline" className="gap-2">
+          <Download className="h-4 w-4" />
+          Export
+        </Button>
       </div>
 
       {/* Month Selector */}
       <Card>
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-            <div className="space-y-2 sm:col-span-1">
-              <Label htmlFor="month">Month</Label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+            <div className="text-center space-y-2">
+              <Label htmlFor="month" className="text-sm font-medium block">Month</Label>
               <Input
                 id="month"
                 type="month"
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
+                className="h-11 max-w-[200px] mx-auto"
               />
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Income</p>
-              <p className="text-xl text-gray-900 dark:text-gray-100">
+            <div className="text-center space-y-1">
+              <p className="text-sm text-muted-foreground">Total Income</p>
+              <p className="text-2xl font-semibold text-foreground">
                 {formatCurrency(totalIncome)}
               </p>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Admin Fees (7.5%)</p>
-              <p className="text-xl text-green-600 dark:text-green-400">
+            <div className="text-center space-y-1">
+              <p className="text-sm text-muted-foreground">Total Admin Fees (7.5%)</p>
+              <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
                 {formatCurrency(totalAdminFees)}
               </p>
             </div>
@@ -217,7 +267,7 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-4">
-              <div className="space-y-1">
+              <div className="space-y-1 text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Nonprofits</p>
                 <p className="text-2xl text-gray-900 dark:text-gray-100">{allocations.length}</p>
               </div>
@@ -225,7 +275,7 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="space-y-1">
+              <div className="space-y-1 text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Confirmed</p>
                 <p className="text-2xl text-green-600 dark:text-green-400">{confirmedCount}</p>
               </div>
@@ -233,7 +283,7 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="space-y-1">
+              <div className="space-y-1 text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400">Pending</p>
                 <p className="text-2xl text-orange-600 dark:text-orange-400">
                   {allocations.length - confirmedCount}
@@ -309,7 +359,7 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
                       </TableCell>
                       {isInFocus && !readOnly && (
                         <TableCell className="text-right">
-                          {!allocation.confirmed && (
+                          {!allocation.confirmed ? (
                             <Button
                               size="sm"
                               variant="outline"
@@ -321,6 +371,19 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
                             >
                               <CheckCircle className="h-3 w-3" />
                               Confirm
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUnconfirm(allocation.entityId);
+                              }}
+                              className="gap-1 text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+                            >
+                              <Edit className="h-3 w-3" />
+                              Unconfirm
                             </Button>
                           )}
                         </TableCell>
@@ -423,6 +486,51 @@ export const IncomeStatementByFund: React.FC<IncomeStatementByFundProps> = ({ re
           </div>
         </CardContent>
       </Card>
+
+      {/* Export Format Dialog */}
+      <Dialog open={exportDialogOpen} onOpenChange={setExportDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center">Export Sponsor Fee Allocation</DialogTitle>
+            <DialogDescription className="text-center">
+              Select your preferred export format for the sponsor fee allocation data.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <RadioGroup value={exportFormat} onValueChange={(value: string) => setExportFormat(value as 'csv' | 'xlsx')}>
+              <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <RadioGroupItem value="csv" id="format-csv" />
+                <Label htmlFor="format-csv" className="cursor-pointer flex-1">
+                  <div>
+                    <div className="font-medium">CSV File</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Comma-separated values</div>
+                  </div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <RadioGroupItem value="xlsx" id="format-xlsx" />
+                <Label htmlFor="format-xlsx" className="cursor-pointer flex-1">
+                  <div>
+                    <div className="font-medium">Excel Spreadsheet</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Microsoft Excel (.xlsx)</div>
+                  </div>
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExportDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmExport} className="gap-2">
+              <Download className="h-4 w-4" />
+              Export {exportFormat.toUpperCase()}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

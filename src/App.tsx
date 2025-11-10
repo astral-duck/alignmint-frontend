@@ -34,7 +34,7 @@ import { DepositHub } from './components/DepositHub';
 import { GeneralLedger } from './components/GeneralLedger';
 import { JournalEntryManager } from './components/JournalEntryManager';
 
-import { IncomeStatementByFund } from './components/IncomeStatementByFund';
+import { SponsorFeeAllocation } from './components/IncomeStatementByFund';
 import { ReportsHub } from './components/ReportsHub';
 import { BalanceSheetReport } from './components/BalanceSheetReport';
 import { ProfitLossReport } from './components/ProfitLossReport';
@@ -260,7 +260,7 @@ const DashboardContent: React.FC = () => {
               ) : accountingTool === 'general-ledger' ? (
                 <GeneralLedger />
               ) : accountingTool === 'income-by-fund' ? (
-                <IncomeStatementByFund />
+                <SponsorFeeAllocation />
               ) : accountingTool === 'journal-entry' ? (
                 <JournalEntryManager />
               ) : null
