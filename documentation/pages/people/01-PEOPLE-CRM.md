@@ -1,29 +1,28 @@
-# Personnel CRM
+# People CRM
 
 **Component File:** `src/components/PersonnelCRM.tsx`  
 **Route:** `/personnel-hub` (with tool='personnel')  
 **Access Level:** Admin, Manager
 
 ## Overview
-The Personnel CRM manages all staff and employee information including contact details, employment status, compensation, benefits, and user account management. It provides comprehensive employee profiles, role management, and integration with payroll and hour tracking systems.
+The People CRM manages all staff and employee information including contact details, employment status, compensation, benefits, and user account management. It provides comprehensive employee profiles, role management, and integration with payroll and hour tracking systems.
 
 ## UI Features
 
 ### Main Features
-- **Personnel List View:**
+- **People List View:**
   - Searchable and sortable table
   - Filter by employment type (Full-time, Part-time, Contractor, Volunteer)
   - Filter by status (Active, On Leave, Inactive)
   - Quick actions menu
-- **Personnel Profile View:**
+- **People Profile View:**
   - Personal information
   - Employment details
   - Compensation and benefits
   - User account management
   - Hour tracking summary
-  - Leave requests
   - Document uploads
-- **Add/Edit Personnel:**
+- **Add/Edit People:**
   - Multi-step form
   - Personal info
   - Employment details
@@ -35,7 +34,7 @@ The Personnel CRM manages all staff and employee information including contact d
   - Password reset
   - Permissions management
 
-### Personnel Table Columns
+### People Table Columns
 - Name (with avatar)
 - Role/Title
 - Employment Type Badge

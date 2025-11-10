@@ -1,11 +1,11 @@
-# Personnel Hub (People)
+# People Hub
 
 **Component File:** `src/components/PersonnelHub.tsx`  
 **Route:** `/people`  
 **Access Level:** Admin, Manager, HR Staff
 
 ## Overview
-The Personnel Hub (labeled "People" in the UI) is a navigation landing page that provides access to all personnel-related tools. It displays a grid of tool cards for managing staff, volunteers, and hour tracking.
+The People Hub is a navigation landing page that provides access to all people-related tools. It displays a grid of tool cards for managing staff, volunteers, and hour tracking.
 
 ## UI Features
 
@@ -26,9 +26,9 @@ The Personnel Hub (labeled "People" in the UI) is a navigation landing page that
 
 | Tool ID | Routes To | Component |
 |---------|-----------|-----------|
-| `groups` | Personnel → Groups | PersonnelCRM |
-| `volunteers` | Personnel → Volunteers | VolunteersCRM |
-| `hour-tracking` | Personnel → Hours | HourTracking |
+| `groups` | People → Groups | PersonnelCRM |
+| `volunteers` | People → Volunteers | VolunteersCRM |
+| `hour-tracking` | People → Hours | HourTracking |
 
 ## State Management
 
@@ -41,7 +41,6 @@ None - pure navigation component
 - `toggleTileVisibility(pageId, toolId)` - Toggle tool visibility
 
 ## Related Documentation
-- [../personnel/01-PERSONNEL-CRM.md](../personnel/01-PERSONNEL-CRM.md)
-- [../personnel/02-VOLUNTEERS-CRM.md](../personnel/02-VOLUNTEERS-CRM.md)
-- [../personnel/03-HOUR-TRACKING.md](../personnel/03-HOUR-TRACKING.md)
-- [../personnel/04-LEAVE-REQUESTS.md](../personnel/04-LEAVE-REQUESTS.md)
+- [../people/01-PEOPLE-CRM.md](../people/01-PEOPLE-CRM.md)
+- [../people/02-VOLUNTEERS-CRM.md](../people/02-VOLUNTEERS-CRM.md)
+- [../people/03-HOUR-TRACKING.md](../people/03-HOUR-TRACKING.md)
