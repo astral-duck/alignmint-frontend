@@ -35,10 +35,10 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'financial': return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-      case 'operational': return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
-      case 'alert': return 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
-      default: return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+      case 'financial': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      case 'operational': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+      case 'alert': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
+      default: return 'bg-gray-100 text-gray-700 dark:bg-muted dark:text-muted-foreground';
     }
   };
 
@@ -58,10 +58,10 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
   return (
     <div
       ref={panelRef}
-      className="absolute right-0 top-12 w-80 sm:w-96 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg overflow-hidden"
+      className="absolute right-0 top-12 w-80 sm:w-96 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg shadow-lg overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-border">
         <h3>Notifications</h3>
         <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
           <X className="h-4 w-4" />
@@ -72,7 +72,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
       <ScrollArea className="h-96">
         <div className="p-2">
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-muted-foreground">
               No notifications
             </div>
           ) : (
@@ -81,8 +81,8 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
                 key={notification.id}
                 className={`p-3 mb-2 rounded-lg cursor-pointer transition-colors ${
                   notification.isRead
-                    ? 'bg-gray-50 dark:bg-gray-900'
-                    : 'bg-blue-50 dark:bg-blue-950 hover:bg-blue-100 dark:hover:bg-blue-900'
+                    ? 'bg-gray-50 dark:bg-muted'
+                    : 'bg-blue-50 dark:bg-accent hover:bg-blue-100 dark:hover:bg-secondary'
                 }`}
                 onClick={() => markNotificationAsRead(notification.id)}
               >
@@ -92,17 +92,17 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <p className={notification.isRead ? 'text-gray-600 dark:text-gray-400' : ''}>
+                      <p className={notification.isRead ? 'text-muted-foreground' : 'text-foreground font-medium'}>
                         {notification.title}
                       </p>
                       {!notification.isRead && (
                         <div className="h-2 w-2 rounded-full bg-blue-500 flex-shrink-0 mt-1" />
                       )}
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {notification.message}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground/70 mt-1">
                       {formatTime(notification.timestamp)}
                     </p>
                   </div>

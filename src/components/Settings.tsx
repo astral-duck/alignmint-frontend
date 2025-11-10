@@ -548,27 +548,6 @@ export const Settings: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Danger Zone */}
-          <Card className="border-red-200 dark:border-red-900">
-            <CardHeader>
-              <CardTitle className="text-red-600 dark:text-red-400">Danger Zone</CardTitle>
-              <CardDescription>
-                Irreversible actions for your organization
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-red-200 dark:border-red-900 rounded-lg">
-                <div>
-                  <p className="font-medium">Delete Organization</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Permanently delete your organization and all associated data
-                  </p>
-                </div>
-                <Button variant="destructive" size="sm">Delete</Button>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>

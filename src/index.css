@@ -254,7 +254,6 @@
   a {
     color: inherit;
     -webkit-text-decoration: inherit;
-    -webkit-text-decoration: inherit;
     text-decoration: inherit;
   }
 
@@ -4849,11 +4848,11 @@
 
 :root {
   --font-size: 16px;
-  --background: #fff;
+  --background: #f5f5f7;
   --foreground: oklch(.145 0 0);
-  --card: #fff;
+  --card: #ffffff;
   --card-foreground: oklch(.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: #ffffff;
   --popover-foreground: oklch(.145 0 0);
   --primary: #030213;
   --primary-foreground: oklch(1 0 0);
@@ -4865,7 +4864,7 @@
   --accent-foreground: #030213;
   --destructive: #d4183d;
   --destructive-foreground: #fff;
-  --border: #0000001a;
+  --border: rgba(228, 228, 231, 0.6);
   --input: transparent;
   --input-background: #f3f3f5;
   --switch-background: #cbced4;
@@ -4878,51 +4877,327 @@
   --chart-4: oklch(.828 .189 84.429);
   --chart-5: oklch(.769 .188 70.08);
   --radius: .625rem;
-  --sidebar: oklch(.985 0 0);
+  --sidebar: #ffffff;
   --sidebar-foreground: oklch(.145 0 0);
   --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(.985 0 0);
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: oklch(.97 0 0);
   --sidebar-accent-foreground: oklch(.205 0 0);
-  --sidebar-border: oklch(.922 0 0);
+  --sidebar-border: rgba(228, 228, 231, 0.5);
   --sidebar-ring: oklch(.708 0 0);
 }
 
+/* Light Mode Glassmorphism Styling - Ultra Soft Theme - Updated */
+/* TEST: If you see a pink border around body, CSS is loading */
+body {
+  background-color: #f5f5f7 !important;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.03) 0px, transparent 50%);
+  background-attachment: fixed;
+  outline: 3px solid hotpink !important;
+}
+
+main {
+  background-color: transparent !important;
+}
+
+.bg-background {
+  background-color: #f5f5f7 !important;
+}
+
+.bg-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(250, 250, 252, 0.8) 100%) !important;
+  border: 1px solid rgba(228, 228, 231, 0.6) !important;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.04),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(12px);
+}
+
+.bg-card:hover {
+  border-color: rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 
+    0 8px 16px -4px rgba(0, 0, 0, 0.06),
+    0 4px 8px -2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    0 0 20px rgba(99, 102, 241, 0.08) !important;
+}
+
+.bg-primary {
+  background: linear-gradient(135deg, #030213 0%, #1a1a2e 50%, #2d2d44 100%) !important;
+  box-shadow: 
+    0 4px 14px 0 rgba(3, 2, 19, 0.25),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.bg-primary:hover {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 50%, #3d3d54 100%) !important;
+  box-shadow: 
+    0 6px 20px 0 rgba(3, 2, 19, 0.35),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+header {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-bottom: 1px solid rgba(228, 228, 231, 0.5) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+aside {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(250, 250, 252, 0.85) 100%) !important;
+  border-right: 1px solid rgba(228, 228, 231, 0.5) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03);
+}
+
+aside .border-gray-200 {
+  border-color: rgba(228, 228, 231, 0.4) !important;
+}
+
+aside > div:last-child {
+  background: transparent !important;
+  border-top: 1px solid rgba(228, 228, 231, 0.4) !important;
+}
+
+[data-sidebar="sidebar"] {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(250, 250, 252, 0.85) 100%) !important;
+  border-right: 1px solid rgba(228, 228, 231, 0.5) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03);
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  background: rgba(250, 250, 252, 0.5) !important;
+  border: 1px solid rgba(228, 228, 231, 0.6) !important;
+  backdrop-filter: blur(8px);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(99, 102, 241, 0.35) !important;
+  box-shadow: 
+    0 0 0 3px rgba(99, 102, 241, 0.08),
+    0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+aside nav a,
+aside nav button {
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+aside nav a:hover,
+aside nav button:hover {
+  background: rgba(99, 102, 241, 0.06) !important;
+  border-left-color: rgba(99, 102, 241, 0.25);
+}
+
+aside nav a.bg-blue-50,
+aside nav button.bg-blue-50,
+aside nav a[data-active="true"],
+aside nav button[data-active="true"] {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.02) 100%) !important;
+  color: #030213 !important;
+  border-left: 3px solid #6366f1 !important;
+  box-shadow: inset 0 0 16px rgba(99, 102, 241, 0.04);
+}
+
+/* Notifications dropdown light mode */
+[class*="absolute"][class*="right-0"][class*="top-"] {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(228, 228, 231, 0.6) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.04),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02) !important;
+}
+
 .dark {
-  --background: oklch(.08 0 0);
-  --foreground: oklch(.92 0 0);
-  --card: oklch(.15 0 0);
-  --card-foreground: oklch(.92 0 0);
-  --popover: oklch(.15 0 0);
-  --popover-foreground: oklch(.92 0 0);
-  --primary: oklch(.92 0 0);
-  --primary-foreground: oklch(.08 0 0);
-  --secondary: oklch(.2 0 0);
-  --secondary-foreground: oklch(.92 0 0);
-  --muted: oklch(.2 0 0);
-  --muted-foreground: oklch(.58 0 0);
-  --accent: oklch(.2 0 0);
-  --accent-foreground: oklch(.92 0 0);
-  --destructive: oklch(.45 .15 25);
-  --destructive-foreground: oklch(.92 0 0);
-  --border: oklch(.22 0 0);
-  --input: oklch(.22 0 0);
-  --ring: oklch(.45 0 0);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: oklch(.55 .22 264);
-  --chart-2: oklch(.7 .17 162);
-  --chart-3: oklch(.77 .19 70);
-  --chart-4: oklch(.63 .27 304);
-  --chart-5: oklch(.65 .25 16);
-  --sidebar: oklch(.15 0 0);
-  --sidebar-foreground: oklch(.92 0 0);
-  --sidebar-primary: oklch(.55 .24 264);
-  --sidebar-primary-foreground: oklch(.92 0 0);
-  --sidebar-accent: oklch(.2 0 0);
-  --sidebar-accent-foreground: oklch(.92 0 0);
-  --sidebar-border: oklch(.22 0 0);
-  --sidebar-ring: oklch(.45 0 0);
+  --background: #0f1629;
+  --foreground: #e8edf4;
+  --card: #1a1f3a;
+  --card-foreground: #e8edf4;
+  --popover: #1a1f3a;
+  --popover-foreground: #e8edf4;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #252b47;
+  --secondary-foreground: #e8edf4;
+  --muted: #1e2337;
+  --muted-foreground: #94a3b8;
+  --accent: #2d3454;
+  --accent-foreground: #e8edf4;
+  --destructive: #f43f5e;
+  --destructive-foreground: #ffffff;
+  --border: #2d3454;
+  --input: #2d3454;
+  --input-background: #151a2e;
+  --switch-background: #3d4463;
+  --ring: #6366f1;
+  --chart-1: #6366f1;
+  --chart-2: #22d3ee;
+  --chart-3: #fbbf24;
+  --chart-4: #a78bfa;
+  --chart-5: #fb7185;
+  --sidebar: #0a0e1f;
+  --sidebar-foreground: #e8edf4;
+  --sidebar-primary: #6366f1;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1a1f3a;
+  --sidebar-accent-foreground: #e8edf4;
+  --sidebar-border: #2d3454;
+  --sidebar-ring: #6366f1;
+}
+
+.dark body {
+  background-color: #0f1629 !important;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.12) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+.dark main {
+  background-color: transparent !important;
+}
+
+.dark .bg-background {
+  background-color: #0f1629 !important;
+}
+
+.dark .bg-card {
+  background: linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(21, 26, 46, 0.95) 100%) !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(12px);
+}
+
+.dark .bg-card:hover {
+  border-color: rgba(99, 102, 241, 0.35) !important;
+  box-shadow: 
+    0 8px 16px -4px rgba(0, 0, 0, 0.5),
+    0 4px 8px -2px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    0 0 20px rgba(99, 102, 241, 0.15) !important;
+}
+
+.dark .bg-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%) !important;
+  box-shadow: 
+    0 4px 14px 0 rgba(99, 102, 241, 0.5),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark .bg-primary:hover {
+  background: linear-gradient(135deg, #7c7ff6 0%, #6366f1 50%, #5b52ee 100%) !important;
+  box-shadow: 
+    0 6px 20px 0 rgba(99, 102, 241, 0.6),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.dark header {
+  background: rgba(26, 31, 58, 0.8) !important;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.dark aside {
+  background: linear-gradient(180deg, #0a0e1f 0%, #0d1225 100%) !important;
+  border-right: 1px solid rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+}
+
+.dark aside .border-gray-200 {
+  border-color: transparent !important;
+}
+
+.dark aside > div:last-child {
+  background: transparent !important;
+  border-top: none !important;
+}
+
+.dark [data-sidebar="sidebar"] {
+  background: linear-gradient(180deg, #0a0e1f 0%, #0d1225 100%) !important;
+  border-right: 1px solid rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background: rgba(21, 26, 46, 0.6) !important;
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  backdrop-filter: blur(8px);
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):focus,
+.dark textarea:focus,
+.dark select:focus {
+  background: rgba(21, 26, 46, 0.8) !important;
+  border-color: rgba(99, 102, 241, 0.5) !important;
+  box-shadow: 
+    0 0 0 3px rgba(99, 102, 241, 0.15),
+    0 1px 3px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark aside nav a,
+.dark aside nav button {
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.dark aside nav a:hover,
+.dark aside nav button:hover {
+  background: rgba(99, 102, 241, 0.15) !important;
+  border-left-color: rgba(99, 102, 241, 0.4);
+}
+
+.dark aside nav a.bg-blue-50,
+.dark aside nav button.bg-blue-50,
+.dark aside nav a[data-active="true"],
+.dark aside nav button[data-active="true"] {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%) !important;
+  color: #ffffff !important;
+  border-left: 3px solid #6366f1 !important;
+  box-shadow: inset 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+.dark .bg-gray-100,
+.dark .bg-gray-50 {
+  background: transparent !important;
+}
+
+/* Notifications dropdown dark mode */
+.dark [class*="absolute"][class*="right-0"][class*="top-"] {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+}
+
+.dark [class*="absolute"][class*="right-0"][class*="top-"] h3,
+.dark [class*="absolute"][class*="right-0"][class*="top-"] p {
+  color: var(--foreground) !important;
+}
+
+.dark [class*="absolute"][class*="right-0"][class*="top-"] .text-gray-500 {
+  color: var(--muted-foreground) !important;
+}
+
+.dark [class*="absolute"][class*="right-0"][class*="top-"] .text-gray-400 {
+  color: var(--muted-foreground) !important;
+  opacity: 0.8;
+}
+
+.dark [class*="absolute"][class*="right-0"][class*="top-"] .border-gray-200 {
+  border-color: var(--border) !important;
 }
 
 * {

@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const displayName = entities.find(e => e.id === selectedEntity)?.name || 'InFocus Ministries';
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white dark:bg-[#1A1A1A] dark:border-[#2A2A2A]">
+    <header className="sticky top-0 z-40 w-full border-b bg-card dark:bg-card">
       <div className="flex h-16 items-center gap-4 px-4 md:px-6">
         {/* Mobile Menu Button */}
         <Button
