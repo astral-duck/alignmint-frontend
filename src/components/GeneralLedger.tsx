@@ -48,9 +48,37 @@ import {
   Flag,
 } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
+import { exportToExcel } from '../lib/exportUtils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from './ui/dialog';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
 // Transaction types
 type TransactionSource = 'donation' | 'check-deposit' | 'reimbursement' | 'expense' | 'reconciliation';
+
+// Category codes
+const CATEGORY_CODES = [
+  { value: '4000', label: '4000 - Donations' },
+  { value: '4100', label: '4100 - Earned Income' },
+  { value: '4300', label: '4300 - Grants' },
+  { value: '5100', label: '5100 - Compensation - Officers' },
+  { value: '5110', label: '5110 - Compensation - Staff' },
+  { value: '5130', label: '5130 - Employee Benefits' },
+  { value: '5200', label: '5200 - Legal Fees' },
+  { value: '5210', label: '5210 - Accounting' },
+  { value: '5300', label: '5300 - Office Supplies' },
+  { value: '5400', label: '5400 - Information Technology' },
+  { value: '5500', label: '5500 - Rent' },
+  { value: '5600', label: '5600 - Travel' },
+  { value: '5700', label: '5700 - Insurance' },
+  { value: '5800', label: '5800 - Bank Fees' },
+];
 
 interface LedgerEntry {
   id: string;
@@ -505,6 +533,10 @@ export const GeneralLedger: React.FC = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<LedgerEntry | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editForm, setEditForm] = useState<Partial<LedgerEntry>>({});
+  
+  // Export dialog state
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'csv' | 'xlsx'>('csv');
 
   // Sync with global entity selector
   useEffect(() => {
@@ -628,52 +660,36 @@ export const GeneralLedger: React.FC = () => {
   }, [filteredTransactions]);
 
   const handleExport = () => {
-    // Prepare data for Excel export
-    import('xlsx').then((XLSX) => {
-      const headers = ['Date', 'Reference', 'Description', 'Entity', 'Category', 'Category Code', 'Debit', 'Credit', 'Balance', 'Status'];
-      const data = filteredTransactions.map(t => [
-        t.date,
-        t.referenceNumber || '',
-        t.description,
-        entities.find(e => e.id === t.entityId)?.name || '',
-        t.category,
-        t.internalCode || '',
-        t.debit.toFixed(2),
-        t.credit.toFixed(2),
-        (t.balance || 0).toFixed(2),
-        t.reconciled ? 'Reconciled' : 'Pending'
-      ]);
+    setExportDialogOpen(true);
+  };
 
-      // Create workbook and worksheet
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+  const handleConfirmExport = () => {
+    // Prepare data for export
+    const data = filteredTransactions.map(t => [
+      t.date,
+      t.referenceNumber || '',
+      t.description,
+      entities.find(e => e.id === t.entityId)?.name || '',
+      t.category,
+      t.internalCode || '',
+      t.debit.toFixed(2),
+      t.credit.toFixed(2),
+      (t.balance || 0).toFixed(2),
+      t.reconciled ? 'Reconciled' : 'Pending'
+    ]);
 
-      // Set column widths
-      ws['!cols'] = [
-        { wch: 12 },  // Date
-        { wch: 12 },  // Reference
-        { wch: 40 },  // Description
-        { wch: 25 },  // Entity
-        { wch: 30 },  // Category
-        { wch: 15 },  // Category Code
-        { wch: 12 },  // Debit
-        { wch: 12 },  // Credit
-        { wch: 12 },  // Balance
-        { wch: 12 },  // Status
-      ];
+    const headers = ['Date', 'Reference', 'Description', 'Entity', 'Category', 'Category Code', 'Debit', 'Credit', 'Balance', 'Status'];
+    const filename = `General_Ledger_${new Date().toISOString().split('T')[0]}`;
+    const sheetName = 'General Ledger';
 
-      // Add worksheet to workbook
-      XLSX.utils.book_append_sheet(wb, ws, 'General Ledger');
-
-      // Generate and download file
-      const filename = `general-ledger-${new Date().toISOString().split('T')[0]}.xlsx`;
-      XLSX.writeFile(wb, filename);
-      
-      toast.success('General Ledger exported successfully');
-    }).catch(error => {
-      console.error('Error exporting to Excel:', error);
-      toast.error('Failed to export General Ledger');
-    });
+    exportToExcel(data, headers, filename, sheetName);
+    
+    setExportDialogOpen(false);
+    const formatName = exportFormat === 'csv' ? 'CSV' : 'Excel';
+    toast.success(
+      `Exporting General Ledger as ${formatName}...`,
+      { description: `Your file will be downloaded shortly` }
+    );
   };
 
   const clearFilters = () => {
@@ -697,14 +713,18 @@ export const GeneralLedger: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="text-center">
         <PageHeader 
           title="General Ledger"
           subtitle="Complete transaction history with reconciliation status - showing unreconciled items by default"
         />
-        <Button onClick={handleExport} className="gap-2">
+      </div>
+
+      {/* Export Button */}
+      <div className="flex justify-center">
+        <Button onClick={handleExport} variant="outline" className="gap-2">
           <Download className="h-4 w-4" />
-          Export to Excel
+          Export
         </Button>
       </div>
 
@@ -1028,8 +1048,8 @@ export const GeneralLedger: React.FC = () => {
 
       {/* Edit Transaction Drawer */}
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-          <SheetHeader className="pb-6 border-b border-gray-200 dark:border-gray-700">
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-8">
+          <SheetHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
             <SheetTitle className="flex items-center gap-2">
               <Edit className="h-5 w-5" />
               Edit Journal Entry
@@ -1040,9 +1060,9 @@ export const GeneralLedger: React.FC = () => {
           </SheetHeader>
 
           {selectedTransaction && (
-            <div className="space-y-8 mt-8">
+            <div className="space-y-10 mt-10">
               {/* Transaction Info Section */}
-              <div className="space-y-5">
+              <div className="space-y-6">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Transaction Information</h3>
                 
                 <div className="grid grid-cols-2 gap-6">
@@ -1088,34 +1108,15 @@ export const GeneralLedger: React.FC = () => {
               </div>
 
               {/* Classification Section */}
-              <div className="space-y-5 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="space-y-6 pt-8 border-t border-gray-200 dark:border-gray-700">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Classification</h3>
                 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="edit-source" className="text-sm">Source Type</Label>
-                    <Select 
-                      value={editForm.source || 'donation'} 
-                      onValueChange={(value: TransactionSource) => setEditForm({ ...editForm, source: value })}
-                    >
-                      <SelectTrigger id="edit-source">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="donation">Donation</SelectItem>
-                        <SelectItem value="check-deposit">Check Deposit</SelectItem>
-                        <SelectItem value="expense">Expense</SelectItem>
-                        <SelectItem value="reimbursement">Reimbursement</SelectItem>
-                        <SelectItem value="reconciliation">Reconciliation</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
                     <Label htmlFor="edit-entity" className="text-sm">Nonprofit</Label>
                     <Select 
                       value={editForm.entityId || ''} 
-                      onValueChange={(value) => setEditForm({ ...editForm, entityId: value })}
+                      onValueChange={(value: string) => setEditForm({ ...editForm, entityId: value })}
                     >
                       <SelectTrigger id="edit-entity">
                         <SelectValue />
@@ -1131,21 +1132,30 @@ export const GeneralLedger: React.FC = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="edit-category" className="text-sm">Account Category</Label>
-                  <Input
-                    id="edit-category"
-                    value={editForm.category || ''}
-                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                    placeholder="e.g., 4000 - Donations"
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-category" className="text-sm">Account Category</Label>
+                    <Select 
+                      value={editForm.category || ''} 
+                      onValueChange={(value: string) => setEditForm({ ...editForm, category: value })}
+                    >
+                      <SelectTrigger id="edit-category">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORY_CODES.map(cat => (
+                          <SelectItem key={cat.value} value={cat.label}>
+                            {cat.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
               {/* Amount Section */}
-              <div className="space-y-5 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="space-y-6 pt-8 border-t border-gray-200 dark:border-gray-700">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Amounts</h3>
                 
                 <div className="grid grid-cols-2 gap-6">
@@ -1182,59 +1192,85 @@ export const GeneralLedger: React.FC = () => {
                 </div>
               </div>
 
-              {/* Status Section */}
-              <div className="space-y-5 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Status</h3>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="edit-reconciled" className="text-sm">Reconciliation Status</Label>
-                  <Select 
-                    value={editForm.reconciled ? 'reconciled' : 'unreconciled'} 
-                    onValueChange={(value) => setEditForm({ ...editForm, reconciled: value === 'reconciled' })}
-                  >
-                    <SelectTrigger id="edit-reconciled">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unreconciled">Unreconciled</SelectItem>
-                      <SelectItem value="reconciled">Reconciled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <div className="space-y-4 pt-12 mt-8 border-t border-gray-200 dark:border-gray-700">
+                <div className="grid grid-cols-2 gap-4">
+                  <Button 
+                    onClick={handleSaveTransaction}
+                    className="gap-2 h-12"
+                  >
+                    <Save className="h-4 w-4" />
+                    Save Changes
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="gap-2 h-12"
+                  >
+                    <X className="h-4 w-4" />
+                    Cancel
+                  </Button>
+                </div>
+                
+                {/* Delete Button */}
                 <Button 
-                  onClick={handleSaveTransaction}
-                  className="flex-1 gap-2 h-11"
+                  variant="destructive"
+                  onClick={handleDeleteTransaction}
+                  className="w-full gap-2 h-12"
                 >
-                  <Save className="h-4 w-4" />
-                  Save Changes
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setIsDrawerOpen(false)}
-                  className="gap-2 h-11"
-                >
-                  <X className="h-4 w-4" />
-                  Cancel
+                  <Trash2 className="h-4 w-4" />
+                  Delete Transaction
                 </Button>
               </div>
-
-              {/* Delete Button */}
-              <Button 
-                variant="destructive"
-                onClick={handleDeleteTransaction}
-                className="w-full gap-2 h-11"
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete Transaction
-              </Button>
             </div>
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Export Format Dialog */}
+      <Dialog open={exportDialogOpen} onOpenChange={setExportDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center">Export General Ledger</DialogTitle>
+            <DialogDescription className="text-center">
+              Select your preferred export format for the general ledger data.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <RadioGroup value={exportFormat} onValueChange={(value: string) => setExportFormat(value as 'csv' | 'xlsx')}>
+              <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <RadioGroupItem value="csv" id="format-csv" />
+                <Label htmlFor="format-csv" className="cursor-pointer flex-1">
+                  <div>
+                    <div className="font-medium">CSV File</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Comma-separated values</div>
+                  </div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <RadioGroupItem value="xlsx" id="format-xlsx" />
+                <Label htmlFor="format-xlsx" className="cursor-pointer flex-1">
+                  <div>
+                    <div className="font-medium">Excel Spreadsheet</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Microsoft Excel (.xlsx)</div>
+                  </div>
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExportDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmExport} className="gap-2">
+              <Download className="h-4 w-4" />
+              Export {exportFormat.toUpperCase()}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
