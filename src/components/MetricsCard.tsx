@@ -37,11 +37,11 @@ export const MetricsCard: React.FC<MetricsCardProps> = ({
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-6">
         <div className="flex flex-col items-center text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>{label}</p>
-          <p className="text-3xl font-semibold mb-3" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontVariantNumeric: 'tabular-nums' }}>{value}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{label}</p>
+          <p className="text-3xl font-semibold mb-3 tabular-nums">{value}</p>
           <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${getTrendColor()}`}>
             {getTrendIcon()}
-            <span style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontVariantNumeric: 'tabular-nums' }}>{Math.abs(change)}%</span>
+            <span className="tabular-nums">{Math.abs(change)}%</span>
           </div>
         </div>
       </CardContent>
