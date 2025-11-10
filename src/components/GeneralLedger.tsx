@@ -731,78 +731,42 @@ export const GeneralLedger: React.FC = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/20 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Total Credits</p>
-                <p className="text-xl text-gray-900 dark:text-gray-100">
-                  ${summary.totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </p>
-              </div>
-            </div>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-sm text-muted-foreground mb-2">Total Credits</p>
+            <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
+              ${summary.totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-950/20 flex items-center justify-center">
-                <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Total Debits</p>
-                <p className="text-xl text-gray-900 dark:text-gray-100">
-                  ${summary.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </p>
-              </div>
-            </div>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-sm text-muted-foreground mb-2">Total Debits</p>
+            <p className="text-2xl font-semibold text-red-600 dark:text-red-400">
+              ${summary.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                summary.netBalance >= 0 
-                  ? 'bg-green-50 dark:bg-green-950/20' 
-                  : 'bg-red-50 dark:bg-red-950/20'
-              }`}>
-                <DollarSign className={`h-5 w-5 ${
-                  summary.netBalance >= 0
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-red-600 dark:text-red-400'
-                }`} />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Net Balance</p>
-                <p className={`text-xl ${
-                  summary.netBalance >= 0
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-red-600 dark:text-red-400'
-                }`}>
-                  ${Math.abs(summary.netBalance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </p>
-              </div>
-            </div>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-sm text-muted-foreground mb-2">Net Balance</p>
+            <p className={`text-2xl font-semibold ${
+              summary.netBalance >= 0
+                ? 'text-green-600 dark:text-green-400'
+                : 'text-red-600 dark:text-red-400'
+            }`}>
+              ${Math.abs(summary.netBalance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-950/20 flex items-center justify-center">
-                <BookOpen className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Transactions</p>
-                <p className="text-xl text-gray-900 dark:text-gray-100">
-                  {summary.transactionCount}
-                </p>
-              </div>
-            </div>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-sm text-muted-foreground mb-2">Transactions</p>
+            <p className="text-2xl font-semibold text-foreground">
+              {summary.transactionCount}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -1019,15 +983,15 @@ export const GeneralLedger: React.FC = () => {
               </div>
               <div className="flex items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-600 dark:text-gray-400">Total Debits:</span>
-                  <span className="font-medium text-red-600 dark:text-red-400">
-                    ${summary.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
                   <span className="text-gray-600 dark:text-gray-400">Total Credits:</span>
                   <span className="font-medium text-green-600 dark:text-green-400">
                     ${summary.totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600 dark:text-gray-400">Total Debits:</span>
+                  <span className="font-medium text-red-600 dark:text-red-400">
+                    ${summary.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
