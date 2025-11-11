@@ -15,7 +15,10 @@ import {
 } from './ui/table';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
+
+// Import Account type and helpers
+import { Account, createJournalEntryFromTransaction, getAccountByCode } from '../lib/journalEntryHelpers';
 import { exportToExcel } from '../lib/exportUtils';
 import {
   Dialog,
@@ -27,6 +30,19 @@ import {
 } from './ui/dialog';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
+// Mock Chart of Accounts for admin fees
+const MOCK_ACCOUNTS: Account[] = [
+  // Asset
+  { id: 'acc-1000', code: '1000', name: 'Cash', type: 'asset', full_name: '1000 - Cash', is_active: true },
+  { id: 'acc-1300', code: '1300', name: 'Due from Nonprofits', type: 'asset', full_name: '1300 - Due from Nonprofits', is_active: true },
+  // Liability
+  { id: 'acc-2200', code: '2200', name: 'Due to InFocus', type: 'liability', full_name: '2200 - Due to InFocus', is_active: true },
+  // Revenue
+  { id: 'acc-4900', code: '4900', name: 'Admin Fee Revenue', type: 'revenue', full_name: '4900 - Admin Fee Revenue', is_active: true },
+  // Expense
+  { id: 'acc-5900', code: '5900', name: 'Admin Fee Expense', type: 'expense', full_name: '5900 - Admin Fee Expense', is_active: true },
+];
+
 interface FundAllocation {
   entityId: string;
   entityName: string;
@@ -35,6 +51,10 @@ interface FundAllocation {
   adminFeeRate: number;
   adminFeeAmount: number;
   confirmed: boolean;
+  // New fields for GL integration
+  journalEntryId?: string;  // Link to created journal entry
+  confirmedBy?: string;
+  confirmedAt?: string;
 }
 
 interface SponsorFeeAllocationProps {
@@ -127,19 +147,230 @@ export const SponsorFeeAllocation: React.FC<SponsorFeeAllocationProps> = ({ read
   };
 
   const handleConfirm = (entityId: string) => {
+    const allocation = allocations.find(a => a.entityId === entityId);
+    if (!allocation) return;
+
+    // Create journal entry for the nonprofit (expense and liability)
+    const nonprofitJournalEntry = {
+      id: `je-admin-fee-${entityId}-${Date.now()}`,
+      organization_id: 'org-1',
+      entity_id: allocation.entityId,
+      entry_number: `ADMIN-FEE-${month}-${entityId.toUpperCase()}`,
+      entry_date: `${month}-01`,
+      description: `Admin fee allocation - ${allocation.entityName}`,
+      memo: `${(allocation.adminFeeRate * 100).toFixed(2)}% admin fee on $${allocation.allocatedIncome.toFixed(2)}`,
+      status: 'posted' as const,
+      source_type: 'manual' as const,
+      source_id: null,
+      created_by: 'Current User',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      posted_at: new Date().toISOString(),
+      posted_by: 'System',
+      lines: [
+        {
+          id: `je-admin-fee-${entityId}-${Date.now()}-line-1`,
+          journal_entry_id: `je-admin-fee-${entityId}-${Date.now()}`,
+          account: getAccountByCode('5900', MOCK_ACCOUNTS), // Admin Fee Expense
+          line_number: 1,
+          description: `Admin fee expense - ${allocation.entityName}`,
+          memo: '',
+          debit_amount: allocation.adminFeeAmount,
+          credit_amount: 0,
+        },
+        {
+          id: `je-admin-fee-${entityId}-${Date.now()}-line-2`,
+          journal_entry_id: `je-admin-fee-${entityId}-${Date.now()}`,
+          account: getAccountByCode('2200', MOCK_ACCOUNTS), // Due to InFocus (liability)
+          line_number: 2,
+          description: `Admin fee payable to InFocus`,
+          memo: '',
+          debit_amount: 0,
+          credit_amount: allocation.adminFeeAmount,
+        },
+      ],
+    };
+
+    // Create journal entry for InFocus (asset and revenue)
+    const infocusJournalEntry = {
+      id: `je-admin-fee-revenue-${entityId}-${Date.now()}`,
+      organization_id: 'org-1',
+      entity_id: 'infocus',
+      entry_number: `ADMIN-REV-${month}-${entityId.toUpperCase()}`,
+      entry_date: `${month}-01`,
+      description: `Admin fee revenue - ${allocation.entityName}`,
+      memo: `${(allocation.adminFeeRate * 100).toFixed(2)}% admin fee on $${allocation.allocatedIncome.toFixed(2)}`,
+      status: 'posted' as const,
+      source_type: 'manual' as const,
+      source_id: null,
+      created_by: 'Current User',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      posted_at: new Date().toISOString(),
+      posted_by: 'System',
+      lines: [
+        {
+          id: `je-admin-fee-revenue-${entityId}-${Date.now()}-line-1`,
+          journal_entry_id: `je-admin-fee-revenue-${entityId}-${Date.now()}`,
+          account: getAccountByCode('1300', MOCK_ACCOUNTS), // Due from Nonprofits (asset)
+          line_number: 1,
+          description: `Admin fee receivable from ${allocation.entityName}`,
+          memo: '',
+          debit_amount: allocation.adminFeeAmount,
+          credit_amount: 0,
+        },
+        {
+          id: `je-admin-fee-revenue-${entityId}-${Date.now()}-line-2`,
+          journal_entry_id: `je-admin-fee-revenue-${entityId}-${Date.now()}`,
+          account: getAccountByCode('4900', MOCK_ACCOUNTS), // Admin Fee Revenue
+          line_number: 2,
+          description: `Admin fee revenue from ${allocation.entityName}`,
+          memo: '',
+          debit_amount: 0,
+          credit_amount: allocation.adminFeeAmount,
+        },
+      ],
+    };
+
+    // Dispatch events to update General Ledger
+    const event = new CustomEvent('journal-entries-created', {
+      detail: { entries: [nonprofitJournalEntry, infocusJournalEntry] }
+    });
+    window.dispatchEvent(event);
+
+    // Update allocation
     setAllocations(prev =>
       prev.map(alloc =>
-        alloc.entityId === entityId ? { ...alloc, confirmed: true } : alloc
+        alloc.entityId === entityId 
+          ? { 
+              ...alloc, 
+              confirmed: true,
+              journalEntryId: nonprofitJournalEntry.id,
+              confirmedBy: 'Current User',
+              confirmedAt: new Date().toISOString(),
+            } 
+          : alloc
       )
     );
+
     setExpandedRow(null);
-    toast.success('Admin fee allocation confirmed');
+    toast.success(`Admin fee posted to General Ledger - $${allocation.adminFeeAmount.toFixed(2)}`);
   };
 
   const handleConfirmAll = () => {
-    setAllocations(prev => prev.map(alloc => ({ ...alloc, confirmed: true })));
+    const unconfirmedAllocations = allocations.filter(a => !a.confirmed);
+    
+    if (unconfirmedAllocations.length === 0) {
+      toast.info('All allocations are already confirmed');
+      return;
+    }
+
+    // Create journal entries for all unconfirmed allocations
+    const allJournalEntries = unconfirmedAllocations.flatMap(allocation => {
+      const nonprofitEntry = {
+        id: `je-admin-fee-${allocation.entityId}-${Date.now()}`,
+        organization_id: 'org-1',
+        entity_id: allocation.entityId,
+        entry_number: `ADMIN-FEE-${month}-${allocation.entityId.toUpperCase()}`,
+        entry_date: `${month}-01`,
+        description: `Admin fee allocation - ${allocation.entityName}`,
+        memo: `${(allocation.adminFeeRate * 100).toFixed(2)}% admin fee on $${allocation.allocatedIncome.toFixed(2)}`,
+        status: 'posted' as const,
+        source_type: 'manual' as const,
+        source_id: null,
+        created_by: 'Current User',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        posted_at: new Date().toISOString(),
+        posted_by: 'System',
+        lines: [
+          {
+            id: `je-admin-fee-${allocation.entityId}-${Date.now()}-line-1`,
+            journal_entry_id: `je-admin-fee-${allocation.entityId}-${Date.now()}`,
+            account: getAccountByCode('5900', MOCK_ACCOUNTS),
+            line_number: 1,
+            description: `Admin fee expense - ${allocation.entityName}`,
+            memo: '',
+            debit_amount: allocation.adminFeeAmount,
+            credit_amount: 0,
+          },
+          {
+            id: `je-admin-fee-${allocation.entityId}-${Date.now()}-line-2`,
+            journal_entry_id: `je-admin-fee-${allocation.entityId}-${Date.now()}`,
+            account: getAccountByCode('2200', MOCK_ACCOUNTS),
+            line_number: 2,
+            description: `Admin fee payable to InFocus`,
+            memo: '',
+            debit_amount: 0,
+            credit_amount: allocation.adminFeeAmount,
+          },
+        ],
+      };
+
+      const infocusEntry = {
+        id: `je-admin-fee-revenue-${allocation.entityId}-${Date.now()}`,
+        organization_id: 'org-1',
+        entity_id: 'infocus',
+        entry_number: `ADMIN-REV-${month}-${allocation.entityId.toUpperCase()}`,
+        entry_date: `${month}-01`,
+        description: `Admin fee revenue - ${allocation.entityName}`,
+        memo: `${(allocation.adminFeeRate * 100).toFixed(2)}% admin fee on $${allocation.allocatedIncome.toFixed(2)}`,
+        status: 'posted' as const,
+        source_type: 'manual' as const,
+        source_id: null,
+        created_by: 'Current User',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        posted_at: new Date().toISOString(),
+        posted_by: 'System',
+        lines: [
+          {
+            id: `je-admin-fee-revenue-${allocation.entityId}-${Date.now()}-line-1`,
+            journal_entry_id: `je-admin-fee-revenue-${allocation.entityId}-${Date.now()}`,
+            account: getAccountByCode('1300', MOCK_ACCOUNTS),
+            line_number: 1,
+            description: `Admin fee receivable from ${allocation.entityName}`,
+            memo: '',
+            debit_amount: allocation.adminFeeAmount,
+            credit_amount: 0,
+          },
+          {
+            id: `je-admin-fee-revenue-${allocation.entityId}-${Date.now()}-line-2`,
+            journal_entry_id: `je-admin-fee-revenue-${allocation.entityId}-${Date.now()}`,
+            account: getAccountByCode('4900', MOCK_ACCOUNTS),
+            line_number: 2,
+            description: `Admin fee revenue from ${allocation.entityName}`,
+            memo: '',
+            debit_amount: 0,
+            credit_amount: allocation.adminFeeAmount,
+          },
+        ],
+      };
+
+      return [nonprofitEntry, infocusEntry];
+    });
+
+    // Dispatch events to update General Ledger
+    const event = new CustomEvent('journal-entries-created', {
+      detail: { entries: allJournalEntries }
+    });
+    window.dispatchEvent(event);
+
+    // Update all allocations
+    setAllocations(prev => prev.map(alloc => 
+      !alloc.confirmed 
+        ? {
+            ...alloc,
+            confirmed: true,
+            confirmedBy: 'Current User',
+            confirmedAt: new Date().toISOString(),
+          }
+        : alloc
+    ));
+
     setExpandedRow(null);
-    toast.success('All admin fee allocations confirmed');
+    const totalAmount = unconfirmedAllocations.reduce((sum, a) => sum + a.adminFeeAmount, 0);
+    toast.success(`${unconfirmedAllocations.length} admin fees posted to GL - $${totalAmount.toFixed(2)}`);
   };
 
   const handleUnconfirm = (entityId: string) => {
