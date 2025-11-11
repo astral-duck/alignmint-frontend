@@ -330,6 +330,21 @@ export const ReconciliationManager: React.FC = () => {
       t.id === selectedLedger.id ? { ...t, reconciled: true, selected: false } : t
     ));
 
+    // Dispatch reconciliation event to update General Ledger
+    const event = new CustomEvent('reconciliation-update', {
+      detail: {
+        transactionIds: [selectedLedger.id],
+        reconciled: true,
+        metadata: {
+          reconciled_by: 'Current User',
+          reconciliation_method: 'import',
+          bank_statement_ref: selectedBank.ref,
+          reconciled_at: new Date().toISOString(),
+        },
+      },
+    });
+    window.dispatchEvent(event);
+
     toast.success('Transaction reconciled successfully');
   };
 
@@ -344,6 +359,20 @@ export const ReconciliationManager: React.FC = () => {
     setLedgerTransactions(prev => prev.map(t =>
       t.id === pair.ledgerId ? { ...t, reconciled: false } : t
     ));
+
+    // Dispatch unreconciliation event to update General Ledger
+    const event = new CustomEvent('reconciliation-update', {
+      detail: {
+        transactionIds: [pair.ledgerId],
+        reconciled: false,
+        metadata: {
+          reconciled_by: 'Current User',
+          reconciliation_method: 'manual',
+          reconciled_at: new Date().toISOString(),
+        },
+      },
+    });
+    window.dispatchEvent(event);
 
     // Remove pair
     setReconciledPairs(prev => prev.filter(p => p.id !== pairId));
@@ -414,7 +443,7 @@ export const ReconciliationManager: React.FC = () => {
         /* Reconciliation State */
         <>
           {/* Balance Summary - Sticky Header */}
-          <div className="sticky top-0 z-20 bg-white dark:bg-gray-950 pb-4 -mx-4 sm:-mx-6 px-4 sm:px-6 pt-4">
+          <div className="sticky top-0 z-20 bg-background pb-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Payments (Debits) */}
               <Card>
