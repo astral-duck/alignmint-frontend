@@ -55,33 +55,52 @@ import {
   Calendar,
   FileText,
 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
-// Transaction types - aligned with General Ledger
-type TransactionSource = 'donation' | 'check-deposit' | 'reimbursement' | 'expense' | 'reconciliation' | 'journal-entry';
-
-interface LedgerEntry {
+// Account interface - matches Chart of Accounts
+interface Account {
   id: string;
-  date: string;
-  description: string;
-  source: TransactionSource;
-  entityId: string;
-  category: string;
-  internalCode?: string;
-  debit: number;
-  credit: number;
-  balance?: number;
-  referenceNumber?: string;
-  reconciled: boolean;
+  code: string;
+  name: string;
+  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  full_name: string;
+  is_active: boolean;
 }
 
+// Journal Entry interface - proper structure
+interface JournalEntry {
+  id: string;
+  organization_id: string;
+  entity_id: string;
+  entry_number: string;           // e.g., "JE-2025-001"
+  entry_date: string;
+  description: string;
+  memo?: string;
+  status: 'draft' | 'posted' | 'voided';
+  source_type: 'manual';          // Manual entries only
+  source_id: null;                // No source for manual entries
+  posted_at?: string;
+  posted_by?: string;
+  voided_at?: string;
+  voided_by?: string;
+  void_reason?: string;
+  reversing_entry_id?: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  lines: JournalEntryLine[];
+}
+
+// Journal Entry Line interface
 interface JournalEntryLine {
   id: string;
-  category: string;
-  internalCode: string;
+  journal_entry_id: string;
+  account: Account;               // Full account object from Chart of Accounts
+  line_number: number;            // Order within entry (1, 2, 3...)
   description: string;
-  debit: number;
-  credit: number;
+  memo?: string;
+  debit_amount: number;
+  credit_amount: number;
 }
 
 const mockJournalEntries: LedgerEntry[] = [
