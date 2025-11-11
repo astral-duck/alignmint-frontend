@@ -454,7 +454,113 @@ const handlePostToGL = (expense: ManualExpense) => {
 
 ---
 
-## Phase 5: Testing & Validation (1 hour)
+## Phase 5: Sponsor Fee Allocation (2 hours)
+
+### Overview
+**File:** `src/components/IncomeStatementByFund.tsx`  
+**Current Name:** `SponsorFeeAllocation`  
+**Purpose:** Allocate admin fees from sponsored nonprofits to InFocus
+
+### Current Behavior
+```typescript
+handleConfirm(entityId) {
+  // Just marks as confirmed
+  toast.success('Admin fee allocation confirmed');
+  // ❌ NO JOURNAL ENTRY CREATED
+}
+```
+
+### Required Accounting Logic
+When admin fee is confirmed:
+```
+For each nonprofit:
+  Debit:  5900 - Admin Fee Expense (nonprofit's books)  $XXX.XX
+  Credit: 2200 - Due to InFocus (liability)            $XXX.XX
+
+For InFocus:
+  Debit:  1300 - Due from Nonprofits (asset)           $XXX.XX
+  Credit: 4900 - Admin Fee Revenue                     $XXX.XX
+```
+
+### Implementation Steps
+
+#### Step 5.1: Update FundAllocation Interface
+```typescript
+interface FundAllocation {
+  entityId: string;
+  entityName: string;
+  totalIncome: number;
+  allocatedIncome: number;
+  adminFeeRate: number;
+  adminFeeAmount: number;
+  confirmed: boolean;
+  // New fields
+  journalEntryId?: string;  // Link to created journal entry
+  confirmedBy?: string;
+  confirmedAt?: string;
+}
+```
+
+#### Step 5.2: Update handleConfirm
+```typescript
+const handleConfirm = (entityId: string) => {
+  const allocation = allocations.find(a => a.entityId === entityId);
+  if (!allocation) return;
+
+  // Create journal entry for the nonprofit
+  const nonprofitEntry = createJournalEntryFromTransaction('admin-fee', {
+    entityId: allocation.entityId,
+    amount: allocation.adminFeeAmount,
+    date: `${month}-01`, // First of the month
+    description: `Admin fee allocation - ${allocation.entityName}`,
+    account: getAccountByCode('5900', MOCK_ACCOUNTS), // Admin Fee Expense
+  }, MOCK_ACCOUNTS);
+
+  // Create journal entry for InFocus
+  const infocusEntry = createJournalEntryFromTransaction('admin-fee-revenue', {
+    entityId: 'infocus',
+    amount: allocation.adminFeeAmount,
+    date: `${month}-01`,
+    description: `Admin fee revenue - ${allocation.entityName}`,
+    account: getAccountByCode('4900', MOCK_ACCOUNTS), // Admin Fee Revenue
+  }, MOCK_ACCOUNTS);
+
+  // Dispatch events
+  const event = new CustomEvent('journal-entries-created', {
+    detail: { entries: [nonprofitEntry, infocusEntry] }
+  });
+  window.dispatchEvent(event);
+
+  // Update allocation
+  setAllocations(prev =>
+    prev.map(alloc =>
+      alloc.entityId === entityId 
+        ? { 
+            ...alloc, 
+            confirmed: true,
+            journalEntryId: nonprofitEntry.id,
+            confirmedBy: 'Current User',
+            confirmedAt: new Date().toISOString(),
+          } 
+        : alloc
+    )
+  );
+
+  toast.success(`Admin fee posted to General Ledger - $${allocation.adminFeeAmount.toFixed(2)}`);
+};
+```
+
+#### Step 5.3: Update handleConfirmAll
+Same logic but for all unconfirmed allocations.
+
+#### Step 5.4: Add Unconfirm with Reversal
+When unconfirming, create reversing journal entries.
+
+**Commit:** "feat: Integrate Sponsor Fee Allocation with General Ledger"
+
+---
+
+## Phase 6: Testing & Validation (1 hour)
 
 ### Step 5.1: Test Check Deposits
 1. Deposit a check
