@@ -620,6 +620,41 @@ export const GeneralLedger: React.FC = () => {
     setFilterEntity(selectedEntity === 'all' ? 'all' : selectedEntity);
   }, [selectedEntity]);
 
+  // Listen for reconciliation updates from ReconciliationManager
+  useEffect(() => {
+    const handleReconciliationUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { transactionIds, reconciled, metadata } = customEvent.detail;
+      
+      setTransactions(prev => prev.map(t => {
+        if (transactionIds.includes(t.id)) {
+          return {
+            ...t,
+            reconciled,
+            ...(metadata && {
+              reconciled_at: metadata.reconciled_at,
+              reconciled_by: metadata.reconciled_by,
+              reconciliation_method: metadata.reconciliation_method,
+              bank_statement_ref: metadata.bank_statement_ref,
+            }),
+          };
+        }
+        return t;
+      }));
+
+      // Show toast notification
+      const count = transactionIds.length;
+      if (reconciled) {
+        toast.success(`${count} transaction${count > 1 ? 's' : ''} reconciled successfully`);
+      } else {
+        toast.success(`${count} transaction${count > 1 ? 's' : ''} unreconciled`);
+      }
+    };
+
+    window.addEventListener('reconciliation-update', handleReconciliationUpdate);
+    return () => window.removeEventListener('reconciliation-update', handleReconciliationUpdate);
+  }, []);
+
   // Open drawer with transaction details
   const handleTransactionClick = (transaction: LedgerEntry) => {
     setSelectedTransaction(transaction);
@@ -665,6 +700,26 @@ export const GeneralLedger: React.FC = () => {
     setTransactions(updatedTransactions);
     setIsDrawerOpen(false);
     toast.success('Transaction deleted successfully');
+  };
+
+  // Toggle reconciliation status
+  const handleToggleReconciliation = () => {
+    if (!selectedTransaction) return;
+
+    const newStatus = !selectedTransaction.reconciled;
+    const event = new CustomEvent('reconciliation-update', {
+      detail: {
+        transactionIds: [selectedTransaction.id],
+        reconciled: newStatus,
+        metadata: {
+          reconciled_by: 'Current User',
+          reconciliation_method: 'manual',
+          reconciled_at: new Date().toISOString(),
+        },
+      },
+    });
+    window.dispatchEvent(event);
+    setIsDrawerOpen(false);
   };
 
   // Filter and sort transactions
@@ -1291,6 +1346,25 @@ export const GeneralLedger: React.FC = () => {
                     Cancel
                   </Button>
                 </div>
+                
+                {/* Reconciliation Toggle Button */}
+                <Button 
+                  variant={selectedTransaction?.reconciled ? "outline" : "default"}
+                  onClick={handleToggleReconciliation}
+                  className="w-full gap-2 h-12"
+                >
+                  {selectedTransaction?.reconciled ? (
+                    <>
+                      <X className="h-4 w-4" />
+                      Mark as Unreconciled
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Mark as Reconciled
+                    </>
+                  )}
+                </Button>
                 
                 {/* Delete Button */}
                 <Button 
