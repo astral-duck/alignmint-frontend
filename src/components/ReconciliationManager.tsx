@@ -442,87 +442,51 @@ export const ReconciliationManager: React.FC = () => {
       ) : (
         /* Reconciliation State */
         <>
-          {/* Balance Summary - Sticky Header */}
-          <div className="sticky top-16 left-0 right-0 z-20 bg-background -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8 -mt-4 sm:-mt-6 pt-0 pb-4">
+          {/* Balance Summary */}
+          <div className="mb-6">
             <div className="max-w-7xl mx-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Payments (Debits) */}
               <Card>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-950/20 flex items-center justify-center">
-                      <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Payments</p>
-                      <p className="text-xl text-gray-900 dark:text-gray-100">
-                        {formatCurrency(payments)}
-                      </p>
-                    </div>
-                  </div>
+                <CardContent className="p-4 sm:p-6 text-center">
+                  <p className="text-sm text-muted-foreground mb-1">Payments</p>
+                  <p className="text-2xl font-semibold text-red-600 dark:text-red-400">
+                    {formatCurrency(payments)}
+                  </p>
                 </CardContent>
               </Card>
 
               {/* Deposits (Credits) */}
               <Card>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-950/20 flex items-center justify-center">
-                      <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Deposits</p>
-                      <p className="text-xl text-gray-900 dark:text-gray-100">
-                        {formatCurrency(deposits)}
-                      </p>
-                    </div>
-                  </div>
+                <CardContent className="p-4 sm:p-6 text-center">
+                  <p className="text-sm text-muted-foreground mb-1">Deposits</p>
+                  <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
+                    {formatCurrency(deposits)}
+                  </p>
                 </CardContent>
               </Card>
 
               {/* Cleared Balance */}
               <Card>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/20 flex items-center justify-center">
-                      <DollarSign className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Cleared Balance</p>
-                      <p className="text-xl text-gray-900 dark:text-gray-100">
-                        {formatCurrency(clearedBalance)}
-                      </p>
-                    </div>
-                  </div>
+                <CardContent className="p-4 sm:p-6 text-center">
+                  <p className="text-sm text-muted-foreground mb-1">Cleared Balance</p>
+                  <p className="text-2xl font-semibold">
+                    {formatCurrency(clearedBalance)}
+                  </p>
                 </CardContent>
               </Card>
 
               {/* Difference */}
               <Card>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      difference === 0 
-                        ? 'bg-green-50 dark:bg-green-950/20' 
-                        : 'bg-red-50 dark:bg-red-950/20'
-                    }`}>
-                      <BookOpen className={`h-5 w-5 ${
-                        difference === 0
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
-                      }`} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Difference</p>
-                      <p className={`text-xl ${
-                        difference === 0
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
-                      }`}>
-                        {formatCurrency(Math.abs(difference))}
-                      </p>
-                    </div>
-                  </div>
+                <CardContent className="p-4 sm:p-6 text-center">
+                  <p className="text-sm text-muted-foreground mb-1">Difference</p>
+                  <p className={`text-2xl font-semibold ${
+                    difference === 0
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`}>
+                    {formatCurrency(Math.abs(difference))}
+                  </p>
                 </CardContent>
               </Card>
               </div>
