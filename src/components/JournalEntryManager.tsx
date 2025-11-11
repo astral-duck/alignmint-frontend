@@ -728,6 +728,15 @@ export const JournalEntryManager: React.FC = () => {
                           </div>
                         </div>
                       ))}
+                      {/* Add Line button at bottom */}
+                      {newEntry.lines.length > 0 && (
+                        <div className="flex justify-center pt-2">
+                          <Button type="button" onClick={addLine} variant="outline" size="sm" className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Add Line
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
 
