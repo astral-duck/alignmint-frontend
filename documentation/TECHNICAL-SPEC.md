@@ -188,36 +188,86 @@ See: **`02-API-REQUIREMENTS.md`** - Complete API specifications
 
 The IFM MVP features deep integration between modules, with the General Ledger serving as the central hub for all financial transactions.
 
+### 🔴 CRITICAL ARCHITECTURE PRINCIPLE
+
+**ALL financial transactions flow through Journal Entries before appearing in the General Ledger:**
+
+```
+Transaction Source (Donation, Expense, Reimbursement, etc.)
+    ↓
+Creates Journal Entry (with debit/credit lines)
+    ↓
+Journal Entry Posted (status = 'posted')
+    ↓
+Creates Ledger Entries (one per journal entry line)
+    ↓
+Appears in General Ledger
+    ↓
+Flows to Financial Reports
+```
+
+**Why This Matters:**
+- ✅ **Enforces double-entry accounting** (debits always = credits)
+- ✅ **Atomic transactions** (all lines post together or none post)
+- ✅ **Complete audit trail** (can trace from report → ledger → journal entry → source)
+- ✅ **Proper grouping** (related entries linked via journal_entry_id)
+- ✅ **Voiding capability** (void journal entry creates reversing entry)
+
+**Database Relationships:**
+```sql
+donations.journal_entry_id → journal_entries.id
+expenses.journal_entry_id → journal_entries.id
+reimbursements.journal_entry_id → journal_entries.id
+deposits.journal_entry_id → journal_entries.id
+
+journal_entries.id ← journal_entry_lines.journal_entry_id
+journal_entry_lines → ledger_entries (created when posted)
+
+ledger_entries.journal_entry_id → journal_entries.id
+```
+
 ### Key Integration Flows
 
-#### 1. Donation → Ledger → Reconciliation → Reports
+#### 1. Donation → Journal Entry → Ledger → Reconciliation → Reports
 ```
 Donations Manager
     ↓ (Create donation)
-Payment Processing
+Payment Processing (Stripe/Check)
     ↓ (Payment completed)
-General Ledger Entry Created
-    ↓ (Debit: Cash, Credit: Revenue)
+CREATE Journal Entry
+  Line 1: Debit $500 - Checking Account (1000)
+  Line 2: Credit $500 - Donation Revenue (4000)
+    ↓ (Auto-post)
+POST Journal Entry
+    ↓ (Creates 2 ledger entries)
+General Ledger (2 entries created)
+    ↓
 Reconciliation Manager
-    ↓ (Match with bank)
-General Ledger Updated (reconciled = true)
+    ↓ (Match with bank statement)
+Ledger Entries Updated (reconciled = true)
     ↓
 Reports (Balance Sheet, Income Statement)
 ```
 
-#### 2. Expense → Approval → Ledger → Reports
+#### 2. Expense → Approval → Journal Entry → Ledger → Reports
 ```
 Expenses Manager
-    ↓ (Create expense)
+    ↓ (Create expense - status: pending)
 Approval Workflow
-    ↓ (Manager approves)
+    ↓ (Manager approves - status: approved)
 Payment Processing
-    ↓ (Payment made)
-General Ledger Entry Created
-    ↓ (Debit: Expense, Credit: Cash)
+    ↓ (Payment made - status: paid)
+CREATE Journal Entry
+  Line 1: Debit $150 - Office Supplies (5300)
+  Line 2: Credit $150 - Checking Account (1000)
+    ↓ (Auto-post)
+POST Journal Entry
+    ↓ (Creates 2 ledger entries)
+General Ledger (2 entries created)
+    ↓
 Reconciliation Manager
-    ↓ (Match with bank)
-General Ledger Updated (reconciled = true)
+    ↓ (Match with bank statement)
+Ledger Entries Updated (reconciled = true)
     ↓
 Reports (Balance Sheet, Income Statement)
 ```

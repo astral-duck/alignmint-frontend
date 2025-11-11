@@ -97,7 +97,8 @@ This document defines all data models needed for the backend Rails API.
   donation_type: string, # 'one-time', 'recurring', 'pledge'
   payment_method: string, # 'credit_card', 'check', 'cash', 'ach', 'wire'
   payment_status: string, # 'completed', 'pending', 'failed', 'refunded'
-  transaction_id: string (nullable), # External payment processor ID
+  transaction_id: string (nullable), # External payment processor ID (Stripe, etc.)
+  journal_entry_id: uuid (foreign key -> journal_entries, nullable), # Links to accounting entry
   fund_id: uuid (foreign key -> funds, nullable),
   campaign_id: uuid (foreign key -> campaigns, nullable),
   designation: string (nullable), # Specific purpose
@@ -203,39 +204,57 @@ This document defines all data models needed for the backend Rails API.
 ### 10. JournalEntry
 ```ruby
 # Table: journal_entries
+# CRITICAL: ALL transactions (donations, expenses, etc.) create journal entries
+# Journal entries are the ONLY source of ledger entries
 {
   id: uuid (primary key),
   organization_id: uuid (foreign key -> organizations),
-  entry_number: string, # Auto-generated or manual
+  entity_id: uuid (foreign key -> organizations), # Fund/Nonprofit
+  entry_number: string, # Auto-generated (e.g., JE-2025-001, DON-123, EXP-456)
   entry_date: date,
   description: text,
+  memo: text (nullable),
   reference: string (nullable), # Check number, invoice number, etc.
   status: string, # 'draft', 'posted', 'voided'
+  
+  # Source tracking - links back to originating transaction
+  source_type: string (nullable), # 'donation', 'expense', 'reimbursement', 'manual', etc.
+  source_id: uuid (nullable), # ID of source record (donation_id, expense_id, etc.)
+  
+  # Posting/voiding tracking
   created_by_id: uuid (foreign key -> users),
   posted_at: datetime (nullable),
+  posted_by_id: uuid (foreign key -> users, nullable),
+  voided_at: datetime (nullable),
+  voided_by_id: uuid (foreign key -> users, nullable),
+  void_reason: text (nullable),
+  reversing_entry_id: uuid (foreign key -> journal_entries, nullable),
+  
   created_at: datetime,
   updated_at: datetime
 }
-# Indexes: organization_id, entry_date, status
+# Indexes: organization_id, entity_id, entry_date, status, source_type, source_id
 ```
 
 ### 11. JournalEntryLine
 ```ruby
 # Table: journal_entry_lines
+# Each line represents one side of a double-entry transaction
 {
   id: uuid (primary key),
   journal_entry_id: uuid (foreign key -> journal_entries),
   account_id: uuid (foreign key -> accounts),
-  fund_id: uuid (foreign key -> funds, nullable),
-  debit_amount: decimal(12,2) (default: 0),
-  credit_amount: decimal(12,2) (default: 0),
-  description: text (nullable),
-  line_order: integer,
+  line_number: integer, # Order within journal entry (1, 2, 3...)
+  description: text,
+  memo: text (nullable),
+  debit_amount: decimal(15,2) (default: 0),
+  credit_amount: decimal(15,2) (default: 0),
   created_at: datetime,
   updated_at: datetime
 }
 # Indexes: journal_entry_id, account_id
 # Constraint: (debit_amount > 0 AND credit_amount = 0) OR (credit_amount > 0 AND debit_amount = 0)
+# Validation: Sum of debits = Sum of credits for all lines in a journal entry
 ```
 
 ### 12. Expense
@@ -244,8 +263,8 @@ This document defines all data models needed for the backend Rails API.
 {
   id: uuid (primary key),
   organization_id: uuid (foreign key -> organizations),
+  entity_id: uuid (foreign key -> organizations), # Fund/Nonprofit
   account_id: uuid (foreign key -> accounts),
-  fund_id: uuid (foreign key -> funds, nullable),
   vendor_name: string,
   amount: decimal(12,2),
   expense_date: date,
@@ -253,16 +272,18 @@ This document defines all data models needed for the backend Rails API.
   check_number: string (nullable),
   reference_number: string (nullable),
   description: text,
-  category: string, # Maps to account types
   receipt_url: string (nullable),
   status: string, # 'pending', 'approved', 'paid', 'rejected'
   approved_by_id: uuid (foreign key -> users, nullable),
   approved_at: datetime (nullable),
+  paid_at: datetime (nullable),
+  journal_entry_id: uuid (foreign key -> journal_entries, nullable), # Created when status = 'paid'
   created_by_id: uuid (foreign key -> users),
   created_at: datetime,
   updated_at: datetime
 }
-# Indexes: organization_id, expense_date, status, account_id
+# Indexes: organization_id, entity_id, expense_date, status, account_id
+# Note: journal_entry_id is populated when expense is marked as 'paid'
 ```
 
 ### 13. Reimbursement
@@ -271,22 +292,25 @@ This document defines all data models needed for the backend Rails API.
 {
   id: uuid (primary key),
   organization_id: uuid (foreign key -> organizations),
+  entity_id: uuid (foreign key -> organizations), # Fund/Nonprofit
   user_id: uuid (foreign key -> users), # Person requesting reimbursement
+  account_id: uuid (foreign key -> accounts), # Expense account
   amount: decimal(12,2),
   description: text,
   expense_date: date,
-  category: string,
   receipt_url: string (nullable),
   status: string, # 'pending', 'approved', 'paid', 'rejected'
   approved_by_id: uuid (foreign key -> users, nullable),
   approved_at: datetime (nullable),
   paid_at: datetime (nullable),
   payment_method: string (nullable),
+  journal_entry_id: uuid (foreign key -> journal_entries, nullable), # Created when status = 'paid'
   notes: text (nullable),
   created_at: datetime,
   updated_at: datetime
 }
-# Indexes: organization_id, user_id, status, expense_date
+# Indexes: organization_id, entity_id, user_id, status, expense_date
+# Note: journal_entry_id is populated when reimbursement is marked as 'paid'
 ```
 
 ### 14. Deposit
@@ -303,11 +327,13 @@ This document defines all data models needed for the backend Rails API.
   status: string, # 'pending', 'deposited', 'cleared'
   deposited_by_id: uuid (foreign key -> users),
   deposit_slip_url: string (nullable),
+  journal_entry_id: uuid (foreign key -> journal_entries, nullable), # Created when status = 'deposited'
   notes: text (nullable),
   created_at: datetime,
   updated_at: datetime
 }
 # Indexes: organization_id, deposit_date, status
+# Note: journal_entry_id is populated when deposit is marked as 'deposited'
 ```
 
 ### 15. DepositItem

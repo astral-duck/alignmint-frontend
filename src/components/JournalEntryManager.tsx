@@ -39,6 +39,7 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import { Textarea } from './ui/textarea';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import {
   ArrowLeft,
   Plus,
@@ -168,6 +169,10 @@ export const JournalEntryManager: React.FC = () => {
     referenceNumber: '',
   });
 
+  // Export dialog state
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'csv' | 'xlsx'>('csv');
+
   const handleEntryClick = (entry: LedgerEntry) => {
     setSelectedEntry(entry);
     setEditForm({
@@ -288,6 +293,10 @@ export const JournalEntryManager: React.FC = () => {
   };
 
   const handleExport = () => {
+    setExportDialogOpen(true);
+  };
+
+  const handleConfirmExport = () => {
     import('xlsx').then((XLSX) => {
       const headers = ['Date', 'Reference', 'Description', 'Entity', 'Category', 'Category Code', 'Debit', 'Credit', 'Status'];
       const data = filteredEntries.map(e => [
@@ -318,10 +327,28 @@ export const JournalEntryManager: React.FC = () => {
       ];
 
       XLSX.utils.book_append_sheet(wb, ws, 'Journal Entries');
-      const filename = `journal-entries-${new Date().toISOString().split('T')[0]}.xlsx`;
-      XLSX.writeFile(wb, filename);
+      const filename = `journal-entries-${new Date().toISOString().split('T')[0]}.${exportFormat === 'csv' ? 'csv' : 'xlsx'}`;
       
-      toast.success('Journal entries exported successfully');
+      if (exportFormat === 'csv') {
+        // Convert to CSV
+        const csv = [headers, ...data].map(row => row.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        XLSX.writeFile(wb, filename);
+      }
+      
+      setExportDialogOpen(false);
+      const formatName = exportFormat === 'csv' ? 'CSV' : 'Excel';
+      toast.success(
+        `Exporting Journal Entries as ${formatName}...`,
+        { description: 'Your file will be downloaded shortly' }
+      );
     }).catch(error => {
       console.error('Error exporting:', error);
       toast.error('Failed to export journal entries');
@@ -395,7 +422,7 @@ export const JournalEntryManager: React.FC = () => {
         <div className="flex gap-2">
           <Button onClick={handleExport} variant="outline" className="gap-2">
             <Download className="h-4 w-4" />
-            Export to Excel
+            Export
           </Button>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
@@ -980,6 +1007,47 @@ export const JournalEntryManager: React.FC = () => {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      {/* Export Format Dialog */}
+      <Dialog open={exportDialogOpen} onOpenChange={setExportDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center">Export Journal Entries</DialogTitle>
+            <DialogDescription className="text-center">
+              Select your preferred export format for the journal entries data.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <RadioGroup value={exportFormat} onValueChange={(value: string) => setExportFormat(value as 'csv' | 'xlsx')}>
+              <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <RadioGroupItem value="csv" id="format-csv" />
+                <Label htmlFor="format-csv" className="cursor-pointer flex-1">
+                  <div className="font-medium">CSV</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Comma-separated values, compatible with Excel and Google Sheets</div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <RadioGroupItem value="xlsx" id="format-xlsx" />
+                <Label htmlFor="format-xlsx" className="cursor-pointer flex-1">
+                  <div className="font-medium">Excel (XLSX)</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Microsoft Excel format with formatting</div>
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExportDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmExport} className="gap-2">
+              <Download className="h-4 w-4" />
+              Export {exportFormat.toUpperCase()}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
