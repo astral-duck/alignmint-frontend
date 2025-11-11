@@ -1,11 +1,99 @@
 # Reconciliation Manager
 
+## ✨ General Ledger Integration (NEW)
+
+**Status:** ✅ **FULLY INTEGRATED**
+
+The Reconciliation Manager is now fully integrated with the General Ledger, providing real-time reconciliation status updates across both components.
+
+### Key Features
+
+#### Real-Time Synchronization
+- Reconciling transactions in Reconciliation Manager **immediately updates** the General Ledger
+- Orange flags disappear when transactions are reconciled
+- Status badges change from "Pending" to "Reconciled" instantly
+- Toast notifications confirm reconciliation with transaction count
+
+#### Bidirectional Updates
+- **From Reconciliation Manager:** Match and reconcile transactions → GL updates
+- **From General Ledger:** Manual reconciliation toggle → Both components update
+- **Unreconcile:** Works from either component
+
+#### Metadata Tracking
+All reconciliations include:
+- `reconciled_by`: User who performed the reconciliation
+- `reconciliation_method`: `manual`, `auto`, or `import`
+- `bank_statement_ref`: Reference to bank transaction
+- `reconciled_at`: Timestamp of reconciliation
+
+### User Workflows
+
+#### Workflow 1: Bank Statement Reconciliation
+1. Upload bank statement in Reconciliation Manager
+2. Match bank transactions with ledger transactions
+3. Click "Reconcile" button
+4. **General Ledger updates immediately**
+5. Orange flags disappear
+6. Status changes to "Reconciled"
+
+#### Workflow 2: Manual Reconciliation from GL
+1. Open transaction in General Ledger drawer
+2. Click "Mark as Reconciled" button
+3. Transaction updates in both components
+4. Flag disappears
+5. Status badge updates
+
+#### Workflow 3: Unreconcile Transaction
+1. From Reconciliation Manager: Click unreconcile on matched pair
+2. From General Ledger: Click "Mark as Unreconciled" in drawer
+3. Both components update immediately
+4. Flag reappears (for check deposits)
+5. Status returns to "Pending"
+
+### Technical Implementation
+
+#### Event-Based Communication
+- Uses CustomEvent API for loose coupling
+- No prop drilling required
+- Components remain independent
+
+#### Event Structure
+```javascript
+{
+  detail: {
+    transactionIds: ['txn-123'],
+    reconciled: true,
+    metadata: {
+      reconciled_by: 'Current User',
+      reconciliation_method: 'import',
+      bank_statement_ref: 'BANK-REF-456',
+      reconciled_at: '2025-01-10T12:34:56Z'
+    }
+  }
+}
+```
+
+#### Context Methods
+Available via `useApp()`:
+- `updateTransactionReconciliation(id, reconciled, metadata)`
+- `bulkUpdateReconciliation(ids, reconciled, metadata)`
+
+### Benefits
+
+✅ **No Manual Status Updates** - Reconciliation status flows automatically  
+✅ **Consistent State** - Both components always in sync  
+✅ **Audit Trail** - Full metadata for every reconciliation  
+✅ **User Friendly** - Immediate visual feedback  
+✅ **Flexible** - Reconcile from either component  
+
+---
+
 **Component File:** `src/components/ReconciliationManager.tsx`  
 **Route:** `/accounting-hub` (with tool='reconciliation')  
 **Access Level:** Admin, Manager
 
 ## Overview
-The Reconciliation Manager facilitates bank reconciliation by matching bank statement transactions with ledger entries. Users can upload bank statements, automatically match transactions, manually match unmatched items, and resolve discrepancies. This ensures the organization's books accurately reflect bank activity.
+The Reconciliation Manager allows users to upload bank statements, match transactions with the General Ledger, and reconcile balances to ensure accuracy.
 
 ## UI Features
 
