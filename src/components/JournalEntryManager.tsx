@@ -299,6 +299,7 @@ export const JournalEntryManager: React.FC = () => {
   const [newEntry, setNewEntry] = useState({
     date: new Date().toISOString().split('T')[0],
     description: '',
+    memo: '',
     entityId: selectedEntity === 'all' ? 'infocus' : selectedEntity,
     referenceNumber: '',
     lines: [] as JournalEntryLine[],
@@ -430,6 +431,7 @@ export const JournalEntryManager: React.FC = () => {
     setNewEntry({
       date: new Date().toISOString().split('T')[0],
       description: '',
+      memo: '',
       entityId: selectedEntity === 'all' ? 'infocus' : selectedEntity,
       referenceNumber: '',
       lines: [],
@@ -625,6 +627,16 @@ export const JournalEntryManager: React.FC = () => {
                       rows={2}
                     />
                   </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="entry-memo">Memo (Optional)</Label>
+                    <Textarea
+                      id="entry-memo"
+                      placeholder="Additional notes for this journal entry"
+                      value={newEntry.memo || ''}
+                      onChange={(e) => setNewEntry({ ...newEntry, memo: e.target.value })}
+                      rows={2}
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="entry-reference">Reference Number (Optional)</Label>
                     <Input
@@ -725,6 +737,14 @@ export const JournalEntryManager: React.FC = () => {
                                 placeholder="Description for this line"
                                 value={line.description}
                                 onChange={(e) => updateLine(line.id, 'description', e.target.value)}
+                              />
+                            </div>
+                            <div className="space-y-2 sm:col-span-2">
+                              <Label>Line Memo (Optional)</Label>
+                              <Input
+                                placeholder="Additional notes for this line"
+                                value={line.memo || ''}
+                                onChange={(e) => updateLine(line.id, 'memo', e.target.value)}
                               />
                             </div>
                             <div className="space-y-2">
