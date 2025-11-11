@@ -904,88 +904,85 @@ export const JournalEntryManager: React.FC = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px]">Date</TableHead>
-                  <TableHead className="w-[110px]">Reference</TableHead>
+                  <TableHead className="w-[120px]">Entry Number</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead className="w-[90px]">Code</TableHead>
                   <TableHead className="hidden lg:table-cell w-[140px]">Entity</TableHead>
-                  <TableHead className="hidden xl:table-cell min-w-[180px]">Category</TableHead>
-                  <TableHead className="text-right w-[100px]">Debit</TableHead>
-                  <TableHead className="text-right w-[100px]">Credit</TableHead>
-                  <TableHead className="text-center w-[90px]">Status</TableHead>
+                  <TableHead className="text-center w-[90px]">Lines</TableHead>
+                  <TableHead className="text-right w-[120px]">Total Debits</TableHead>
+                  <TableHead className="text-right w-[120px]">Total Credits</TableHead>
+                  <TableHead className="text-center w-[100px]">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredEntries.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <TableCell colSpan={8} className="text-center py-8 text-gray-500 dark:text-gray-400">
                       No journal entries found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredEntries.map((entry) => (
-                    <TableRow
-                      key={entry.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors"
-                      onClick={() => handleEntryClick(entry)}
-                    >
-                      <TableCell className="font-medium">
-                        {new Date(entry.date).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs text-gray-600 dark:text-gray-400">
-                        {entry.referenceNumber}
-                      </TableCell>
-                      <TableCell>
-                        <div className="max-w-xs truncate" title={entry.description}>
-                          {entry.description}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-mono text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {entry.internalCode || '—'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell text-sm">
-                        {entities.find(e => e.id === entry.entityId)?.name || 'Unknown'}
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell text-xs text-gray-600 dark:text-gray-400">
-                        {entry.category}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {entry.debit > 0 ? (
-                          <span className="text-red-600 dark:text-red-400">
-                            ${entry.debit.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {entry.credit > 0 ? (
-                          <span className="text-green-600 dark:text-green-400">
-                            ${entry.credit.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {entry.reconciled ? (
-                          <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Posted
+                  filteredEntries.map((entry) => {
+                    const totalDebits = entry.lines.reduce((sum, line) => sum + line.debit_amount, 0);
+                    const totalCredits = entry.lines.reduce((sum, line) => sum + line.credit_amount, 0);
+                    
+                    return (
+                      <TableRow
+                        key={entry.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors"
+                        onClick={() => handleEntryClick(entry)}
+                      >
+                        <TableCell className="font-medium">
+                          {new Date(entry.entry_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </TableCell>
+                        <TableCell className="font-mono text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {entry.entry_number}
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-xs truncate" title={entry.description}>
+                            {entry.description}
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell text-sm">
+                          {entities.find(e => e.id === entry.entity_id)?.name || 'Unknown'}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="secondary" className="text-xs">
+                            {entry.lines.length} {entry.lines.length === 1 ? 'line' : 'lines'}
                           </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-xs">
-                            Draft
-                          </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          <span className="text-red-600 dark:text-red-400 font-medium">
+                            ${totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          <span className="text-green-600 dark:text-green-400 font-medium">
+                            ${totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {entry.status === 'posted' ? (
+                            <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Posted
+                            </Badge>
+                          ) : entry.status === 'voided' ? (
+                            <Badge variant="destructive" className="text-xs">
+                              Voided
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs">
+                              Draft
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
