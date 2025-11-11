@@ -332,14 +332,18 @@ export const MarketingCampaigns: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="text-center">
         <PageHeader 
           title="Marketing & Email Campaigns"
           subtitle="Create and send email campaigns to donors and volunteers"
         />
+      </div>
+
+      {/* New Campaign Button */}
+      <div className="flex justify-center">
         <Dialog open={composeOpen} onOpenChange={setComposeOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2 w-full sm:w-auto">
+            <Button className="gap-2">
               <Plus className="h-4 w-4" />
               New Campaign
             </Button>
@@ -606,42 +610,27 @@ export const MarketingCampaigns: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-950 rounded-lg">
-                <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Campaigns</p>
-                <p className="text-2xl">{mockCampaigns.length}</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Campaigns</p>
+              <p className="text-2xl">{mockCampaigns.length}</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 dark:bg-green-950 rounded-lg">
-                <Send className="h-5 w-5 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Sent This Month</p>
-                <p className="text-2xl">2</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Last Date Sent</p>
+              <p className="text-2xl">Nov 5, 2024</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-950 rounded-lg">
-                <Eye className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Avg. Open Rate</p>
-                <p className="text-2xl">70%</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Avg. Open Rate</p>
+              <p className="text-2xl">70%</p>
             </div>
           </CardContent>
         </Card>

@@ -387,11 +387,11 @@ export const JournalEntryManager: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <PageHeader 
-          title="Journal Entries"
-          subtitle="Create and manage manual journal entries for adjustments and corrections"
-        />
+      <div className="flex flex-col items-center gap-4">
+        <div className="text-center">
+          <h1 className="text-2xl sm:text-3xl font-medium mb-2">Journal Entries</h1>
+          <p className="text-muted-foreground">Create and manage manual journal entries for adjustments and corrections</p>
+        </div>
         <div className="flex gap-2">
           <Button onClick={handleExport} variant="outline" className="gap-2">
             <Download className="h-4 w-4" />
@@ -630,46 +630,31 @@ export const JournalEntryManager: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/20 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Total Entries</p>
-                <p className="text-xl text-gray-900 dark:text-gray-100">{summary.count}</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Total Entries</p>
+              <p className="text-2xl font-semibold">{summary.count}</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-950/20 flex items-center justify-center">
-                <BookOpen className="h-5 w-5 text-red-600 dark:text-red-400" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Total Debits</p>
-                <p className="text-xl text-gray-900 dark:text-gray-100">
-                  ${summary.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Total Debits</p>
+              <p className="text-2xl font-semibold text-red-600 dark:text-red-400">
+                ${summary.totalDebits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-950/20 flex items-center justify-center">
-                <BookOpen className="h-5 w-5 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Total Credits</p>
-                <p className="text-xl text-gray-900 dark:text-gray-100">
-                  ${summary.totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Total Credits</p>
+              <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
+                ${summary.totalCredits.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
             </div>
           </CardContent>
         </Card>

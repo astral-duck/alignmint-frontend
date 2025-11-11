@@ -79,7 +79,7 @@ export const DonorHub: React.FC<DonorHubProps> = ({ onSelectTool }) => {
                     />
                   )}
                 </div>
-                <CardTitle className={`${!visibilityEditMode ? 'group-hover:text-blue-600 dark:group-hover:text-blue-400' : ''} transition-colors font-sans`} style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+                <CardTitle className={`${!visibilityEditMode ? 'group-hover:text-blue-600 dark:group-hover:text-blue-400' : ''} transition-colors`}>
                   {tool.title}
                 </CardTitle>
                 <CardDescription>{tool.description}</CardDescription>

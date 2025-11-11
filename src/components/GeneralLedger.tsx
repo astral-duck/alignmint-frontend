@@ -47,7 +47,7 @@ import {
   Trash2,
   Flag,
 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { exportToExcel } from '../lib/exportUtils';
 import {
   Dialog,
@@ -59,41 +59,77 @@ import {
 } from './ui/dialog';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
-// Transaction types
+// Transaction types - matching backend spec
+type TransactionType = 'deposit' | 'check' | 'journal_entry' | 'transfer' | 'payment' | 'receipt';
 type TransactionSource = 'donation' | 'check-deposit' | 'reimbursement' | 'expense' | 'reconciliation';
 
-// Category codes
-const CATEGORY_CODES = [
-  { value: '4000', label: '4000 - Donations' },
-  { value: '4100', label: '4100 - Earned Income' },
-  { value: '4300', label: '4300 - Grants' },
-  { value: '5100', label: '5100 - Compensation - Officers' },
-  { value: '5110', label: '5110 - Compensation - Staff' },
-  { value: '5130', label: '5130 - Employee Benefits' },
-  { value: '5200', label: '5200 - Legal Fees' },
-  { value: '5210', label: '5210 - Accounting' },
-  { value: '5300', label: '5300 - Office Supplies' },
-  { value: '5400', label: '5400 - Information Technology' },
-  { value: '5500', label: '5500 - Rent' },
-  { value: '5600', label: '5600 - Travel' },
-  { value: '5700', label: '5700 - Insurance' },
-  { value: '5800', label: '5800 - Bank Fees' },
+// Mock Chart of Accounts - in production this will come from backend API
+const MOCK_ACCOUNTS: Account[] = [
+  { id: '1000', code: '1000', name: 'IFM Checking/Peoples Bank', type: 'asset' as const, full_name: '1000 - IFM Checking/Peoples Bank' },
+  { id: '1010', code: '1010', name: 'Savings Account', type: 'asset' as const, full_name: '1010 - Savings Account' },
+  { id: '1200', code: '1200', name: 'Accounts Receivable', type: 'asset' as const, full_name: '1200 - Accounts Receivable' },
+  { id: '4000', code: '4000', name: 'Donations', type: 'revenue' as const, full_name: '4000 - Donations' },
+  { id: '4100', code: '4100', name: 'Earned Income', type: 'revenue' as const, full_name: '4100 - Earned Income' },
+  { id: '4300', code: '4300', name: 'Grants', type: 'revenue' as const, full_name: '4300 - Grants' },
+  { id: '5100', code: '5100', name: 'Compensation - Officers', type: 'expense' as const, full_name: '5100 - Compensation - Officers' },
+  { id: '5110', code: '5110', name: 'Compensation - Staff', type: 'expense' as const, full_name: '5110 - Compensation - Staff' },
+  { id: '5130', code: '5130', name: 'Employee Benefits', type: 'expense' as const, full_name: '5130 - Employee Benefits' },
+  { id: '5200', code: '5200', name: 'Legal Fees', type: 'expense' as const, full_name: '5200 - Legal Fees' },
+  { id: '5210', code: '5210', name: 'Accounting', type: 'expense' as const, full_name: '5210 - Accounting' },
+  { id: '5300', code: '5300', name: 'Office Supplies', type: 'expense' as const, full_name: '5300 - Office Supplies' },
+  { id: '5400', code: '5400', name: 'Information Technology', type: 'expense' as const, full_name: '5400 - Information Technology' },
+  { id: '5500', code: '5500', name: 'Rent', type: 'expense' as const, full_name: '5500 - Rent' },
+  { id: '5600', code: '5600', name: 'Travel', type: 'expense' as const, full_name: '5600 - Travel' },
+  { id: '5700', code: '5700', name: 'Insurance', type: 'expense' as const, full_name: '5700 - Insurance' },
+  { id: '5800', code: '5800', name: 'Bank Fees', type: 'expense' as const, full_name: '5800 - Bank Fees' },
 ];
 
+// Account interface matching backend spec
+interface Account {
+  id: string;
+  code: string;
+  name: string;
+  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  full_name: string;
+}
+
+// Updated LedgerEntry interface matching refactor spec
 interface LedgerEntry {
   id: string;
   date: string;
-  description: string;
-  source: TransactionSource;
+  account: Account; // NEW: Links to Chart of Accounts
   entityId: string;
-  category: string;
-  internalCode?: string; // internal category code (4000, 5000, etc.)
-  debit: number; // expenses
-  credit: number; // income
-  balance?: number; // running balance
+  transactionType: TransactionType; // NEW: Proper transaction type
   referenceNumber?: string;
-  reconciled: boolean; // reconciliation status
+  contactName?: string; // NEW: Payee/Donor name
+  description: string;
+  memo?: string; // NEW: Additional details
+  debit: number;
+  credit: number;
+  runningBalance: number; // NEW: Calculated by backend (renamed from balance)
+  reconciled: boolean;
+  // Legacy fields for backward compatibility during transition
+  source?: TransactionSource;
+  category?: string;
+  internalCode?: string;
 }
+
+// Helper function to get account by code
+const getAccountByCode = (code: string): Account => {
+  const account = MOCK_ACCOUNTS.find(a => a.code === code);
+  return account || MOCK_ACCOUNTS[0]; // Default to first account if not found
+};
+
+// Helper to map source to transaction type
+const mapSourceToTransactionType = (source: TransactionSource): TransactionType => {
+  switch (source) {
+    case 'donation': return 'deposit';
+    case 'check-deposit': return 'check';
+    case 'expense': return 'payment';
+    case 'reimbursement': return 'payment';
+    default: return 'journal_entry';
+  }
+};
 
 // Mock transaction data - in production this would come from a database
 const generateMockTransactions = (): LedgerEntry[] => {
@@ -514,7 +550,47 @@ const generateMockTransactions = (): LedgerEntry[] => {
     });
   }
 
-  return transactions;
+  // Sort transactions by date (oldest first) for running balance calculation
+  transactions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+  // Calculate running balance and add missing fields
+  let runningBalance = 0;
+  const processedTransactions: LedgerEntry[] = transactions.map((t, index) => {
+    // Get account from internalCode
+    const account = getAccountByCode(t.internalCode || '1000');
+    
+    // Map source to transaction type
+    const transactionType = mapSourceToTransactionType(t.source || 'reconciliation');
+    
+    // Extract contact name from description for donations/checks
+    let contactName: string | undefined;
+    if (t.source === 'donation' || t.source === 'check-deposit') {
+      // Extract name from "Donation from Name" or "Check #123 - Name"
+      const match = t.description.match(/(?:from|-)\\s+(.+)$/);
+      contactName = match ? match[1].trim() : undefined;
+    } else if (t.source === 'reimbursement') {
+      // Extract staff name from "Description - Name"
+      const match = t.description.match(/\\s+-\\s+(.+)$/);
+      contactName = match ? match[1].trim() : undefined;
+    }
+    
+    // Generate memo for some transactions
+    const memo = index % 5 === 0 ? `Additional details for ${t.description.substring(0, 30)}...` : undefined;
+    
+    // Calculate running balance (credits increase, debits decrease)
+    runningBalance += t.credit - t.debit;
+    
+    return {
+      ...t,
+      account,
+      transactionType,
+      contactName,
+      memo,
+      runningBalance,
+    };
+  });
+  
+  return processedTransactions;
 };
 
 export const GeneralLedger: React.FC = () => {
@@ -523,6 +599,7 @@ export const GeneralLedger: React.FC = () => {
   
   // Filters
   const [filterEntity, setFilterEntity] = useState<string>(selectedEntity === 'all' ? 'all' : selectedEntity);
+  const [filterAccount, setFilterAccount] = useState<string>('all');
   const [filterSource, setFilterSource] = useState<string>('all');
   const [filterReconciled, setFilterReconciled] = useState<string>('unreconciled');
   const [filterDateFrom, setFilterDateFrom] = useState<string>('');
@@ -599,6 +676,11 @@ export const GeneralLedger: React.FC = () => {
       filtered = filtered.filter(t => t.entityId === filterEntity);
     }
 
+    // Account filter
+    if (filterAccount !== 'all') {
+      filtered = filtered.filter(t => t.account.code === filterAccount);
+    }
+
     // Category Code filter
     if (filterSource !== 'all') {
       filtered = filtered.filter(t => t.internalCode === filterSource);
@@ -624,7 +706,9 @@ export const GeneralLedger: React.FC = () => {
       const search = searchTerm.toLowerCase();
       filtered = filtered.filter(t =>
         t.description.toLowerCase().includes(search) ||
-        t.category.toLowerCase().includes(search) ||
+        t.category?.toLowerCase().includes(search) ||
+        t.account.full_name.toLowerCase().includes(search) ||
+        t.contactName?.toLowerCase().includes(search) ||
         t.internalCode?.toLowerCase().includes(search) ||
         t.referenceNumber?.toLowerCase().includes(search)
       );
@@ -633,17 +717,11 @@ export const GeneralLedger: React.FC = () => {
     // Sort by date (newest first)
     filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    // Calculate running balance
-    let balance = 0;
-    // Reverse to calculate from oldest to newest
-    const reversed = [...filtered].reverse();
-    reversed.forEach(t => {
-      balance += t.credit - t.debit;
-      t.balance = balance;
-    });
+    // NOTE: Running balance comes from backend (already calculated in mock data)
+    // No frontend calculation needed
 
     return filtered;
-  }, [transactions, filterEntity, filterSource, filterReconciled, filterDateFrom, filterDateTo, searchTerm]);
+  }, [transactions, filterEntity, filterAccount, filterSource, filterReconciled, filterDateFrom, filterDateTo, searchTerm]);
 
   // Calculate summary stats
   const summary = useMemo(() => {
@@ -667,18 +745,20 @@ export const GeneralLedger: React.FC = () => {
     // Prepare data for export
     const data = filteredTransactions.map(t => [
       t.date,
+      t.account.full_name,
       t.referenceNumber || '',
+      t.contactName || '',
       t.description,
+      t.memo || '',
       entities.find(e => e.id === t.entityId)?.name || '',
-      t.category,
-      t.internalCode || '',
+      t.transactionType,
       t.debit.toFixed(2),
       t.credit.toFixed(2),
-      (t.balance || 0).toFixed(2),
+      t.runningBalance.toFixed(2),
       t.reconciled ? 'Reconciled' : 'Pending'
     ]);
 
-    const headers = ['Date', 'Reference', 'Description', 'Entity', 'Category', 'Category Code', 'Debit', 'Credit', 'Balance', 'Status'];
+    const headers = ['Date', 'Account', 'Reference', 'Contact', 'Description', 'Memo', 'Entity', 'Type', 'Debit', 'Credit', 'Running Balance', 'Status'];
     const filename = `General_Ledger_${new Date().toISOString().split('T')[0]}`;
     const sheetName = 'General Ledger';
 
@@ -693,6 +773,7 @@ export const GeneralLedger: React.FC = () => {
   };
 
   const clearFilters = () => {
+    setFilterAccount('all');
     setFilterSource('all');
     setFilterReconciled('unreconciled');
     setFilterDateFrom('');
@@ -801,29 +882,20 @@ export const GeneralLedger: React.FC = () => {
               </div>
             </div>
 
-            {/* Category Code Filter */}
+            {/* Account Filter */}
             <div className="space-y-2">
-              <Label htmlFor="filterSource">Category Code</Label>
-              <Select value={filterSource} onValueChange={setFilterSource}>
-                <SelectTrigger id="filterSource">
+              <Label htmlFor="filterAccount">Account</Label>
+              <Select value={filterAccount} onValueChange={setFilterAccount}>
+                <SelectTrigger id="filterAccount">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="4000">4000 - Donations</SelectItem>
-                  <SelectItem value="4100">4100 - Earned Income</SelectItem>
-                  <SelectItem value="4300">4300 - Grants</SelectItem>
-                  <SelectItem value="5100">5100 - Compensation - Officers</SelectItem>
-                  <SelectItem value="5110">5110 - Compensation - Staff</SelectItem>
-                  <SelectItem value="5130">5130 - Employee Benefits</SelectItem>
-                  <SelectItem value="5200">5200 - Legal Fees</SelectItem>
-                  <SelectItem value="5210">5210 - Accounting</SelectItem>
-                  <SelectItem value="5300">5300 - Office Supplies</SelectItem>
-                  <SelectItem value="5400">5400 - Information Technology</SelectItem>
-                  <SelectItem value="5500">5500 - Rent</SelectItem>
-                  <SelectItem value="5600">5600 - Travel</SelectItem>
-                  <SelectItem value="5700">5700 - Insurance</SelectItem>
-                  <SelectItem value="5800">5800 - Bank Fees</SelectItem>
+                  <SelectItem value="all">All Accounts</SelectItem>
+                  {MOCK_ACCOUNTS.map(account => (
+                    <SelectItem key={account.id} value={account.code}>
+                      {account.full_name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -868,11 +940,11 @@ export const GeneralLedger: React.FC = () => {
                 <TableRow>
                   <TableHead className="w-[40px]"></TableHead>
                   <TableHead className="w-[100px]">Date</TableHead>
+                  <TableHead className="min-w-[200px]">Account</TableHead>
                   <TableHead className="w-[110px]">Reference</TableHead>
+                  <TableHead className="hidden lg:table-cell w-[140px]">Contact</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead className="w-[90px]">Code</TableHead>
-                  <TableHead className="hidden lg:table-cell w-[140px]">Entity</TableHead>
-                  <TableHead className="hidden xl:table-cell min-w-[180px]">Category</TableHead>
+                  <TableHead className="hidden xl:table-cell w-[100px]">Type</TableHead>
                   <TableHead className="text-right w-[100px]">Debit</TableHead>
                   <TableHead className="text-right w-[100px]">Credit</TableHead>
                   <TableHead className="text-right w-[110px]">Balance</TableHead>
@@ -905,24 +977,26 @@ export const GeneralLedger: React.FC = () => {
                           year: 'numeric',
                         })}
                       </TableCell>
+                      <TableCell>
+                        <div className="max-w-[200px] truncate text-sm font-medium" title={transaction.account.full_name}>
+                          {transaction.account.full_name}
+                        </div>
+                      </TableCell>
                       <TableCell className="font-mono text-xs text-gray-600 dark:text-gray-400">
                         {transaction.referenceNumber}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell text-sm text-gray-600 dark:text-gray-400">
+                        {transaction.contactName || '—'}
                       </TableCell>
                       <TableCell>
                         <div className="max-w-xs truncate" title={transaction.description}>
                           {transaction.description}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <span className="font-mono text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {transaction.internalCode || '—'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell text-sm">
-                        {entities.find(e => e.id === transaction.entityId)?.name || 'Unknown'}
-                      </TableCell>
-                      <TableCell className="hidden xl:table-cell text-xs text-gray-600 dark:text-gray-400">
-                        {transaction.category}
+                      <TableCell className="hidden xl:table-cell text-xs">
+                        <Badge variant="outline" className="text-xs capitalize">
+                          {transaction.transactionType.replace('_', ' ')}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-right font-mono">
                         {transaction.debit > 0 ? (
@@ -944,11 +1018,11 @@ export const GeneralLedger: React.FC = () => {
                       </TableCell>
                       <TableCell className="text-right font-mono font-medium">
                         <span className={
-                          (transaction.balance || 0) >= 0
+                          transaction.runningBalance >= 0
                             ? 'text-gray-900 dark:text-gray-100'
                             : 'text-red-600 dark:text-red-400'
                         }>
-                          ${Math.abs(transaction.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          ${Math.abs(transaction.runningBalance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
@@ -1069,6 +1143,48 @@ export const GeneralLedger: React.FC = () => {
                     placeholder="Enter transaction description"
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-contact" className="text-sm">Contact/Payee</Label>
+                    <Input
+                      id="edit-contact"
+                      value={editForm.contactName || ''}
+                      onChange={(e) => setEditForm({ ...editForm, contactName: e.target.value })}
+                      placeholder="Donor or vendor name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-type" className="text-sm">Transaction Type</Label>
+                    <Select 
+                      value={editForm.transactionType || ''} 
+                      onValueChange={(value: TransactionType) => setEditForm({ ...editForm, transactionType: value })}
+                    >
+                      <SelectTrigger id="edit-type">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="deposit">Deposit</SelectItem>
+                        <SelectItem value="check">Check</SelectItem>
+                        <SelectItem value="journal_entry">Journal Entry</SelectItem>
+                        <SelectItem value="transfer">Transfer</SelectItem>
+                        <SelectItem value="payment">Payment</SelectItem>
+                        <SelectItem value="receipt">Receipt</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-memo" className="text-sm">Memo (Optional)</Label>
+                  <Textarea
+                    id="edit-memo"
+                    rows={2}
+                    value={editForm.memo || ''}
+                    onChange={(e) => setEditForm({ ...editForm, memo: e.target.value })}
+                    placeholder="Additional notes or details"
+                  />
+                </div>
               </div>
 
               {/* Classification Section */}
@@ -1098,18 +1214,18 @@ export const GeneralLedger: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="edit-category" className="text-sm">Account Category</Label>
+                    <Label htmlFor="edit-account" className="text-sm">Account</Label>
                     <Select 
-                      value={editForm.category || ''} 
-                      onValueChange={(value: string) => setEditForm({ ...editForm, category: value })}
+                      value={editForm.internalCode || ''} 
+                      onValueChange={(value: string) => setEditForm({ ...editForm, internalCode: value })}
                     >
-                      <SelectTrigger id="edit-category">
-                        <SelectValue placeholder="Select category" />
+                      <SelectTrigger id="edit-account">
+                        <SelectValue placeholder="Select account" />
                       </SelectTrigger>
                       <SelectContent>
-                        {CATEGORY_CODES.map(cat => (
-                          <SelectItem key={cat.value} value={cat.label}>
-                            {cat.label}
+                        {MOCK_ACCOUNTS.map(account => (
+                          <SelectItem key={account.id} value={account.code}>
+                            {account.full_name}
                           </SelectItem>
                         ))}
                       </SelectContent>

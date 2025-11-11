@@ -1,9 +1,7 @@
-# Product Requirements Document (PRD)
-## IFM MVP - Unified Fiscal Sponsor Management Platform
+# IFM MVP - Project Guide
 
 **Version:** 2.0  
 **Last Updated:** November 10, 2025  
-**Document Owner:** Product & Engineering Team  
 **Status:** Backend Integration Phase
 
 ---
@@ -15,7 +13,7 @@ The IFM MVP is a comprehensive nonprofit management platform designed for fiscal
 ### Current Status
 - **Frontend:** 100% complete with React 18 + TypeScript
 - **Backend:** In planning phase - transitioning from mock data to Ruby on Rails API
-- **Documentation:** 36% complete (18 of ~50 pages documented)
+- **Documentation:** In progress
 - **Mobile Responsive:** 85% complete
 
 ### Key Value Propositions
@@ -34,8 +32,8 @@ The IFM MVP is a comprehensive nonprofit management platform designed for fiscal
 2. [User Personas & Roles](#user-personas--roles)
 3. [Core Modules](#core-modules)
 4. [Technical Architecture](#technical-architecture)
-5. [Security & Compliance](#security--compliance)
-6. [Integration Points](#integration-points)
+5. [Integration Approach](#integration-approach)
+6. [Security & Compliance](#security--compliance)
 7. [Success Metrics](#success-metrics)
 8. [Implementation Roadmap](#implementation-roadmap)
 
@@ -134,11 +132,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - Time period filtering (Day, Week, Month, YTD)
 - Organization selector
 
-**Integration Points:**
-- Pulls data from all modules
-- Links to detail views in source modules
-- Real-time metric updates
-
 ### 2. Donor Hub
 **Purpose:** Complete donor relationship and donation management
 
@@ -148,12 +141,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Donor Page Builder:** Custom donation landing pages
 - **Donor Portal:** Self-service for donors (history, receipts, profile)
 
-**Integration Points:**
-- Links to General Ledger for financial tracking
-- Connects to Marketing for campaigns
-- Feeds Dashboard metrics
-- Generates financial reports
-
 ### 3. Personnel Hub
 **Purpose:** Staff and volunteer management
 
@@ -162,12 +149,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Volunteers CRM:** Volunteer profiles, skills, activities
 - **Hour Tracking:** Time entry, approval workflow, reporting
 
-**Integration Points:**
-- Links to User Management for account creation
-- Feeds Volunteer Hours Report
-- Updates Dashboard metrics
-- Connects to Payroll (future)
-
 ### 4. Marketing Hub
 **Purpose:** Campaign management and prospect cultivation
 
@@ -175,11 +156,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Email Campaigns:** Template-based email marketing with analytics
 - **Prospects List:** Lead tracking and cultivation
 - **VideoBomb Manager:** Video-centric donation pages
-
-**Integration Points:**
-- Pulls donor lists from Donor CRM
-- Creates donations in Donations Manager
-- Tracks campaign ROI in reports
 
 ### 5. Accounting Hub
 **Purpose:** Complete financial management and compliance
@@ -193,13 +169,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Check Deposit Manager:** Check processing with OCR
 - **Reconciliation Manager:** Bank reconciliation
 
-**Integration Points:**
-- **Central Hub:** All financial transactions flow through General Ledger
-- Donations create ledger entries
-- Expenses create ledger entries
-- Reconciliation updates ledger status
-- Feeds all financial reports
-
 ### 6. Reports Hub
 **Purpose:** Comprehensive financial and operational reporting
 
@@ -209,13 +178,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Profit & Loss:** Detailed P&L with comparisons
 - **Fund Accounting:** Fund-specific financial tracking
 - **Volunteer Hours:** Hour tracking and analytics
-- **Cash Flow:** Cash movement analysis (future)
-
-**Integration Points:**
-- Pulls from General Ledger
-- Drill-down to source transactions
-- Links to Donor CRM and Donations Manager
-- Export to Excel/PDF
 
 ### 7. Administration Hub
 **Purpose:** System configuration and user management
@@ -226,11 +188,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Settings:** System preferences and configuration
 - **Distribution Manager:** Fiscal sponsor fund distribution
 
-**Integration Points:**
-- User Management links to Personnel CRM
-- Controls access across all modules
-- Manages multi-tenant data isolation
-
 ---
 
 ## Technical Architecture
@@ -239,7 +196,7 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Framework:** React 18 with TypeScript
 - **Build Tool:** Vite
 - **Styling:** TailwindCSS v4.0
-- **UI Components:** shadcn/ui
+- **UI Components:** shadcn/ui (Radix UI primitives)
 - **State Management:** React Context API
 - **Charts:** Recharts
 - **Drag & Drop:** react-dnd
@@ -257,24 +214,15 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **OCR:** Tesseract or cloud OCR service
 
 ### Database Architecture
-- **28 Core Tables:**
+- **28+ Core Tables** including:
   - Organizations (nonprofits)
   - Users
   - Donors (7 tables including addresses, notes, tags)
   - Donations (3 tables including recurring, allocations)
-  - Personnel (2 tables)
-  - Volunteers
-  - Hour Entries
-  - Chart of Accounts
-  - Ledger Entries
-  - Journal Entries
-  - Expenses
-  - Reimbursements
-  - Check Deposits
-  - Reconciliations
-  - Campaigns
-  - Donor Pages
-  - And more...
+  - Personnel, Volunteers, Hour Entries
+  - Chart of Accounts, Ledger Entries, Journal Entries
+  - Expenses, Reimbursements, Check Deposits, Reconciliations
+  - Campaigns, Donor Pages
 
 ### API Structure
 - **~180+ Endpoints** across all modules
@@ -288,13 +236,60 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 
 ---
 
+## Integration Approach
+
+### Phase 1: Documentation (Current)
+1. Document all frontend pages and their data requirements
+2. Define complete data schema for all entities
+3. Specify all required API endpoints
+4. Create request/response schemas
+
+### Phase 2: Backend API Development
+1. Rails backend team implements API endpoints
+2. Set up authentication/authorization
+3. Create database migrations and models
+4. Implement business logic and validations
+
+### Phase 3: Frontend Integration
+1. Remove mock data dependencies
+2. Create API client service layer
+3. Implement API calls in components
+4. Add error handling and loading states
+5. Update AppContext to use real API data
+
+### Phase 4: Testing & Deployment
+1. Integration testing
+2. End-to-end testing
+3. Performance optimization
+4. Production deployment
+
+### Key Technical Decisions
+
+#### Authentication Strategy
+- JWT tokens (stateless)
+- Token refresh mechanism
+- Role-based access control
+
+#### API Versioning
+- URL versioning (`/api/v1/...`)
+
+#### Error Handling
+- Standard error response format
+- HTTP status codes strategy
+- Validation error format
+
+#### Pagination
+- Offset-based pagination
+- Page size limits
+
+---
+
 ## Security & Compliance
 
 ### Authentication & Authorization
 - **JWT Tokens:** Secure token-based authentication
 - **Role-Based Access Control (RBAC):** 4 primary roles
 - **Granular Permissions:** Module-level and action-level permissions
-- **Multi-Factor Authentication:** Required for admins (future)
 - **Session Management:** Secure session handling with timeout
 - **Password Policies:** Strong password requirements
 
@@ -310,29 +305,6 @@ Empower fiscal sponsor organizations to efficiently manage multiple nonprofit en
 - **Security Standards:** SOC 2 Type II preparation
 - **Audit Logging:** Comprehensive activity tracking
 - **Data Retention:** Configurable retention policies
-
----
-
-## Integration Points
-
-### Internal Integrations
-See `03-COMPONENT-INTEGRATIONS.md` for complete details:
-
-**Key Integration Flows:**
-1. **Donation → Ledger → Reconciliation → Reports**
-2. **Expense → Approval → Ledger → Reports**
-3. **Hour Entry → Approval → Personnel/Volunteer Record**
-4. **Donor CRM ↔ Donations Manager** (bidirectional)
-5. **General Ledger ↔ All Accounting Modules** (central hub)
-6. **Reports → Drill-down → Source Modules**
-
-### External Integrations (Future)
-- Payment processors (Stripe, PayPal)
-- Email service providers (SendGrid, Mailgun)
-- Accounting software (QuickBooks, Xero)
-- CRM systems (Salesforce)
-- Calendar systems (Google Calendar, Outlook)
-- Document storage (Google Drive, Dropbox)
 
 ---
 
@@ -374,12 +346,7 @@ See `03-COMPONENT-INTEGRATIONS.md` for complete details:
 ✅ UI/UX design system
 
 ### Phase 2: Backend Development (CURRENT)
-🔄 **Documentation (36% complete):**
-- 18 of ~50 pages documented
-- Component integrations documented
-- API requirements defined
-- Data schema complete
-
+🔄 **Documentation in progress**
 📋 **Next Steps:**
 - Complete remaining page documentation
 - Ruby on Rails API development
@@ -411,89 +378,37 @@ See `03-COMPONENT-INTEGRATIONS.md` for complete details:
 
 ---
 
-## Risk Assessment & Mitigation
+## Environment Configuration
 
-### High Priority Risks
-1. **Data Security**
-   - Risk: Data breaches affecting multiple nonprofits
-   - Mitigation: Regular security audits, encryption, access controls
+### Required Environment Variables
+```
+VITE_API_BASE_URL=https://api.example.com
+VITE_API_VERSION=v1
+VITE_AUTH_TOKEN_KEY=ifm_auth_token
+```
 
-2. **Compliance**
-   - Risk: Regulatory changes affecting fiscal sponsor requirements
-   - Mitigation: Legal review, compliance monitoring, flexible architecture
-
-3. **Performance**
-   - Risk: Degradation with rapid growth
-   - Mitigation: Load testing, scalable architecture, monitoring
-
-### Medium Priority Risks
-1. **User Adoption**
-   - Risk: Resistance to change from current systems
-   - Mitigation: Training programs, change management, user feedback
-
-2. **Integration Complexity**
-   - Risk: Third-party service integration challenges
-   - Mitigation: Modular architecture, API abstraction, thorough testing
-
-### Mitigation Strategies
-- Comprehensive testing at all levels
-- Phased rollout approach
-- User training and support
-- Regular security audits
-- Performance monitoring
-- Backup and disaster recovery plans
+### CORS Configuration
+Rails backend will need to configure CORS to allow requests from the frontend domain.
 
 ---
 
-## Documentation Status
+## Multi-Tenant Considerations
 
-### Completed Documentation
-- ✅ Overview and architecture
-- ✅ Data schema (28 tables)
-- ✅ API requirements (~180 endpoints)
-- ✅ Component integrations
-- ✅ Migration plan (34 weeks)
-- ✅ 18 page-specific documents
-
-### In Progress
-- 🔄 Remaining 32 page documents
-- 🔄 API implementation guides
-- 🔄 Testing documentation
-- 🔄 Deployment guides
-
-### Documentation Location
-All documentation located in `/documentation/` folder:
-- High-level docs in root
-- Page-specific docs in `/pages/` subfolders
-- Organized by module (donor-hub, accounting, personnel, etc.)
+The application supports multiple nonprofits. Backend needs to:
+- Isolate data by organization/nonprofit
+- Ensure users can only access their organization's data
+- Support organization switching if applicable
 
 ---
 
-## Conclusion
+## Related Documentation
 
-The IFM MVP represents a comprehensive solution for nonprofit management within a fiscal sponsor framework. With the frontend complete and backend planning underway, the platform is well-positioned to serve InFocus Ministries and their 34 nonprofit entities.
-
-**Current Focus:**
-- Complete documentation (64% remaining)
-- Begin Ruby on Rails backend development
-- Maintain frontend while building backend
-- Plan integration and testing phases
-
-**Next Milestones:**
-1. Complete page documentation (32 pages remaining)
-2. Finalize API specifications
-3. Begin Rails backend development
-4. Database schema implementation
-5. Authentication system setup
-
----
-
-*This PRD serves as a living document and will be updated as the product evolves and new requirements emerge.*
-
-**Related Documentation:**
-- `00-OVERVIEW.md` - High-level architecture
-- `01-DATA-SCHEMA.md` - Database schema
-- `02-API-REQUIREMENTS.md` - API endpoints
-- `03-COMPONENT-INTEGRATIONS.md` - Component interactions
-- `MIGRATION-PLAN.md` - Implementation timeline
+- `TECHNICAL-SPEC.md` - Complete technical specifications
+- `GENERAL-LEDGER-REFACTOR.md` - General Ledger refactor details
+- `STYLING-GUIDE.md` - UI/UX styling guide
+- `DATABASE-SCHEMA.sql` - Database schema file
 - `pages/` - Page-specific documentation
+
+---
+
+*This guide serves as the primary reference for understanding the IFM MVP platform. For detailed technical specifications, see TECHNICAL-SPEC.md.*

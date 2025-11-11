@@ -20,6 +20,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from './ui/dialog';
 import { Checkbox } from './ui/checkbox';
 import { toast } from 'sonner@2.0.3';
@@ -144,7 +145,32 @@ export const ProspectsList: React.FC = () => {
     a.download = `prospects-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Prospects exported');
+    toast.success('All prospects exported');
+  };
+
+  const handleExportSelected = () => {
+    const selectedData = prospects.filter(p => selectedProspects.includes(p.id));
+    const headers = ['Name', 'Email', 'Phone', 'Source', 'Added Date', 'Notes'];
+    const csvContent = [
+      headers.join(','),
+      ...selectedData.map(p => [
+        p.name,
+        p.email,
+        p.phone || '',
+        p.source,
+        p.addedDate,
+        p.notes || '',
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prospects-selected-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`${selectedData.length} selected prospects exported`);
   };
 
   const toggleProspectSelection = (id: string) => {
@@ -173,21 +199,22 @@ export const ProspectsList: React.FC = () => {
         Back to Marketing Hub
       </Button>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="text-center">
         <PageHeader 
           title="Prospects"
           subtitle="Manage potential donors who haven't donated yet"
         />
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => setShowUploadDialog(true)}>
-            <Upload className="h-4 w-4 mr-2" />
-            Import CSV
-          </Button>
-          <Button onClick={() => setShowAddDialog(true)}>
-            <UserPlus className="h-4 w-4 mr-2" />
-            Add Prospect
-          </Button>
-        </div>
+      </div>
+
+      <div className="flex justify-center gap-2">
+        <Button variant="outline" onClick={() => setShowUploadDialog(true)}>
+          <Upload className="h-4 w-4 mr-2" />
+          Import CSV
+        </Button>
+        <Button onClick={() => setShowAddDialog(true)}>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Add Prospect
+        </Button>
       </div>
 
       <Card>
@@ -209,22 +236,54 @@ export const ProspectsList: React.FC = () => {
                   className="pl-9 w-full sm:w-64"
                 />
               </div>
-              <Button variant="outline" size="icon" onClick={handleExportCSV}>
-                <Download className="h-4 w-4" />
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Export Prospects</DialogTitle>
+                    <DialogDescription>
+                      Choose which prospects to export to CSV
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => {
+                        handleExportCSV();
+                        document.querySelector('[data-state="open"]')?.closest('[role="dialog"]')?.querySelector('button[aria-label="Close"]')?.click();
+                      }}
+                    >
+                      Export All Prospects ({prospects.length})
+                    </Button>
+                    {selectedProspects.length > 0 && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start"
+                        onClick={() => {
+                          handleExportSelected();
+                          document.querySelector('[data-state="open"]')?.closest('[role="dialog"]')?.querySelector('button[aria-label="Close"]')?.click();
+                        }}
+                      >
+                        Export Selected Prospects ({selectedProspects.length})
+                      </Button>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           {selectedProspects.length > 0 && (
-            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg flex items-center justify-between">
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
               <p className="text-sm text-blue-900 dark:text-blue-100">
                 {selectedProspects.length} prospect{selectedProspects.length > 1 ? 's' : ''} selected
               </p>
-              <Button variant="outline" size="sm">
-                <Mail className="h-4 w-4 mr-2" />
-                Send Email
-              </Button>
             </div>
           )}
 

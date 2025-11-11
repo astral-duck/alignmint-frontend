@@ -259,11 +259,15 @@ export const ExpensesManager: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="text-center">
         <PageHeader 
           title="Expense Management"
           subtitle="Track and approve manual expense entries"
         />
+      </div>
+
+      {/* Add Expense Button */}
+      <div className="flex justify-center">
         <Button onClick={handleAddExpense} className="gap-2">
           <Plus className="h-4 w-4" />
           Add Expense
