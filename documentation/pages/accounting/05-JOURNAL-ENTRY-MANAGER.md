@@ -4,8 +4,72 @@
 **Route:** `/accounting-hub` (with tool='journal-entry')  
 **Access Level:** Admin, Manager
 
+## ✨ Double-Entry Accounting System (NEW)
+
+**Status:** ✅ **FULLY IMPLEMENTED**
+
+The Journal Entry Manager has been completely refactored to support proper double-entry accounting with Chart of Accounts integration.
+
+### Key Features
+
+#### Proper Double-Entry Structure
+- **Grouped Entries:** Journal entries displayed as single records with multiple lines
+- **Balanced Entries:** Debits must equal credits (validated on creation)
+- **Line Items:** Each entry contains multiple debit/credit lines
+- **Chart of Accounts:** All lines reference accounts from the Chart of Accounts
+
+#### Entry Display
+- **Table View:** Shows one row per journal entry (not per line)
+- **Entry Totals:** Displays total debits and credits for each entry
+- **Line Count:** Shows number of lines in each entry
+- **Status Badges:** Draft/Posted/Voided status indicators
+- **Detail View:** Comprehensive drawer showing all lines and metadata
+
+#### Create Dialog
+- **Multi-Line Entry:** Add unlimited line items
+- **Account Selection:** Choose from Chart of Accounts (21 accounts)
+- **Memo Fields:** Entry-level and line-level memos
+- **Real-Time Validation:** Shows balance status as you type
+- **Dual Add Buttons:** Add lines from top or bottom of list
+
+#### Data Structure
+```typescript
+JournalEntry {
+  id, organization_id, entity_id
+  entry_number, entry_date
+  description, memo
+  status: 'draft' | 'posted' | 'voided'
+  source_type: 'manual' | 'system'
+  lines: JournalEntryLine[]
+}
+
+JournalEntryLine {
+  id, journal_entry_id, line_number
+  account: Account  // From Chart of Accounts
+  description, memo
+  debit_amount, credit_amount
+}
+```
+
+#### Export
+- **Grouped by Entry:** Each entry exports with all its lines
+- **Totals Row:** Automatic totals for each entry
+- **Full Details:** Account codes, names, descriptions, amounts
+- **CSV/XLSX:** Both formats supported
+
+### Benefits
+
+✅ **Proper Accounting:** True double-entry system  
+✅ **Chart of Accounts:** Standardized account structure  
+✅ **Audit Trail:** Complete entry history with metadata  
+✅ **User Friendly:** Clear visual feedback and validation  
+✅ **Flexible:** Unlimited lines per entry  
+✅ **Consistent:** Matches General Ledger styling  
+
+---
+
 ## Overview
-The Journal Entry Manager allows users to create, edit, and manage manual journal entries for adjustments, corrections, and non-standard transactions. Journal entries are the foundation of double-entry bookkeeping, ensuring debits equal credits for every transaction.
+The Journal Entry Manager allows users to create, edit, and manage manual journal entries for adjustments, corrections, and other accounting transactions. Journal entries are the foundation of double-entry bookkeeping, ensuring debits equal credits for every transaction.
 
 ## UI Features
 

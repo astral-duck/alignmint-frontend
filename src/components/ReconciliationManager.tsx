@@ -443,8 +443,9 @@ export const ReconciliationManager: React.FC = () => {
         /* Reconciliation State */
         <>
           {/* Balance Summary - Sticky Header */}
-          <div className="sticky top-0 z-20 bg-background -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8 -mt-4 sm:-mt-6 pt-4 sm:pt-6 pb-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="sticky top-16 left-0 right-0 z-20 bg-background -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8 -mt-4 sm:-mt-6 pt-0 pb-4">
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Payments (Debits) */}
               <Card>
                 <CardContent className="p-4 sm:p-6">
@@ -524,6 +525,7 @@ export const ReconciliationManager: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
+              </div>
             </div>
           </div>
 
