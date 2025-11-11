@@ -990,163 +990,173 @@ export const JournalEntryManager: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Edit Entry Drawer */}
+      {/* Entry Detail Drawer */}
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-3xl overflow-y-auto">
           <SheetHeader className="pb-6 border-b border-gray-200 dark:border-gray-700">
             <SheetTitle className="flex items-center gap-2">
-              <Edit className="h-5 w-5" />
-              Edit Journal Entry
+              <FileText className="h-5 w-5" />
+              Journal Entry Details
             </SheetTitle>
             <SheetDescription>
-              Make changes to this journal entry. All fields are editable.
+              View all details and lines for this journal entry.
             </SheetDescription>
           </SheetHeader>
 
           {selectedEntry && (
-            <div className="space-y-8 mt-8">
-              <div className="space-y-5">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Entry Information</h3>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-sm">Entry ID</Label>
-                    <Input
-                      value={selectedEntry.id}
-                      disabled
-                      className="bg-gray-50 dark:bg-gray-900 text-gray-500"
-                    />
+            <div className="space-y-6 mt-6">
+              {/* Entry Header */}
+              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg space-y-3">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Entry Number:</span>
+                    <p className="font-mono font-medium mt-1">{selectedEntry.entry_number}</p>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-reference" className="text-sm">Reference Number</Label>
-                    <Input
-                      id="edit-reference"
-                      value={editForm.referenceNumber || ''}
-                      onChange={(e) => setEditForm({ ...editForm, referenceNumber: e.target.value })}
-                      placeholder="JE-2025-001"
-                    />
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Date:</span>
+                    <p className="font-medium mt-1">
+                      {new Date(selectedEntry.entry_date).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </p>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-date" className="text-sm">Date</Label>
-                  <Input
-                    id="edit-date"
-                    type="date"
-                    value={editForm.date || ''}
-                    onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-description" className="text-sm">Description</Label>
-                  <Textarea
-                    id="edit-description"
-                    rows={3}
-                    value={editForm.description || ''}
-                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                    placeholder="Enter entry description"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-category" className="text-sm">Category Code</Label>
-                  <Select
-                    value={editForm.internalCode}
-                    onValueChange={(value) => {
-                      const categoryMap: { [key: string]: string } = {
-                        '4000': '4000 - Donations',
-                        '4100': '4100 - Earned Income',
-                        '4300': '4300 - Grants',
-                        '5100': '5100 - Compensation - Officers and Directors',
-                        '5110': '5110 - Compensation - all others',
-                        '5130': '5130 - Other Employee Benefits',
-                        '5200': '5200 - Legal Fees',
-                        '5210': '5210 - Accounting',
-                        '5300': '5300 - Office Supplies',
-                        '5310': '5310 - Furniture & Equipment',
-                        '5400': '5400 - Information Technology',
-                        '5500': '5500 - Rent',
-                        '5600': '5600 - Travel and Meetings',
-                        '5700': '5700 - Insurance Premium',
-                        '5800': '5800 - Bank Fees',
-                      };
-                      setEditForm({
-                        ...editForm,
-                        internalCode: value,
-                        category: categoryMap[value] || '',
-                      });
-                    }}
-                  >
-                    <SelectTrigger id="edit-category">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="4000">4000 - Donations</SelectItem>
-                      <SelectItem value="4100">4100 - Earned Income</SelectItem>
-                      <SelectItem value="4300">4300 - Grants</SelectItem>
-                      <SelectItem value="5100">5100 - Compensation - Officers</SelectItem>
-                      <SelectItem value="5110">5110 - Compensation - Staff</SelectItem>
-                      <SelectItem value="5130">5130 - Employee Benefits</SelectItem>
-                      <SelectItem value="5200">5200 - Legal Fees</SelectItem>
-                      <SelectItem value="5210">5210 - Accounting</SelectItem>
-                      <SelectItem value="5300">5300 - Office Supplies</SelectItem>
-                      <SelectItem value="5310">5310 - Furniture & Equipment</SelectItem>
-                      <SelectItem value="5400">5400 - Information Technology</SelectItem>
-                      <SelectItem value="5500">5500 - Rent</SelectItem>
-                      <SelectItem value="5600">5600 - Travel</SelectItem>
-                      <SelectItem value="5700">5700 - Insurance</SelectItem>
-                      <SelectItem value="5800">5800 - Bank Fees</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-debit" className="text-sm">Debit Amount</Label>
-                    <Input
-                      id="edit-debit"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={editForm.debit || ''}
-                      onChange={(e) => setEditForm({ ...editForm, debit: parseFloat(e.target.value) || 0 })}
-                    />
+                  <div className="col-span-2">
+                    <span className="text-gray-600 dark:text-gray-400">Description:</span>
+                    <p className="font-medium mt-1">{selectedEntry.description}</p>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-credit" className="text-sm">Credit Amount</Label>
-                    <Input
-                      id="edit-credit"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={editForm.credit || ''}
-                      onChange={(e) => setEditForm({ ...editForm, credit: parseFloat(e.target.value) || 0 })}
-                    />
+                  {selectedEntry.memo && (
+                    <div className="col-span-2">
+                      <span className="text-gray-600 dark:text-gray-400">Memo:</span>
+                      <p className="text-sm mt-1">{selectedEntry.memo}</p>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                    <div className="mt-1">
+                      {selectedEntry.status === 'posted' ? (
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Posted
+                        </Badge>
+                      ) : selectedEntry.status === 'voided' ? (
+                        <Badge variant="destructive">Voided</Badge>
+                      ) : (
+                        <Badge variant="outline">Draft</Badge>
+                      )}
+                    </div>
                   </div>
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Entity:</span>
+                    <p className="font-medium mt-1">
+                      {entities.find(e => e.id === selectedEntry.entity_id)?.name || 'Unknown'}
+                    </p>
+                  </div>
+                  {selectedEntry.posted_at && (
+                    <div className="col-span-2">
+                      <span className="text-gray-600 dark:text-gray-400">Posted:</span>
+                      <p className="text-sm mt-1">
+                        {new Date(selectedEntry.posted_at).toLocaleString()} by {selectedEntry.posted_by}
+                      </p>
+                    </div>
+                  )}
+                  {selectedEntry.voided_at && (
+                    <>
+                      <div className="col-span-2">
+                        <span className="text-gray-600 dark:text-gray-400">Voided:</span>
+                        <p className="text-sm mt-1">
+                          {new Date(selectedEntry.voided_at).toLocaleString()} by {selectedEntry.voided_by}
+                        </p>
+                      </div>
+                      {selectedEntry.void_reason && (
+                        <div className="col-span-2">
+                          <span className="text-gray-600 dark:text-gray-400">Void Reason:</span>
+                          <p className="text-sm mt-1">{selectedEntry.void_reason}</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Entry Lines */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Entry Lines</h3>
+                <div className="border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[60px]">Line</TableHead>
+                        <TableHead>Account</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-right w-[120px]">Debit</TableHead>
+                        <TableHead className="text-right w-[120px]">Credit</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {selectedEntry.lines.map((line) => (
+                        <TableRow key={line.id}>
+                          <TableCell className="font-medium text-gray-600 dark:text-gray-400">
+                            {line.line_number}
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-mono text-sm font-medium">{line.account.code}</div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">{line.account.name}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div>{line.description}</div>
+                            {line.memo && (
+                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{line.memo}</div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            {line.debit_amount > 0 ? (
+                              <span className="text-red-600 dark:text-red-400 font-medium">
+                                ${line.debit_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            {line.credit_amount > 0 ? (
+                              <span className="text-green-600 dark:text-green-400 font-medium">
+                                ${line.credit_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {/* Totals Row */}
+                      <TableRow className="bg-gray-50 dark:bg-gray-900 font-medium">
+                        <TableCell colSpan={3} className="text-right">
+                          <span className="text-gray-900 dark:text-gray-100">Totals:</span>
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          <span className="text-red-600 dark:text-red-400 font-bold">
+                            ${selectedEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          <span className="text-green-600 dark:text-green-400 font-bold">
+                            ${selectedEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
             </div>
           )}
 
-          <SheetFooter className="mt-8 flex gap-2 sm:gap-0">
-            <Button
-              variant="destructive"
-              onClick={handleDeleteEntry}
-              className="gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
+          <SheetFooter className="mt-8">
+            <Button variant="outline" onClick={() => setIsDrawerOpen(false)}>
+              Close
             </Button>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setIsDrawerOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSaveEdit} className="gap-2">
-                <Save className="h-4 w-4" />
-                Save Changes
-              </Button>
-            </div>
           </SheetFooter>
         </SheetContent>
       </Sheet>
