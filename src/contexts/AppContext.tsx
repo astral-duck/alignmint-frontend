@@ -119,6 +119,17 @@ interface AppContextType {
   toggleTileVisibility: (pageId: string, tileId: string) => void;
   isSidebarItemVisible: (itemId: string) => boolean;
   isTileVisible: (pageId: string, tileId: string) => boolean;
+  // Reconciliation methods
+  updateTransactionReconciliation: (transactionId: string, reconciled: boolean, metadata?: {
+    reconciled_by?: string;
+    reconciliation_method?: 'manual' | 'auto' | 'import';
+    bank_statement_ref?: string;
+  }) => void;
+  bulkUpdateReconciliation: (transactionIds: string[], reconciled: boolean, metadata?: {
+    reconciled_by?: string;
+    reconciliation_method?: 'manual' | 'auto' | 'import';
+    bank_statement_ref?: string;
+  }) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -508,6 +519,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return !pageHiddenTiles.includes(tileId);
   };
 
+  // Reconciliation methods
+  const updateTransactionReconciliation = (
+    transactionId: string,
+    reconciled: boolean,
+    metadata?: {
+      reconciled_by?: string;
+      reconciliation_method?: 'manual' | 'auto' | 'import';
+      bank_statement_ref?: string;
+    }
+  ) => {
+    // Dispatch custom event that GeneralLedger will listen to
+    const event = new CustomEvent('reconciliation-update', {
+      detail: {
+        transactionIds: [transactionId],
+        reconciled,
+        metadata: {
+          ...metadata,
+          reconciled_at: new Date().toISOString(),
+        },
+      },
+    });
+    window.dispatchEvent(event);
+  };
+
+  const bulkUpdateReconciliation = (
+    transactionIds: string[],
+    reconciled: boolean,
+    metadata?: {
+      reconciled_by?: string;
+      reconciliation_method?: 'manual' | 'auto' | 'import';
+      bank_statement_ref?: string;
+    }
+  ) => {
+    // Dispatch custom event that GeneralLedger will listen to
+    const event = new CustomEvent('reconciliation-update', {
+      detail: {
+        transactionIds,
+        reconciled,
+        metadata: {
+          ...metadata,
+          reconciled_at: new Date().toISOString(),
+        },
+      },
+    });
+    window.dispatchEvent(event);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -561,6 +619,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toggleTileVisibility,
         isSidebarItemVisible,
         isTileVisible,
+        updateTransactionReconciliation,
+        bulkUpdateReconciliation,
       }}
     >
       {children}
