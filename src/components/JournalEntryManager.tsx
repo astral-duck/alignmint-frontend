@@ -103,6 +103,37 @@ interface JournalEntryLine {
   credit_amount: number;
 }
 
+// Mock Chart of Accounts - in production this will come from backend API
+const MOCK_ACCOUNTS: Account[] = [
+  { id: '1000', code: '1000', name: 'IFM Checking/Peoples Bank', type: 'asset', full_name: '1000 - IFM Checking/Peoples Bank', is_active: true },
+  { id: '1010', code: '1010', name: 'Savings Account', type: 'asset', full_name: '1010 - Savings Account', is_active: true },
+  { id: '1200', code: '1200', name: 'Accounts Receivable', type: 'asset', full_name: '1200 - Accounts Receivable', is_active: true },
+  { id: '1700', code: '1700', name: 'Accumulated Depreciation', type: 'asset', full_name: '1700 - Accumulated Depreciation', is_active: true },
+  { id: '4000', code: '4000', name: 'Donations', type: 'revenue', full_name: '4000 - Donations', is_active: true },
+  { id: '4100', code: '4100', name: 'Earned Income', type: 'revenue', full_name: '4100 - Earned Income', is_active: true },
+  { id: '4300', code: '4300', name: 'Grants', type: 'revenue', full_name: '4300 - Grants', is_active: true },
+  { id: '5100', code: '5100', name: 'Compensation - Officers', type: 'expense', full_name: '5100 - Compensation - Officers', is_active: true },
+  { id: '5110', code: '5110', name: 'Compensation - Staff', type: 'expense', full_name: '5110 - Compensation - Staff', is_active: true },
+  { id: '5130', code: '5130', name: 'Employee Benefits', type: 'expense', full_name: '5130 - Employee Benefits', is_active: true },
+  { id: '5140', code: '5140', name: 'Payroll Taxes', type: 'expense', full_name: '5140 - Payroll Taxes', is_active: true },
+  { id: '5200', code: '5200', name: 'Legal Fees', type: 'expense', full_name: '5200 - Legal Fees', is_active: true },
+  { id: '5210', code: '5210', name: 'Accounting', type: 'expense', full_name: '5210 - Accounting', is_active: true },
+  { id: '5240', code: '5240', name: 'Advertising', type: 'expense', full_name: '5240 - Advertising', is_active: true },
+  { id: '5300', code: '5300', name: 'Office Supplies', type: 'expense', full_name: '5300 - Office Supplies', is_active: true },
+  { id: '5310', code: '5310', name: 'Furniture & Equipment', type: 'expense', full_name: '5310 - Furniture & Equipment', is_active: true },
+  { id: '5400', code: '5400', name: 'Information Technology', type: 'expense', full_name: '5400 - Information Technology', is_active: true },
+  { id: '5500', code: '5500', name: 'Rent', type: 'expense', full_name: '5500 - Rent', is_active: true },
+  { id: '5600', code: '5600', name: 'Travel', type: 'expense', full_name: '5600 - Travel', is_active: true },
+  { id: '5700', code: '5700', name: 'Insurance', type: 'expense', full_name: '5700 - Insurance', is_active: true },
+  { id: '5800', code: '5800', name: 'Bank Fees', type: 'expense', full_name: '5800 - Bank Fees', is_active: true },
+];
+
+// Helper function to get account by code
+const getAccountByCode = (code: string): Account => {
+  const account = MOCK_ACCOUNTS.find(a => a.code === code);
+  return account || MOCK_ACCOUNTS[0]; // Default to first account if not found
+};
+
 const mockJournalEntries: LedgerEntry[] = [
   {
     id: 'JE-001',
