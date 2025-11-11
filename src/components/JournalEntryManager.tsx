@@ -509,35 +509,43 @@ export const JournalEntryManager: React.FC = () => {
 
     // Filter by global selected entity
     if (selectedEntity !== 'all') {
-      filtered = filtered.filter(e => e.entityId === selectedEntity);
+      filtered = filtered.filter(e => e.entity_id === selectedEntity);
     }
 
     if (filterDateFrom) {
-      filtered = filtered.filter(e => e.date >= filterDateFrom);
+      filtered = filtered.filter(e => e.entry_date >= filterDateFrom);
     }
     if (filterDateTo) {
-      filtered = filtered.filter(e => e.date <= filterDateTo);
+      filtered = filtered.filter(e => e.entry_date <= filterDateTo);
     }
 
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       filtered = filtered.filter(e =>
         e.description.toLowerCase().includes(search) ||
-        e.category.toLowerCase().includes(search) ||
-        e.internalCode?.toLowerCase().includes(search) ||
-        e.referenceNumber?.toLowerCase().includes(search)
+        e.entry_number.toLowerCase().includes(search) ||
+        e.memo?.toLowerCase().includes(search) ||
+        e.lines.some(line => 
+          line.account.code.toLowerCase().includes(search) ||
+          line.account.name.toLowerCase().includes(search) ||
+          line.description.toLowerCase().includes(search)
+        )
       );
     }
 
-    filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    filtered.sort((a, b) => new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime());
 
     return filtered;
   }, [journalEntries, selectedEntity, filterDateFrom, filterDateTo, searchTerm]);
 
   // Calculate summary
   const summary = useMemo(() => {
-    const totalDebits = filteredEntries.reduce((sum, e) => sum + e.debit, 0);
-    const totalCredits = filteredEntries.reduce((sum, e) => sum + e.credit, 0);
+    const totalDebits = filteredEntries.reduce((sum, e) => 
+      sum + e.lines.reduce((lineSum, line) => lineSum + line.debit_amount, 0), 0
+    );
+    const totalCredits = filteredEntries.reduce((sum, e) => 
+      sum + e.lines.reduce((lineSum, line) => lineSum + line.credit_amount, 0), 0
+    );
     return {
       totalDebits,
       totalCredits,
