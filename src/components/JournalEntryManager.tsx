@@ -577,7 +577,7 @@ export const JournalEntryManager: React.FC = () => {
 
               <div className="space-y-6">
                 {/* Header Information */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
                   <div className="space-y-2">
                     <Label htmlFor="entry-date">Date</Label>
                     <Input
@@ -650,7 +650,7 @@ export const JournalEntryManager: React.FC = () => {
                   ) : (
                     <div className="space-y-3">
                       {newEntry.lines.map((line, index) => (
-                        <div key={line.id} className="p-4 border rounded-lg space-y-3 bg-white dark:bg-gray-800">
+                        <div key={line.id} className="p-4 border rounded-lg space-y-3 bg-card">
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Line {index + 1}</span>
                             <Button
@@ -742,7 +742,7 @@ export const JournalEntryManager: React.FC = () => {
 
                   {/* Totals */}
                   {newEntry.lines.length > 0 && (
-                    <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className="p-4 bg-muted/50 rounded-lg">
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex justify-between">
                           <span className="text-gray-600 dark:text-gray-400">Total Debits:</span>
@@ -991,7 +991,7 @@ export const JournalEntryManager: React.FC = () => {
           {selectedEntry && (
             <div className="space-y-6 mt-6">
               {/* Entry Header */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg space-y-3">
+              <div className="p-4 bg-muted/50 rounded-lg space-y-3">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">Entry Number:</span>
@@ -1116,7 +1116,7 @@ export const JournalEntryManager: React.FC = () => {
                         </TableRow>
                       ))}
                       {/* Totals Row */}
-                      <TableRow className="bg-gray-50 dark:bg-gray-900 font-medium">
+                      <TableRow className="bg-muted/50 font-medium">
                         <TableCell colSpan={3} className="text-right">
                           <span className="text-gray-900 dark:text-gray-100">Totals:</span>
                         </TableCell>
