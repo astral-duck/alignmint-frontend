@@ -4,18 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { PageHeader } from './PageHeader';
-
-// Income Categories
-const INCOME_CATEGORIES = [
-  { code: '4000', name: 'Donations' },
-  { code: '4100', name: 'Earned Income' },
-  { code: '4200', name: 'Cash Pledge Collections' },
-  { code: '4300', name: 'Grants' },
-  { code: '4400', name: 'Government Grants' },
-  { code: '4500', name: 'Investment Income' },
-  { code: '4600', name: 'Other Income' },
-];
-
 import {
   Camera,
   Upload,
@@ -48,10 +36,27 @@ import {
 } from './ui/select';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
-// Import Account type from helpers
-import { Account } from '../lib/journalEntryHelpers';
+// Import Account type and helpers
+import { Account, createJournalEntryFromTransaction } from '../lib/journalEntryHelpers';
+
+// Mock Chart of Accounts - Revenue Accounts
+const MOCK_ACCOUNTS: Account[] = [
+  // Asset
+  { id: 'acc-1000', code: '1000', name: 'Cash', type: 'asset', full_name: '1000 - Cash', is_active: true },
+  // Revenue Accounts
+  { id: 'acc-4000', code: '4000', name: 'Donations', type: 'revenue', full_name: '4000 - Donations', is_active: true },
+  { id: 'acc-4100', code: '4100', name: 'Earned Income', type: 'revenue', full_name: '4100 - Earned Income', is_active: true },
+  { id: 'acc-4200', code: '4200', name: 'Cash Pledge Collections', type: 'revenue', full_name: '4200 - Cash Pledge Collections', is_active: true },
+  { id: 'acc-4300', code: '4300', name: 'Grants', type: 'revenue', full_name: '4300 - Grants', is_active: true },
+  { id: 'acc-4400', code: '4400', name: 'Government Grants', type: 'revenue', full_name: '4400 - Government Grants', is_active: true },
+  { id: 'acc-4500', code: '4500', name: 'Investment Income', type: 'revenue', full_name: '4500 - Investment Income', is_active: true },
+  { id: 'acc-4600', code: '4600', name: 'Other Income', type: 'revenue', full_name: '4600 - Other Income', is_active: true },
+];
+
+// Revenue accounts only for the selector
+const REVENUE_ACCOUNTS = MOCK_ACCOUNTS.filter(acc => acc.type === 'revenue');
 
 interface CheckData {
   id: string;
@@ -98,14 +103,20 @@ export const CheckDepositManager: React.FC = () => {
     const mockPayers = ['John Smith', 'Mary Johnson', 'ABC Company', 'Tech Corp', 'Jane Doe', 'Community Foundation'];
     const mockBanks = ['Chase Bank', 'Bank of America', 'Wells Fargo', 'US Bank', 'Citibank'];
     
+    // Get default account (Donations)
+    const defaultAccount = REVENUE_ACCOUNTS.find(acc => acc.code === '4000') || REVENUE_ACCOUNTS[0];
+    
     return {
       payerName: mockPayers[Math.floor(Math.random() * mockPayers.length)],
       checkNumber: String(Math.floor(Math.random() * 9000) + 1000),
-      amount: (Math.random() * 5000 + 50).toFixed(2),
+      amount: parseFloat((Math.random() * 5000 + 50).toFixed(2)),
       date: new Date().toISOString().split('T')[0],
-      category: '4000 - Donations',
+      account: defaultAccount,
       memo: 'Donation',
       bankName: mockBanks[Math.floor(Math.random() * mockBanks.length)],
+      reconciled: false,
+      depositedBy: '',
+      depositedAt: '',
     };
   };
 
@@ -119,18 +130,22 @@ export const CheckDepositManager: React.FC = () => {
       setIsProcessing(true);
       try {
         const ocrData = await processCheckOCR(imageDataUrl);
+        const defaultAccount = REVENUE_ACCOUNTS.find(acc => acc.code === '4000') || REVENUE_ACCOUNTS[0];
         
         setCurrentCheck({
           id: `check-${Date.now()}`,
           image: imageDataUrl,
           payerName: ocrData.payerName || '',
           checkNumber: ocrData.checkNumber || '',
-          amount: ocrData.amount || '',
+          amount: ocrData.amount || 0,
           date: ocrData.date || new Date().toISOString().split('T')[0],
-          category: ocrData.category || '',
+          account: ocrData.account || defaultAccount,
           memo: ocrData.memo || '',
           bankName: ocrData.bankName || '',
           entityId: selectedEntity === 'all' ? '' : selectedEntity,
+          reconciled: false,
+          depositedBy: '',
+          depositedAt: '',
         });
         setStep('review');
       } catch (error) {
@@ -153,7 +168,7 @@ export const CheckDepositManager: React.FC = () => {
   const handleConfirmCheck = () => {
     if (!currentCheck) return;
 
-    if (!currentCheck.payerName || !currentCheck.amount || !currentCheck.category || !currentCheck.entityId) {
+    if (!currentCheck.payerName || !currentCheck.amount || !currentCheck.account || !currentCheck.entityId) {
       toast.error('Please fill in all required fields (including nonprofit)');
       return;
     }
@@ -180,19 +195,27 @@ export const CheckDepositManager: React.FC = () => {
       return;
     }
 
-    const totalAmount = checks.reduce((sum, c) => sum + parseFloat(c.amount || '0'), 0);
+    // Create batch ID for this deposit
+    const batchId = `batch-${Date.now()}`;
     
-    // Group checks by entity for better messaging
-    const entitiesByCheck = new Set(checks.map(c => c.entityId));
-    const entityNames = Array.from(entitiesByCheck).map(id => 
-      entities.find(e => e.id === id)?.name
-    ).filter(Boolean);
+    // Create journal entries for each check
+    const journalEntries = checks.map(check => 
+      createJournalEntryFromTransaction('check-deposit', {
+        ...check,
+        batchId,
+        depositedBy: 'Current User',
+        depositedAt: new Date().toISOString(),
+      }, MOCK_ACCOUNTS)
+    );
     
-    const message = entityNames.length === 1 
-      ? `Check deposit submitted to general ledger for ${entityNames[0]}: ${checks.length} check${checks.length > 1 ? 's' : ''}, ${totalAmount.toFixed(2)}`
-      : `Check deposit submitted to general ledger: ${checks.length} check${checks.length > 1 ? 's' : ''} across ${entityNames.length} nonprofits, ${totalAmount.toFixed(2)}`;
+    // Dispatch event to update General Ledger
+    const event = new CustomEvent('journal-entries-created', {
+      detail: { entries: journalEntries }
+    });
+    window.dispatchEvent(event);
     
-    toast.success(message);
+    const totalAmount = checks.reduce((sum, c) => sum + c.amount, 0);
+    toast.success(`${checks.length} check(s) deposited - $${totalAmount.toFixed(2)} posted to General Ledger`);
     
     // Reset form
     setChecks([]);
@@ -210,7 +233,7 @@ export const CheckDepositManager: React.FC = () => {
     }
   };
 
-  const totalAmount = checks.reduce((sum, c) => sum + parseFloat(c.amount || '0'), 0);
+  const totalAmount = checks.reduce((sum, c) => sum + c.amount, 0);
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -394,7 +417,7 @@ export const CheckDepositManager: React.FC = () => {
                     step="0.01"
                     value={currentCheck.amount}
                     onChange={(e) =>
-                      setCurrentCheck({ ...currentCheck, amount: e.target.value })
+                      setCurrentCheck({ ...currentCheck, amount: parseFloat(e.target.value) || 0 })
                     }
                     placeholder="0.00"
                   />
@@ -413,20 +436,23 @@ export const CheckDepositManager: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="category">Income Category *</Label>
+                  <Label htmlFor="account">Revenue Account *</Label>
                   <Select
-                    value={currentCheck.category}
-                    onValueChange={(value) =>
-                      setCurrentCheck({ ...currentCheck, category: value })
-                    }
+                    value={currentCheck.account?.id}
+                    onValueChange={(value) => {
+                      const account = REVENUE_ACCOUNTS.find(acc => acc.id === value);
+                      if (account) {
+                        setCurrentCheck({ ...currentCheck, account });
+                      }
+                    }}
                   >
-                    <SelectTrigger id="category">
-                      <SelectValue placeholder="Select category" />
+                    <SelectTrigger id="account">
+                      <SelectValue placeholder="Select revenue account" />
                     </SelectTrigger>
                     <SelectContent>
-                      {INCOME_CATEGORIES.map((cat, idx) => (
-                        <SelectItem key={`${cat.code}-${idx}`} value={`${cat.code} - ${cat.name}`}>
-                          {cat.code} - {cat.name}
+                      {REVENUE_ACCOUNTS.map((acc) => (
+                        <SelectItem key={acc.id} value={acc.id}>
+                          {acc.code} - {acc.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -600,10 +626,10 @@ export const CheckDepositManager: React.FC = () => {
                           </div>
                           <div className="mt-2 flex flex-wrap items-center gap-2">
                             <Badge variant="outline" className="text-xs">
-                              ${check.amount}
+                              ${check.amount.toFixed(2)}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
-                              {check.category}
+                              {check.account.code} - {check.account.name}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
                               {check.date}
