@@ -1020,8 +1020,8 @@ export const JournalEntryManager: React.FC = () => {
 
       {/* Entry Detail Drawer */}
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-3xl overflow-y-auto">
-          <SheetHeader className="pb-6 border-b border-gray-200 dark:border-gray-700">
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-8">
+          <SheetHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
             <SheetTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
               Journal Entry Details
