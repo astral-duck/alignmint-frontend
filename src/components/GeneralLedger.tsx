@@ -655,6 +655,41 @@ export const GeneralLedger: React.FC = () => {
     return () => window.removeEventListener('reconciliation-update', handleReconciliationUpdate);
   }, []);
 
+  // Listen for journal entries created from transaction modules
+  useEffect(() => {
+    const handleJournalEntriesCreated = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { entries } = customEvent.detail;
+      
+      // Convert journal entries to ledger entries
+      const newLedgerEntries: LedgerEntry[] = entries.flatMap((entry: any) =>
+        entry.lines.map((line: any) => ({
+          id: `${entry.id}-${line.id}`,
+          date: entry.entry_date,
+          account: line.account,
+          entityId: entry.entity_id,
+          transactionType: entry.source_type === 'check-deposit' ? 'check' : 'payment',
+          referenceNumber: entry.entry_number,
+          description: line.description,
+          memo: line.memo,
+          debit: line.debit_amount,
+          credit: line.credit_amount,
+          runningBalance: 0, // Will be recalculated
+          reconciled: false,
+          source: entry.source_type,
+        }))
+      );
+      
+      setTransactions(prev => [...newLedgerEntries, ...prev]);
+      
+      const count = entries.length;
+      toast.success(`${count} transaction${count > 1 ? 's' : ''} posted to General Ledger`);
+    };
+    
+    window.addEventListener('journal-entries-created', handleJournalEntriesCreated);
+    return () => window.removeEventListener('journal-entries-created', handleJournalEntriesCreated);
+  }, []);
+
   // Open drawer with transaction details
   const handleTransactionClick = (transaction: LedgerEntry) => {
     setSelectedTransaction(transaction);
