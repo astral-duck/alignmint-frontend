@@ -50,17 +50,26 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner@2.0.3';
 
+// Import Account type from helpers
+import { Account } from '../lib/journalEntryHelpers';
+
 interface CheckData {
   id: string;
   image: string; // data URL
   payerName: string;
   checkNumber: string;
-  amount: string;
+  amount: number;              // Changed from string
   date: string;
-  category: string;
+  account: Account;            // Changed from category string
   memo: string;
   bankName: string;
   entityId: string;
+  // New fields for GL integration
+  batchId?: string;
+  journalEntryId?: string;
+  reconciled: boolean;
+  depositedBy: string;
+  depositedAt: string;
 }
 
 type Step = 'capture' | 'review' | 'complete';
