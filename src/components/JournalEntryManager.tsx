@@ -305,80 +305,30 @@ export const JournalEntryManager: React.FC = () => {
     lines: [] as JournalEntryLine[],
   });
 
-  // Edit form state
-  const [editForm, setEditForm] = useState({
-    date: '',
-    description: '',
-    category: '',
-    internalCode: '',
-    debit: 0,
-    credit: 0,
-    referenceNumber: '',
-  });
-
   // Export dialog state
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<'csv' | 'xlsx'>('csv');
 
-  const handleEntryClick = (entry: LedgerEntry) => {
+  const handleEntryClick = (entry: JournalEntry) => {
     setSelectedEntry(entry);
-    setEditForm({
-      date: entry.date,
-      description: entry.description,
-      category: entry.category,
-      internalCode: entry.internalCode || '',
-      debit: entry.debit,
-      credit: entry.credit,
-      referenceNumber: entry.referenceNumber || '',
-    });
     setIsDrawerOpen(true);
-  };
-
-  const handleSaveEdit = () => {
-    if (!selectedEntry) return;
-
-    const updatedEntries = journalEntries.map(e =>
-      e.id === selectedEntry.id
-        ? {
-            ...e,
-            date: editForm.date,
-            description: editForm.description,
-            category: editForm.category,
-            internalCode: editForm.internalCode,
-            debit: editForm.debit,
-            credit: editForm.credit,
-            referenceNumber: editForm.referenceNumber,
-          }
-        : e
-    );
-
-    setJournalEntries(updatedEntries);
-    setIsDrawerOpen(false);
-    toast.success('Journal entry updated successfully');
-  };
-
-  const handleDeleteEntry = () => {
-    if (!selectedEntry) return;
-
-    const updatedEntries = journalEntries.filter(e => e.id !== selectedEntry.id);
-    setJournalEntries(updatedEntries);
-    setIsDrawerOpen(false);
-    toast.success('Journal entry deleted successfully');
   };
 
   const addLine = () => {
     const newLine: JournalEntryLine = {
       id: `line-${Date.now()}`,
-      category: '',
-      internalCode: '',
+      journal_entry_id: '',
+      account: MOCK_ACCOUNTS[0], // Default to first account
+      line_number: newEntry.lines.length + 1,
       description: '',
-      debit: 0,
-      credit: 0,
+      memo: '',
+      debit_amount: 0,
+      credit_amount: 0,
     };
     setNewEntry({ ...newEntry, lines: [...newEntry.lines, newLine] });
   };
 
-  const updateLine = (lineId: string, field: keyof JournalEntryLine, value: any) => {
+  const updateLine = (lineId: string, field: string, value: any) => {
     const updatedLines = newEntry.lines.map(line =>
       line.id === lineId ? { ...line, [field]: value } : line
     );
@@ -391,8 +341,8 @@ export const JournalEntryManager: React.FC = () => {
 
   const handleCreateEntry = () => {
     // Validate that debits equal credits
-    const totalDebits = newEntry.lines.reduce((sum, line) => sum + line.debit, 0);
-    const totalCredits = newEntry.lines.reduce((sum, line) => sum + line.credit, 0);
+    const totalDebits = newEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0);
+    const totalCredits = newEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0);
 
     if (Math.abs(totalDebits - totalCredits) > 0.01) {
       toast.error('Debits must equal credits');
@@ -409,22 +359,29 @@ export const JournalEntryManager: React.FC = () => {
       return;
     }
 
-    // Create journal entries (one for each line)
-    const newEntries: LedgerEntry[] = newEntry.lines.map((line, index) => ({
-      id: `JE-${Date.now()}-${index}`,
-      date: newEntry.date,
-      description: `${newEntry.description} - ${line.description}`,
-      source: 'journal-entry' as TransactionSource,
-      entityId: newEntry.entityId,
-      category: line.category,
-      internalCode: line.internalCode,
-      debit: line.debit,
-      credit: line.credit,
-      referenceNumber: newEntry.referenceNumber || `JE-${Date.now()}`,
-      reconciled: false,
-    }));
+    // Create proper journal entry
+    const newJournalEntry: JournalEntry = {
+      id: `je-${Date.now()}`,
+      organization_id: 'org-1',
+      entity_id: newEntry.entityId,
+      entry_number: newEntry.referenceNumber || `JE-${Date.now()}`,
+      entry_date: newEntry.date,
+      description: newEntry.description,
+      memo: newEntry.memo,
+      status: 'draft',
+      source_type: 'manual',
+      source_id: null,
+      created_by: 'Current User',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      lines: newEntry.lines.map((line, index) => ({
+        ...line,
+        journal_entry_id: `je-${Date.now()}`,
+        line_number: index + 1,
+      })),
+    };
 
-    setJournalEntries([...newEntries, ...journalEntries]);
+    setJournalEntries([newJournalEntry, ...journalEntries]);
     setIsCreateDialogOpen(false);
     
     // Reset form
@@ -437,7 +394,7 @@ export const JournalEntryManager: React.FC = () => {
       lines: [],
     });
 
-    toast.success(`Journal entry created with ${newEntries.length} line${newEntries.length > 1 ? 's' : ''}`);
+    toast.success(`Journal entry created with ${newJournalEntry.lines.length} line${newJournalEntry.lines.length > 1 ? 's' : ''}`);
   };
 
   const handleExport = () => {
@@ -446,18 +403,38 @@ export const JournalEntryManager: React.FC = () => {
 
   const handleConfirmExport = () => {
     import('xlsx').then((XLSX) => {
-      const headers = ['Date', 'Reference', 'Description', 'Entity', 'Category', 'Category Code', 'Debit', 'Credit', 'Status'];
-      const data = filteredEntries.map(e => [
-        e.date,
-        e.referenceNumber || '',
-        e.description,
-        entities.find(ent => ent.id === e.entityId)?.name || '',
-        e.category,
-        e.internalCode || '',
-        e.debit.toFixed(2),
-        e.credit.toFixed(2),
-        e.reconciled ? 'Reconciled' : 'Pending'
-      ]);
+      const headers = ['Entry Number', 'Date', 'Description', 'Entity', 'Line #', 'Account', 'Line Description', 'Debit', 'Credit', 'Status'];
+      const data = filteredEntries.flatMap(e => {
+        const entityName = entities.find(ent => ent.id === e.entity_id)?.name || '';
+        const rows = e.lines.map(line => [
+          e.entry_number,
+          e.entry_date,
+          e.description,
+          entityName,
+          line.line_number,
+          `${line.account.code} - ${line.account.name}`,
+          line.description,
+          line.debit_amount.toFixed(2),
+          line.credit_amount.toFixed(2),
+          e.status.charAt(0).toUpperCase() + e.status.slice(1)
+        ]);
+        // Add totals row
+        const totalDebits = e.lines.reduce((sum, l) => sum + l.debit_amount, 0);
+        const totalCredits = e.lines.reduce((sum, l) => sum + l.credit_amount, 0);
+        rows.push([
+          e.entry_number,
+          '',
+          '',
+          '',
+          '',
+          'TOTAL',
+          '',
+          totalDebits.toFixed(2),
+          totalCredits.toFixed(2),
+          ''
+        ]);
+        return rows;
+      });
 
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
@@ -553,8 +530,8 @@ export const JournalEntryManager: React.FC = () => {
     };
   }, [filteredEntries]);
 
-  const totalDebits = newEntry.lines.reduce((sum, line) => sum + line.debit, 0);
-  const totalCredits = newEntry.lines.reduce((sum, line) => sum + line.credit, 0);
+  const totalDebits = newEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0);
+  const totalCredits = newEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0);
   const isBalanced = Math.abs(totalDebits - totalCredits) < 0.01;
 
   return (
@@ -612,7 +589,7 @@ export const JournalEntryManager: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="entry-entity">Entity</Label>
-                    <Select value={newEntry.entityId} onValueChange={(value) => setNewEntry({ ...newEntry, entityId: value })}>
+                    <Select value={newEntry.entityId} onValueChange={(value: string) => setNewEntry({ ...newEntry, entityId: value })}>
                       <SelectTrigger id="entry-entity">
                         <SelectValue />
                       </SelectTrigger>
@@ -688,54 +665,25 @@ export const JournalEntryManager: React.FC = () => {
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-2 sm:col-span-2">
-                              <Label>Category Code</Label>
+                              <Label>Account</Label>
                               <Select
-                                value={line.internalCode}
-                                onValueChange={(value) => {
-                                  const categoryMap: { [key: string]: string } = {
-                                    '4000': '4000 - Donations',
-                                    '4100': '4100 - Earned Income',
-                                    '4300': '4300 - Grants',
-                                    '5100': '5100 - Compensation - Officers and Directors',
-                                    '5110': '5110 - Compensation - all others',
-                                    '5130': '5130 - Other Employee Benefits',
-                                    '5140': '5140 - Payroll Taxes',
-                                    '5200': '5200 - Legal Fees',
-                                    '5210': '5210 - Accounting',
-                                    '5240': '5240 - Advertising Expenses',
-                                    '5300': '5300 - Office Supplies',
-                                    '5310': '5310 - Furniture & Equipment',
-                                    '5400': '5400 - Information Technology',
-                                    '5500': '5500 - Rent',
-                                    '5600': '5600 - Travel and Meetings',
-                                    '5700': '5700 - Insurance Premium',
-                                    '5800': '5800 - Bank Fees',
-                                  };
-                                  updateLine(line.id, 'internalCode', value);
-                                  updateLine(line.id, 'category', categoryMap[value] || '');
+                                value={line.account.id}
+                                onValueChange={(value: string) => {
+                                  const selectedAccount = MOCK_ACCOUNTS.find(a => a.id === value);
+                                  if (selectedAccount) {
+                                    updateLine(line.id, 'account', selectedAccount);
+                                  }
                                 }}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select category" />
+                                  <SelectValue placeholder="Select account" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="4000">4000 - Donations</SelectItem>
-                                  <SelectItem value="4100">4100 - Earned Income</SelectItem>
-                                  <SelectItem value="4300">4300 - Grants</SelectItem>
-                                  <SelectItem value="5100">5100 - Compensation - Officers</SelectItem>
-                                  <SelectItem value="5110">5110 - Compensation - Staff</SelectItem>
-                                  <SelectItem value="5130">5130 - Employee Benefits</SelectItem>
-                                  <SelectItem value="5140">5140 - Payroll Taxes</SelectItem>
-                                  <SelectItem value="5200">5200 - Legal Fees</SelectItem>
-                                  <SelectItem value="5210">5210 - Accounting</SelectItem>
-                                  <SelectItem value="5240">5240 - Advertising</SelectItem>
-                                  <SelectItem value="5300">5300 - Office Supplies</SelectItem>
-                                  <SelectItem value="5310">5310 - Furniture & Equipment</SelectItem>
-                                  <SelectItem value="5400">5400 - Information Technology</SelectItem>
-                                  <SelectItem value="5500">5500 - Rent</SelectItem>
-                                  <SelectItem value="5600">5600 - Travel</SelectItem>
-                                  <SelectItem value="5700">5700 - Insurance</SelectItem>
-                                  <SelectItem value="5800">5800 - Bank Fees</SelectItem>
+                                  {MOCK_ACCOUNTS.map(account => (
+                                    <SelectItem key={account.id} value={account.id}>
+                                      {account.full_name}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
                             </div>
@@ -762,8 +710,8 @@ export const JournalEntryManager: React.FC = () => {
                                 step="0.01"
                                 min="0"
                                 placeholder="0.00"
-                                value={line.debit || ''}
-                                onChange={(e) => updateLine(line.id, 'debit', parseFloat(e.target.value) || 0)}
+                                value={line.debit_amount || ''}
+                                onChange={(e) => updateLine(line.id, 'debit_amount', parseFloat(e.target.value) || 0)}
                               />
                             </div>
                             <div className="space-y-2">
@@ -773,8 +721,8 @@ export const JournalEntryManager: React.FC = () => {
                                 step="0.01"
                                 min="0"
                                 placeholder="0.00"
-                                value={line.credit || ''}
-                                onChange={(e) => updateLine(line.id, 'credit', parseFloat(e.target.value) || 0)}
+                                value={line.credit_amount || ''}
+                                onChange={(e) => updateLine(line.id, 'credit_amount', parseFloat(e.target.value) || 0)}
                               />
                             </div>
                           </div>
