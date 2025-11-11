@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useApp, entities } from '../contexts/AppContext';
 import { getBalanceSheet } from '../lib/financialData';
+import { generateLegacyBalanceSheet } from '../lib/legacyReportData';
+import { BalanceSheetData, AccountBalance } from '../types/reports';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -699,8 +701,8 @@ export const BalanceSheetReport: React.FC = () => {
 
       {/* Transaction Detail Drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-          <SheetHeader>
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-8">
+          <SheetHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
             <SheetTitle className="flex items-center gap-2">
               <ExternalLink className="h-5 w-5" />
               {selectedLineItem?.name}
@@ -710,7 +712,7 @@ export const BalanceSheetReport: React.FC = () => {
             </SheetDescription>
           </SheetHeader>
 
-          <div className="mt-6 space-y-4">
+          <div className="space-y-10 mt-10">
             {/* Summary Cards */}
             <div className="grid grid-cols-2 gap-4">
               <Card>
