@@ -1382,25 +1382,6 @@ export const GeneralLedger: React.FC = () => {
                   </Button>
                 </div>
                 
-                {/* Reconciliation Toggle Button */}
-                <Button 
-                  variant={selectedTransaction?.reconciled ? "outline" : "default"}
-                  onClick={handleToggleReconciliation}
-                  className="w-full gap-2 h-12"
-                >
-                  {selectedTransaction?.reconciled ? (
-                    <>
-                      <X className="h-4 w-4" />
-                      Mark as Unreconciled
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-4 w-4" />
-                      Mark as Reconciled
-                    </>
-                  )}
-                </Button>
-                
                 {/* Delete Button */}
                 <Button 
                   variant="destructive"
