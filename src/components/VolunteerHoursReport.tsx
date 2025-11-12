@@ -3,7 +3,7 @@ import { useApp, entities } from '../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { PageHeader } from './PageHeader';
-import { Download, Clock, TrendingUp, Users, Award, ArrowLeft } from 'lucide-react';
+import { Download, ArrowLeft } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { toast } from 'sonner@2.0.3';
@@ -184,56 +184,36 @@ export const VolunteerHoursReport: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-950 rounded-lg">
-                <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Hours</p>
-                <p className="text-2xl text-gray-900 dark:text-gray-100">{totalHours.toLocaleString()}</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Hours</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{totalHours.toLocaleString()}</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 dark:bg-green-950 rounded-lg">
-                <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Active Volunteers</p>
-                <p className="text-2xl text-gray-900 dark:text-gray-100">{totalVolunteers}</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Volunteers</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{totalVolunteers}</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-950 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Avg Hours/Volunteer</p>
-                <p className="text-2xl text-gray-900 dark:text-gray-100">{avgHoursPerVolunteer}</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Avg Hours/Volunteer</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{avgHoursPerVolunteer}</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 dark:bg-orange-950 rounded-lg">
-                <Award className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Value</p>
-                <p className="text-2xl text-gray-900 dark:text-gray-100">{formatCurrency(estimatedValue)}</p>
-              </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Estimated Value</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(estimatedValue)}</p>
             </div>
           </CardContent>
         </Card>
