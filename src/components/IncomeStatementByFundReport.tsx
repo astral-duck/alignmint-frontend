@@ -307,21 +307,21 @@ export const IncomeStatementByFundReport: React.FC = () => {
 
       {/* Transaction Detail Drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-8">
-          <SheetHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
-            <SheetTitle>
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
+          <SheetHeader className="pb-4 sm:pb-6 md:pb-8 border-b border-gray-200 dark:border-gray-700">
+            <SheetTitle className="text-lg sm:text-xl break-words">
               {selectedAccount?.account.account_number} - {selectedAccount?.account.account_name}
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="text-sm">
               Transactions for {selectedAccount?.fundName} ({dateRange.startDate} to {dateRange.endDate})
             </SheetDescription>
           </SheetHeader>
 
-          <div className="space-y-10 mt-10">
+          <div className="space-y-6 sm:space-y-8 md:space-y-10 mt-6 sm:mt-8 md:mt-10">
             <Card>
-              <CardContent className="pt-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Amount</p>
-                <p className="text-2xl font-mono tabular-nums">
+              <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Amount</p>
+                <p className="text-xl sm:text-2xl font-mono tabular-nums font-semibold">
                   {selectedAccount && formatCurrency(
                     selectedAccount.account.amounts_by_fund[selectedAccount.fundId] || 0
                   )}

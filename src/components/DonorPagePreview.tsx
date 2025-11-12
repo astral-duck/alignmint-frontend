@@ -121,7 +121,7 @@ export const DonorPagePreview: React.FC<DonorPagePreviewProps> = ({ config, onBa
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0D0D0D]">
       {/* Header */}
-      <div className="bg-white dark:bg-[#1A1A1A] border-b dark:border-[#2A2A2A] sticky top-0 z-50">
+      <div className="bg-white dark:bg-[#1A1A1A] border-b dark:border-[#2A2A2A]">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={onBack}>

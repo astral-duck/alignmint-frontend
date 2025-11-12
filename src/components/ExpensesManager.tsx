@@ -6,6 +6,7 @@ import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { PageHeader } from './PageHeader';
+import { DesktopOnlyWarning } from './DesktopOnlyWarning';
 import {
   ArrowLeft,
   Plus,
@@ -258,23 +259,32 @@ export const ExpensesManager: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={() => setAccountingTool(null)}
-        className="gap-2 -ml-2"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Accounting Hub
-      </Button>
+      {/* Desktop-Only Warning for Mobile */}
+      <DesktopOnlyWarning 
+        toolName="Expense Management"
+        description="The Expense Manager requires a desktop computer for detailed expense categorization, approval workflows, and general ledger integration. Please access this feature from a larger screen."
+        onBack={() => setAccountingTool(null)}
+      />
 
-      {/* Header */}
-      <div className="text-center">
-        <PageHeader 
-          title="Expense Management"
-          subtitle="Track and approve manual expense entries"
-        />
-      </div>
+      {/* Desktop Content */}
+      <div className="hidden md:block space-y-4 sm:space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => setAccountingTool(null)}
+          className="gap-2 -ml-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Accounting Hub
+        </Button>
+
+        {/* Header */}
+        <div className="text-center">
+          <PageHeader 
+            title="Expense Management"
+            subtitle="Track and approve manual expense entries"
+          />
+        </div>
 
       {/* Add Expense Button */}
       <div className="flex justify-center">
@@ -567,6 +577,7 @@ export const ExpensesManager: React.FC = () => {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

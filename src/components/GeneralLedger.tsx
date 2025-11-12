@@ -6,6 +6,7 @@ import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { PageHeader } from './PageHeader';
+import { DesktopOnlyWarning } from './DesktopOnlyWarning';
 import {
   Select,
   SelectContent,
@@ -873,23 +874,32 @@ export const GeneralLedger: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={() => setAccountingTool(null)}
-        className="gap-2 -ml-2"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Accounting Hub
-      </Button>
+      {/* Desktop-Only Warning for Mobile */}
+      <DesktopOnlyWarning 
+        toolName="General Ledger"
+        description="The General Ledger requires a desktop computer for complex transaction management, detailed filtering, editing capabilities, and reconciliation tracking. Please access this feature from a larger screen."
+        onBack={() => setAccountingTool(null)}
+      />
 
-      {/* Header */}
-      <div className="text-center">
-        <PageHeader 
-          title="General Ledger"
-          subtitle="Complete transaction history with reconciliation status - showing unreconciled items by default"
-        />
-      </div>
+      {/* Desktop Content */}
+      <div className="hidden md:block space-y-4 sm:space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => setAccountingTool(null)}
+          className="gap-2 -ml-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Accounting Hub
+        </Button>
+
+        {/* Header */}
+        <div className="text-center">
+          <PageHeader 
+            title="General Ledger"
+            subtitle="Complete transaction history with reconciliation status - showing unreconciled items by default"
+          />
+        </div>
 
       {/* Export Button */}
       <div className="flex justify-center">
@@ -1176,24 +1186,24 @@ export const GeneralLedger: React.FC = () => {
 
       {/* Edit Transaction Drawer */}
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-8">
-          <SheetHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
-            <SheetTitle className="flex items-center gap-2">
-              <Edit className="h-5 w-5" />
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
+          <SheetHeader className="pb-4 sm:pb-6 md:pb-8 border-b border-gray-200 dark:border-gray-700">
+            <SheetTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
               Edit Journal Entry
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="text-sm">
               Make changes to this transaction. All fields are editable.
             </SheetDescription>
           </SheetHeader>
 
           {selectedTransaction && (
-            <div className="space-y-10 mt-10">
+            <div className="space-y-6 sm:space-y-8 md:space-y-10 mt-6 sm:mt-8 md:mt-10">
               {/* Transaction Info Section */}
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Transaction Information</h3>
                 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
                     <Label className="text-sm">Transaction ID</Label>
                     <Input 
@@ -1441,6 +1451,7 @@ export const GeneralLedger: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 };

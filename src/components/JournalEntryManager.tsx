@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { PageHeader } from './PageHeader';
+import { DesktopOnlyWarning } from './DesktopOnlyWarning';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import {
@@ -536,22 +537,31 @@ export const JournalEntryManager: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={() => setAccountingTool(null)}
-        className="gap-2 -ml-2"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Accounting Hub
-      </Button>
+      {/* Desktop-Only Warning for Mobile */}
+      <DesktopOnlyWarning 
+        toolName="Journal Entry Manager"
+        description="The Journal Entry Manager requires a desktop computer for complex double-entry bookkeeping, multi-line entries, and precise account balancing. Please access this feature from a larger screen."
+        onBack={() => setAccountingTool(null)}
+      />
 
-      {/* Header */}
-      <div className="flex flex-col items-center gap-4">
-        <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl font-medium mb-2">Journal Entries</h1>
-          <p className="text-muted-foreground">Create and manage manual journal entries for adjustments and corrections</p>
-        </div>
+      {/* Desktop Content */}
+      <div className="hidden md:block space-y-4 sm:space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => setAccountingTool(null)}
+          className="gap-2 -ml-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Accounting Hub
+        </Button>
+
+        {/* Header */}
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-center">
+            <h1 className="text-2xl sm:text-3xl font-medium mb-2">Journal Entries</h1>
+            <p className="text-muted-foreground">Create and manage manual journal entries for adjustments and corrections</p>
+          </div>
         <div className="flex gap-2">
           <Button onClick={handleExport} variant="outline" className="gap-2">
             <Download className="h-4 w-4" />
@@ -977,22 +987,22 @@ export const JournalEntryManager: React.FC = () => {
 
       {/* Entry Detail Drawer */}
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-8">
-          <SheetHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
-            <SheetTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
+          <SheetHeader className="pb-4 sm:pb-6 md:pb-8 border-b border-gray-200 dark:border-gray-700">
+            <SheetTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
               Journal Entry Details
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="text-sm">
               View all details and lines for this journal entry.
             </SheetDescription>
           </SheetHeader>
 
           {selectedEntry && (
-            <div className="space-y-6 mt-6">
+            <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
               {/* Entry Header */}
-              <div className="p-4 bg-muted/50 rounded-lg space-y-3">
-                <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="p-3 sm:p-4 bg-muted/50 rounded-lg space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">Entry Number:</span>
                     <p className="font-mono font-medium mt-1">{selectedEntry.entry_number}</p>
@@ -1186,6 +1196,7 @@ export const JournalEntryManager: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 };

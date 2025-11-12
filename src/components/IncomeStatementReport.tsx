@@ -801,31 +801,31 @@ export const IncomeStatementReport: React.FC = () => {
 
       {/* Transaction Details Drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>{selectedLineItem?.label} - Transaction Details</SheetTitle>
-            <SheetDescription>
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
+          <SheetHeader className="pb-4 sm:pb-6">
+            <SheetTitle className="text-lg sm:text-xl break-words">{selectedLineItem?.label} - Transaction Details</SheetTitle>
+            <SheetDescription className="text-sm">
               {selectedLineItem?.accountCode} | {entityName}
             </SheetDescription>
           </SheetHeader>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
             {/* Summary Cards */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <Card>
-                <CardContent className="pt-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">
                     {selectedLineItem?.category === 'revenue' ? 'Revenue' : 'Expense'} Amount
                   </p>
-                  <p className="text-2xl">{formatCurrency(selectedLineItem?.amount || 0)}</p>
+                  <p className="text-xl sm:text-2xl font-semibold">{formatCurrency(selectedLineItem?.amount || 0)}</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">
                     {selectedLineItem?.accountCode === '4000' ? 'Donors' : 'Transactions'}
                   </p>
-                  <p className="text-2xl">{filteredTransactions.length}</p>
+                  <p className="text-xl sm:text-2xl font-semibold">{filteredTransactions.length}</p>
                 </CardContent>
               </Card>
             </div>
@@ -833,12 +833,14 @@ export const IncomeStatementReport: React.FC = () => {
             {/* Transactions Table - Special view for Donations */}
             {selectedLineItem?.accountCode === '4000' ? (
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Donor Contributions</CardTitle>
+                <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+                  <CardTitle className="text-base sm:text-lg">Donor Contributions</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[500px]">
-                    <Table>
+                <CardContent className="p-0">
+                  <ScrollArea className="h-[400px] sm:h-[500px]">
+                    <div className="overflow-x-auto">
+                      <div className="inline-block min-w-full align-middle">
+                        <Table className="min-w-[600px]">
                       <TableHeader>
                         <TableRow>
                           <TableHead>Donor</TableHead>
@@ -882,7 +884,9 @@ export const IncomeStatementReport: React.FC = () => {
                           </TableRow>
                         ))}
                       </TableBody>
-                    </Table>
+                        </Table>
+                      </div>
+                    </div>
                   </ScrollArea>
                 </CardContent>
               </Card>

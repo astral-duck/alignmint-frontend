@@ -650,105 +650,107 @@ export const BalanceSheetReport: React.FC = () => {
 
       {/* Transaction Detail Drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-8">
-          <SheetHeader className="pb-8 border-b border-gray-200 dark:border-gray-700">
-            <SheetTitle className="flex items-center gap-2">
-              <ExternalLink className="h-5 w-5" />
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
+          <SheetHeader className="pb-4 sm:pb-6 md:pb-8 border-b border-gray-200 dark:border-gray-700">
+            <SheetTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5" />
               {selectedLineItem?.name}
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="text-sm">
               General ledger transactions for {dateRange.startDate} to {dateRange.endDate}
             </SheetDescription>
           </SheetHeader>
 
-          <div className="space-y-10 mt-10">
+          <div className="space-y-6 sm:space-y-8 md:space-y-10 mt-6 sm:mt-8 md:mt-10">
             {/* Summary Cards */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <Card>
-                <CardContent className="pt-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Balance Sheet Amount</p>
-                  <p className="text-2xl">{formatCurrency(selectedLineItem?.amount || 0)}</p>
+                <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Balance Sheet Amount</p>
+                  <p className="text-xl sm:text-2xl font-semibold">{formatCurrency(selectedLineItem?.amount || 0)}</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Transactions</p>
-                  <p className="text-2xl">{drawerSummary.transactionCount}</p>
+                <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Transactions</p>
+                  <p className="text-xl sm:text-2xl font-semibold">{drawerSummary.transactionCount}</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Transactions Table */}
             <Card>
-              <CardHeader>
-                <CardTitle>Transaction Details</CardTitle>
+              <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+                <CardTitle className="text-base sm:text-lg">Transaction Details</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 {filteredGLTransactions.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Ref #</TableHead>
-                          <TableHead className="text-right">Debit</TableHead>
-                          <TableHead className="text-right">Credit</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredGLTransactions.map((transaction) => (
-                          <TableRow key={transaction.id}>
-                            <TableCell className="whitespace-nowrap">
-                              {new Date(transaction.date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })}
-                            </TableCell>
-                            <TableCell>
-                              <div>
-                                <p className="text-sm">{transaction.description}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">{transaction.category}</p>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-sm text-gray-600 dark:text-gray-400">
-                              {transaction.referenceNumber}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {transaction.debit > 0 ? (
-                                <span className="text-green-600 dark:text-green-400">
-                                  {formatCurrency(transaction.debit)}
-                                </span>
-                              ) : (
-                                <span className="text-gray-400">—</span>
-                              )}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {transaction.credit > 0 ? (
-                                <span className="text-red-600 dark:text-red-400">
-                                  {formatCurrency(transaction.credit)}
-                                </span>
-                              ) : (
-                                <span className="text-gray-400">—</span>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {transaction.reconciled ? (
-                                <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300">
-                                  Reconciled
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300">
-                                  Pending
-                                </Badge>
-                              )}
-                            </TableCell>
+                    <div className="inline-block min-w-full align-middle">
+                      <Table className="min-w-[800px]">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="whitespace-nowrap px-4 sm:px-6">Date</TableHead>
+                            <TableHead className="whitespace-nowrap px-4 sm:px-6">Description</TableHead>
+                            <TableHead className="whitespace-nowrap px-4 sm:px-6">Ref #</TableHead>
+                            <TableHead className="text-right whitespace-nowrap px-4 sm:px-6">Debit</TableHead>
+                            <TableHead className="text-right whitespace-nowrap px-4 sm:px-6">Credit</TableHead>
+                            <TableHead className="whitespace-nowrap px-4 sm:px-6">Status</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredGLTransactions.map((transaction) => (
+                            <TableRow key={transaction.id}>
+                              <TableCell className="whitespace-nowrap px-4 sm:px-6 text-sm">
+                                {new Date(transaction.date).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                })}
+                              </TableCell>
+                              <TableCell className="px-4 sm:px-6">
+                                <div className="min-w-[200px]">
+                                  <p className="text-sm font-medium">{transaction.description}</p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{transaction.category}</p>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-sm text-gray-600 dark:text-gray-400 px-4 sm:px-6 whitespace-nowrap">
+                                {transaction.referenceNumber}
+                              </TableCell>
+                              <TableCell className="text-right px-4 sm:px-6 whitespace-nowrap">
+                                {transaction.debit > 0 ? (
+                                  <span className="text-green-600 dark:text-green-400 font-medium">
+                                    {formatCurrency(transaction.debit)}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-400">—</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-right px-4 sm:px-6 whitespace-nowrap">
+                                {transaction.credit > 0 ? (
+                                  <span className="text-red-600 dark:text-red-400 font-medium">
+                                    {formatCurrency(transaction.credit)}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-400">—</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="px-4 sm:px-6">
+                                {transaction.reconciled ? (
+                                  <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 whitespace-nowrap">
+                                    Reconciled
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300 whitespace-nowrap">
+                                    Pending
+                                  </Badge>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">

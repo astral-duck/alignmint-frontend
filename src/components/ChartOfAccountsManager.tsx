@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { PageHeader } from './PageHeader';
+import { DesktopOnlyWarning } from './DesktopOnlyWarning';
 import {
   Table,
   TableBody,
@@ -441,12 +442,21 @@ export const ChartOfAccountsManager: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={() => setAdministrationTool(null)}
-        className="gap-2 -ml-2"
-      >
+      {/* Desktop-Only Warning for Mobile */}
+      <DesktopOnlyWarning 
+        toolName="Chart of Accounts Manager"
+        description="The Chart of Accounts Manager requires a desktop computer for managing complex account hierarchies, detailed configurations, and bank account settings. Please access this feature from a larger screen."
+        onBack={() => setAdministrationTool(null)}
+      />
+
+      {/* Desktop Content */}
+      <div className="hidden md:block space-y-4 sm:space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => setAdministrationTool(null)}
+          className="gap-2 -ml-2"
+        >
         <ArrowLeft className="h-4 w-4" />
         Back to Administration Hub
       </Button>
@@ -957,6 +967,7 @@ export const ChartOfAccountsManager: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </div>
     </div>
   );
 };

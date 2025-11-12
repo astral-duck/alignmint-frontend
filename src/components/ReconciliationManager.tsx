@@ -6,6 +6,7 @@ import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Checkbox } from './ui/checkbox';
 import { PageHeader } from './PageHeader';
+import { DesktopOnlyWarning } from './DesktopOnlyWarning';
 import {
   ArrowLeft,
   Upload,
@@ -399,15 +400,24 @@ export const ReconciliationManager: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        onClick={() => setAccountingTool(null)}
-        className="gap-2 -ml-2"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Accounting Hub
-      </Button>
+      {/* Desktop-Only Warning for Mobile */}
+      <DesktopOnlyWarning 
+        toolName="Reconciliation Manager"
+        description="The Reconciliation Manager requires a desktop computer for complex transaction matching, batch processing, and detailed analysis. Please access this feature from a larger screen."
+        onBack={() => setAccountingTool(null)}
+      />
+
+      {/* Desktop Content */}
+      <div className="hidden md:block space-y-4 sm:space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => setAccountingTool(null)}
+          className="gap-2 -ml-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Accounting Hub
+        </Button>
 
       {/* Header */}
       <PageHeader 
@@ -802,6 +812,7 @@ export const ReconciliationManager: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 };

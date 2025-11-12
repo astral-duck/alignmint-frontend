@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const displayName = entities.find(e => e.id === selectedEntity)?.name || 'InFocus Ministries';
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-card dark:bg-card">
+    <header className="w-full border-b bg-card dark:bg-card">
       <div className="flex h-16 items-center gap-4 px-4 md:px-6">
         {/* Mobile Menu Button */}
         <Button
@@ -72,12 +72,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          {/* Visibility Toggle */}
+          {/* Visibility Toggle - Hidden on Mobile */}
           <Button
             variant={visibilityEditMode ? "default" : "ghost"}
             size="icon"
             onClick={() => setVisibilityEditMode(!visibilityEditMode)}
-            className="relative"
+            className="hidden md:flex relative min-h-[44px] min-w-[44px]"
             title={visibilityEditMode ? "Exit visibility mode" : "Customize visible items"}
           >
             {visibilityEditMode ? (
@@ -92,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="relative"
+            className="relative min-h-[44px] min-w-[44px]"
           >
             {theme === 'light' ? (
               <Moon className="h-5 w-5" />
@@ -107,7 +107,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               variant="ghost"
               size="icon"
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative"
+              className="relative min-h-[44px] min-w-[44px]"
+              data-notification-trigger
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
@@ -127,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
+              <Button variant="ghost" size="icon" className="rounded-full min-h-[44px] min-w-[44px]">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-blue-100 dark:bg-[#3d4d6b] text-blue-600 dark:text-white">
                     JD

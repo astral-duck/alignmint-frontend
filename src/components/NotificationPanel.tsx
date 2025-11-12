@@ -15,13 +15,28 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      
+      // Check if click is outside the panel AND not on the notification button
+      if (panelRef.current && !panelRef.current.contains(target)) {
+        // Check if the click is on the notification button (or its children like the Bell icon or Badge)
+        const notificationButton = document.querySelector('[data-notification-trigger]');
+        if (notificationButton && notificationButton.contains(target)) {
+          return; // Don't close if clicking the notification button
+        }
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // Use a small delay to allow the button click to register first
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [onClose]);
 
   const getIcon = (category: string) => {

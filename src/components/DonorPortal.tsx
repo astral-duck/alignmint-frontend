@@ -387,7 +387,7 @@ export const DonorPortal: React.FC = () => {
       </div>
 
       {/* Welcome Section */}
-      <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
+      <Card className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 border-gray-200 dark:border-gray-700">
         <CardContent className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <Avatar className="h-20 w-20">
@@ -432,13 +432,13 @@ export const DonorPortal: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+          <CardHeader className="text-center">
+            <CardTitle className="text-base flex items-center justify-center gap-2">
               <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
               Lifetime Total
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="text-center">
             <p className="text-3xl">
               ${donorProfile.totalLifetimeDonations.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
@@ -446,13 +446,13 @@ export const DonorPortal: React.FC = () => {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+          <CardHeader className="text-center">
+            <CardTitle className="text-base flex items-center justify-center gap-2">
               <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               Total Donations
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="text-center">
             <p className="text-3xl">{donorProfile.donationCount}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Since {donorProfile.firstDonation}
@@ -461,13 +461,13 @@ export const DonorPortal: React.FC = () => {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+          <CardHeader className="text-center">
+            <CardTitle className="text-base flex items-center justify-center gap-2">
               <Calendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               Last Donation
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="text-center">
             <p className="text-xl text-gray-600 dark:text-gray-300">
               {donorProfile.lastDonation}
             </p>
@@ -480,13 +480,13 @@ export const DonorPortal: React.FC = () => {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+          <CardHeader className="text-center">
+            <CardTitle className="text-base flex items-center justify-center gap-2">
               <FileText className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               {selectedYear} Total
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="text-center">
             <p className="text-3xl">
               ${yearTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>

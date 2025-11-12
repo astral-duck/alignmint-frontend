@@ -127,6 +127,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                         if (item.page === 'administration-hub') {
                           setAdministrationTool(null);
                         }
+                        
+                        // Auto-close sidebar on mobile after navigation
+                        if (window.innerWidth < 768) {
+                          onClose();
+                        }
                       }
                     }}
                     disabled={visibilityEditMode}
