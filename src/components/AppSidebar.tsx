@@ -24,7 +24,7 @@ interface AppSidebarProps {
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
-  const { currentPage, setCurrentPage, setMarketingTool, setDonorTool, setPersonnelTool, setAccountingTool, setAdministrationTool, selectedEntity, sidebarCollapsed, setSidebarCollapsed, visibilityEditMode, isSidebarItemVisible, toggleSidebarItemVisibility } = useApp();
+  const { currentPage, setCurrentPage, setMarketingTool, setDonorTool, setPersonnelTool, setAccountingTool, setReportTool, setAdministrationTool, selectedEntity, sidebarCollapsed, setSidebarCollapsed, visibilityEditMode, isSidebarItemVisible, toggleSidebarItemVisibility } = useApp();
   
   // Get the display name based on selected entity
   const displayName = entities.find(e => e.id === selectedEntity)?.name || 'InFocus Ministries';
@@ -122,6 +122,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                         // Reset accounting tool when navigating to accounting hub
                         if (item.page === 'accounting-hub') {
                           setAccountingTool(null);
+                        }
+                        // Reset report tool when navigating to reports
+                        if (item.page === 'reports') {
+                          setReportTool(null);
                         }
                         // Reset administration tool when navigating to administration hub
                         if (item.page === 'administration-hub') {

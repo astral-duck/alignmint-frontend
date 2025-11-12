@@ -591,14 +591,14 @@ export const ProfitLossReport: React.FC = () => {
       if (format === 'xlsx') {
         const data = prepareProfitLossForExport(profitLossData);
         const headers = ['Category', 'Amount'];
-        const filename = `Income_Statement_${nonprofit.name.replace(/\s+/g, '_')}_${dateRange.startDate}_to_${dateRange.endDate}`;
-        exportToExcel(data, headers, filename, 'Income Statement');
+        const filename = `Profit_Loss_Statement_${nonprofit.name.replace(/\s+/g, '_')}_${dateRange.startDate}_to_${dateRange.endDate}`;
+        exportToExcel(data, headers, filename, 'Profit & Loss Statement');
       } else {
         const data = prepareProfitLossForExport(profitLossData);
         const headers = ['Category', 'Amount'];
-        const title = 'Income Statement by Fund';
+        const title = 'Profit & Loss Statement';
         const subtitle = `${nonprofit.name} - ${new Date(dateRange.startDate).toLocaleDateString()} to ${new Date(dateRange.endDate).toLocaleDateString()}`;
-        const filename = `Income_Statement_${nonprofit.name.replace(/\s+/g, '_')}_${dateRange.startDate}_to_${dateRange.endDate}`;
+        const filename = `Profit_Loss_Statement_${nonprofit.name.replace(/\s+/g, '_')}_${dateRange.startDate}_to_${dateRange.endDate}`;
         exportToPDF(title, subtitle, [{ data, headers }], filename);
       }
     });
@@ -619,7 +619,7 @@ export const ProfitLossReport: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col items-center gap-4">
         <PageHeader 
-          title="Income Statement by Fund"
+          title="Profit & Loss Statement"
           subtitle={isInFocus ? 'Consolidated view across all nonprofits' : entityName}
         />
         <Button variant="outline" onClick={handleExport} className="gap-2">
@@ -659,7 +659,7 @@ export const ProfitLossReport: React.FC = () => {
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <CardTitle>Income Statement by Fund</CardTitle>
+              <CardTitle>Profit & Loss Statement</CardTitle>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 For the period of {dateRange.startDate} to {dateRange.endDate}
               </p>
@@ -1015,114 +1015,114 @@ export const ProfitLossReport: React.FC = () => {
 
       {/* GL Transaction Drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent className="sm:max-w-2xl overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>General Ledger Transactions</SheetTitle>
-            <SheetDescription>
-              {selectedLineItem?.name || 'Account Details'}
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
+          <SheetHeader className="pb-4 sm:pb-6">
+            <SheetTitle className="text-lg sm:text-xl break-words">{selectedLineItem?.name || 'Account Details'}</SheetTitle>
+            <SheetDescription className="text-sm">
+              General ledger transactions for {dateRange.startDate} to {dateRange.endDate}
             </SheetDescription>
           </SheetHeader>
           
           {selectedLineItem && (
-            <div className="mt-6 space-y-6">
+            <div className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Account Balance</div>
-                    <div className="text-2xl">{formatCurrency(selectedLineItem.amount)}</div>
+                  <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Account Balance</p>
+                    <p className="text-xl sm:text-2xl font-semibold">{formatCurrency(selectedLineItem.amount)}</p>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Transactions</div>
-                    <div className="text-2xl">{drawerSummary.transactionCount}</div>
+                  <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Transactions</p>
+                    <p className="text-xl sm:text-2xl font-semibold">{drawerSummary.transactionCount}</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Transaction Details */}
-              <div>
-                <h3 className="mb-4">Transaction Details</h3>
-                {filteredGLTransactions.length > 0 ? (
-                  <div className="border rounded-lg overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead className="text-right">Debit</TableHead>
-                          <TableHead className="text-right">Credit</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredGLTransactions.map((transaction) => (
-                          <TableRow key={transaction.id}>
-                            <TableCell className="whitespace-nowrap">
-                              {new Date(transaction.date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })}
-                            </TableCell>
-                            <TableCell>
-                              <div>
-                                <div>{transaction.description}</div>
-                                {transaction.referenceNumber && (
-                                  <div className="text-xs text-gray-500">
-                                    Ref: {transaction.referenceNumber}
+              <Card>
+                <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
+                  <CardTitle className="text-base sm:text-lg">Transaction Details</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {filteredGLTransactions.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <div className="inline-block min-w-full align-middle">
+                        <Table className="min-w-[800px]">
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="whitespace-nowrap px-4 sm:px-6">Date</TableHead>
+                              <TableHead className="whitespace-nowrap px-4 sm:px-6">Description</TableHead>
+                              <TableHead className="whitespace-nowrap px-4 sm:px-6">Ref #</TableHead>
+                              <TableHead className="text-right whitespace-nowrap px-4 sm:px-6">Debit</TableHead>
+                              <TableHead className="text-right whitespace-nowrap px-4 sm:px-6">Credit</TableHead>
+                              <TableHead className="whitespace-nowrap px-4 sm:px-6">Status</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {filteredGLTransactions.map((transaction) => (
+                              <TableRow key={transaction.id}>
+                                <TableCell className="whitespace-nowrap px-4 sm:px-6 text-sm">
+                                  {new Date(transaction.date).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                  })}
+                                </TableCell>
+                                <TableCell className="px-4 sm:px-6">
+                                  <div className="min-w-[200px]">
+                                    <p className="text-sm font-medium">{transaction.description}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{transaction.category}</p>
                                   </div>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {transaction.debit > 0 ? formatCurrency(transaction.debit) : '-'}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {transaction.credit > 0 ? formatCurrency(transaction.credit) : '-'}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant={transaction.reconciled ? 'default' : 'secondary'}>
-                                {transaction.reconciled ? 'Reconciled' : 'Pending'}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                ) : (
-                  <p className="text-center text-gray-500 py-8">
-                    No transactions found for this account in the selected date range.
-                  </p>
-                )}
-              </div>
-
-              {/* Summary Totals */}
-              {filteredGLTransactions.length > 0 && (
-                <Card className="bg-gray-50 dark:bg-gray-900">
-                  <CardContent className="pt-6">
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Total Debits:</span>
-                        <span>{formatCurrency(drawerSummary.totalDebits)}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Total Credits:</span>
-                        <span>{formatCurrency(drawerSummary.totalCredits)}</span>
-                      </div>
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span>Net Balance:</span>
-                        <span className={drawerSummary.netBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                          {formatCurrency(drawerSummary.netBalance)}
-                        </span>
+                                </TableCell>
+                                <TableCell className="text-sm text-gray-600 dark:text-gray-400 px-4 sm:px-6 whitespace-nowrap">
+                                  {transaction.referenceNumber}
+                                </TableCell>
+                                <TableCell className="text-right px-4 sm:px-6 whitespace-nowrap">
+                                  {transaction.debit > 0 ? (
+                                    <span className="text-green-600 dark:text-green-400 font-medium">
+                                      {formatCurrency(transaction.debit)}
+                                    </span>
+                                  ) : (
+                                    <span className="text-gray-400">—</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right px-4 sm:px-6 whitespace-nowrap">
+                                  {transaction.credit > 0 ? (
+                                    <span className="text-red-600 dark:text-red-400 font-medium">
+                                      {formatCurrency(transaction.credit)}
+                                    </span>
+                                  ) : (
+                                    <span className="text-gray-400">—</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="px-4 sm:px-6">
+                                  {transaction.reconciled ? (
+                                    <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 whitespace-nowrap">
+                                      Reconciled
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="outline" className="bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300 whitespace-nowrap">
+                                      Pending
+                                    </Badge>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                  ) : (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      No transactions found for this account in the selected period.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
             </div>
           )}
         </SheetContent>
