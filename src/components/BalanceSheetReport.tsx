@@ -354,6 +354,9 @@ export const BalanceSheetReport: React.FC = () => {
   // Generate GL transactions
   const [glTransactions] = useState<LedgerEntry[]>(generateMockGLTransactions());
 
+  // Use legacy balance sheet data
+  const legacyBalanceSheet = useMemo(() => generateLegacyBalanceSheet(dateRange.endDate), [dateRange.endDate]);
+  
   const balanceSheet = getBalanceSheet(selectedEntity);
   const entityName = entities.find(e => e.id === selectedEntity)?.name || 'InFocus Ministries';
   const isInFocus = selectedEntity === 'infocus';
@@ -422,6 +425,16 @@ export const BalanceSheetReport: React.FC = () => {
       transactionCount: filteredGLTransactions.length,
     };
   }, [filteredGLTransactions]);
+
+  // Handle legacy account click - maps account number to drawer
+  const handleLegacyAccountClick = (account: AccountBalance) => {
+    setSelectedLineItem({ 
+      name: `${account.account_number} - ${account.account_name}`, 
+      amount: account.amount, 
+      accountType: 'ifmCheckingPeoplesBank' as AccountLineItem // Placeholder for now
+    });
+    setDrawerOpen(true);
+  };
 
   // Handle line item click
   const handleLineItemClick = (name: string, amount: number, accountType: AccountLineItem) => {
@@ -516,95 +529,37 @@ export const BalanceSheetReport: React.FC = () => {
             <div>
               <CardTitle>Balance Sheet</CardTitle>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                As of {balanceSheet?.asOfDate || dateRange.endDate}
+                As of {legacyBalanceSheet.report_date}
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {balanceSheet ? (
+          {legacyBalanceSheet ? (
             <>
               {/* Assets Section */}
               <div>
-                <h3 className="mb-4">ASSETS</h3>
+                <h3 className="text-lg font-bold mb-4 border-b-2 border-gray-300 dark:border-gray-600 pb-2">ASSETS</h3>
                 
-                <div className="space-y-3 ml-4">
-                  <div className="space-y-1 text-sm">
+                <div className="ml-4 space-y-1">
+                  {legacyBalanceSheet.assets.map((account) => (
                     <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('1000 - IFM Checking Peoples Bank', balanceSheet.assets.ifmCheckingPeoplesBank, 'ifmCheckingPeoplesBank')}
+                      key={account.account_number}
+                      className="flex justify-between py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 px-2 -mx-2 rounded cursor-pointer transition-colors group"
+                      onClick={() => handleLegacyAccountClick(account)}
                     >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        IFM Checking Peoples Bank
+                      <span className="text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
+                        {account.account_number} - {account.account_name}
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </span>
-                      <span>{formatCurrency(balanceSheet.assets.ifmCheckingPeoplesBank)}</span>
+                      <span className="font-mono text-sm tabular-nums">{formatCurrency(account.amount)}</span>
                     </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('1010 - IFM Savings Peoples Bank', balanceSheet.assets.ifmSavingsPeoplesBank, 'ifmSavingsPeoplesBank')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        IFM Savings Peoples Bank
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.assets.ifmSavingsPeoplesBank)}</span>
-                    </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('1020 - Investment Adelfi Credit Union', balanceSheet.assets.investmentAdelfiCreditUnion, 'investmentAdelfiCreditUnion')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        Investment Adelfi Credit Union
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.assets.investmentAdelfiCreditUnion)}</span>
-                    </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('1021 - Ministry Partners CD', balanceSheet.assets.ministryPartnersCD, 'ministryPartnersCD')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        Ministry Partners CD
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.assets.ministryPartnersCD)}</span>
-                    </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('1022 - Peoples Bank Money Market', balanceSheet.assets.peoplesBankMoneyMarket, 'peoplesBankMoneyMarket')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        Peoples Bank Money Market
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.assets.peoplesBankMoneyMarket)}</span>
-                    </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('1023 - RBC Capital Markets', balanceSheet.assets.rbcCapitalMarkets, 'rbcCapitalMarkets')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        RBC Capital Markets
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.assets.rbcCapitalMarkets)}</span>
-                    </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('1131.999999 - Stripe Payments', balanceSheet.assets.stripePayments, 'stripePayments')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        Stripe Payments
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.assets.stripePayments)}</span>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between">
-                      <span>TOTAL ASSETS</span>
-                      <span>{formatCurrency(balanceSheet.assets.totalAssets)}</span>
-                    </div>
+                  ))}
+                  
+                  <Separator className="my-3" />
+                  <div className="flex justify-between font-semibold pt-2">
+                    <span>TOTAL ASSETS</span>
+                    <span className="font-mono tabular-nums">{formatCurrency(legacyBalanceSheet.total_assets)}</span>
                   </div>
                 </div>
               </div>
@@ -613,83 +568,77 @@ export const BalanceSheetReport: React.FC = () => {
 
               {/* Liabilities Section */}
               <div>
-                <h3 className="mb-4">LIABILITIES</h3>
+                <h3 className="text-lg font-bold mb-4 border-b-2 border-gray-300 dark:border-gray-600 pb-2">LIABILITIES</h3>
                 
-                <div className="space-y-3 ml-4">
-                  <div className="space-y-1 text-sm">
+                <div className="ml-4 space-y-1">
+                  {legacyBalanceSheet.liabilities.map((account) => (
                     <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('2100 - Suspense', balanceSheet.liabilities.suspense, 'suspense')}
+                      key={account.account_number}
+                      className="flex justify-between py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 px-2 -mx-2 rounded cursor-pointer transition-colors group"
+                      onClick={() => handleLegacyAccountClick(account)}
                     >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        Suspense
+                      <span className="text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
+                        {account.account_number} - {account.account_name}
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </span>
-                      <span>{formatCurrency(balanceSheet.liabilities.suspense)}</span>
+                      <span className="font-mono text-sm tabular-nums">{formatCurrency(account.amount)}</span>
                     </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('2210 - Taxes Payable', balanceSheet.liabilities.taxesPayable, 'taxesPayable')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        Taxes Payable
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.liabilities.taxesPayable)}</span>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between">
-                      <span>TOTAL LIABILITIES</span>
-                      <span>{formatCurrency(balanceSheet.liabilities.totalLiabilities)}</span>
-                    </div>
+                  ))}
+                  
+                  <Separator className="my-3" />
+                  <div className="flex justify-between font-semibold pt-2">
+                    <span>TOTAL LIABILITIES</span>
+                    <span className="font-mono tabular-nums">{formatCurrency(legacyBalanceSheet.total_liabilities)}</span>
                   </div>
                 </div>
               </div>
 
               <Separator className="my-6" />
 
-              {/* Equity Section */}
+              {/* Equity Section - All 38 Fund Balances */}
               <div>
-                <h3 className="mb-4">EQUITY</h3>
+                <h3 className="text-lg font-bold mb-4 border-b-2 border-gray-300 dark:border-gray-600 pb-2">EQUITY (FUND BALANCES)</h3>
                 
-                <div className="space-y-3 ml-4">
-                  <div className="space-y-1 text-sm">
+                <div className="ml-4 space-y-1">
+                  {legacyBalanceSheet.equity.map((account) => (
                     <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('3116 - InFocus Ministries Fund Balance', balanceSheet.equity.infocusMinisteriesFundBalance, 'infocusMinisteriesFundBalance')}
+                      key={account.account_number}
+                      className="flex justify-between py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800/50 px-2 -mx-2 rounded cursor-pointer transition-colors group"
+                      onClick={() => handleLegacyAccountClick(account)}
                     >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        InFocus Ministries Fund Balance
+                      <span className="text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
+                        {account.account_number} - {account.account_name}
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </span>
-                      <span>{formatCurrency(balanceSheet.equity.infocusMinisteriesFundBalance)}</span>
+                      <span className="font-mono text-sm tabular-nums">{formatCurrency(account.amount)}</span>
                     </div>
-                    <div 
-                      className="flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded cursor-pointer transition-colors group"
-                      onClick={() => handleLineItemClick('3127 - The Uprising Fund Balance', balanceSheet.equity.theUprisingFundBalance, 'theUprisingFundBalance')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-1">
-                        The Uprising Fund Balance
-                        <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </span>
-                      <span>{formatCurrency(balanceSheet.equity.theUprisingFundBalance)}</span>
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="flex justify-between">
-                      <span>TOTAL EQUITY</span>
-                      <span>{formatCurrency(balanceSheet.equity.totalEquity)}</span>
-                    </div>
+                  ))}
+                  
+                  <Separator className="my-3" />
+                  <div className="flex justify-between font-semibold pt-2">
+                    <span>TOTAL EQUITY</span>
+                    <span className="font-mono tabular-nums">{formatCurrency(legacyBalanceSheet.total_equity)}</span>
                   </div>
                 </div>
               </div>
 
               <Separator className="my-6" />
 
-              {/* Total */}
-              <div className="flex justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              {/* Total Liabilities & Equity */}
+              <div className="flex justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg font-bold text-lg">
                 <span>TOTAL LIABILITIES & EQUITY</span>
-                <span>{formatCurrency(balanceSheet.totalLiabilitiesAndEquity)}</span>
+                <span className="font-mono tabular-nums">{formatCurrency(legacyBalanceSheet.total_liabilities + legacyBalanceSheet.total_equity)}</span>
               </div>
+              
+              {/* Balance Check */}
+              {!legacyBalanceSheet.balanced && (
+                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    ⚠️ Balance sheet does not balance. Assets: {formatCurrency(legacyBalanceSheet.total_assets)}, 
+                    Liabilities + Equity: {formatCurrency(legacyBalanceSheet.total_liabilities + legacyBalanceSheet.total_equity)}
+                  </p>
+                </div>
+              )}
             </>
           ) : (
             <p className="text-center text-gray-500 py-8">
