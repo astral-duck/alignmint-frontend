@@ -34,7 +34,7 @@ import { DepositHub } from './components/DepositHub';
 import { GeneralLedger } from './components/GeneralLedger';
 import { JournalEntryManager } from './components/JournalEntryManager';
 
-import { SponsorFeeAllocation } from './components/IncomeStatementByFund';
+import { SponsorFeeAllocation } from './components/SponsorFeeAllocation';
 import { ReportsHub } from './components/ReportsHub';
 import { BalanceSheetReport } from './components/BalanceSheetReport';
 import { ProfitLossReport } from './components/ProfitLossReport';
