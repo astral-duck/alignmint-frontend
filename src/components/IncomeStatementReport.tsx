@@ -451,7 +451,7 @@ export const IncomeStatementReport: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col items-center gap-4">
         <PageHeader 
           title="Income Statement"
           subtitle={isInFocus ? 'Consolidated view across all nonprofits' : entityName}

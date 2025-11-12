@@ -83,7 +83,7 @@ export const MultiNonprofitExportDialog: React.FC<MultiNonprofitExportDialogProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Export Report</DialogTitle>
           <DialogDescription>
@@ -93,19 +93,19 @@ export const MultiNonprofitExportDialog: React.FC<MultiNonprofitExportDialogProp
 
         <div className="flex flex-col gap-4">
           {/* Export Format Selection */}
-          <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-            <Label className="text-sm">Export Format</Label>
+          <div className="space-y-3 p-3 bg-muted/50 rounded-lg">
+            <Label className="text-sm font-medium">Export Format</Label>
             <RadioGroup value={exportFormat} onValueChange={(value) => setExportFormat(value as 'pdf' | 'xlsx')}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="pdf" id="format-pdf" />
-                <Label htmlFor="format-pdf" className="flex items-center gap-2 cursor-pointer">
+                <Label htmlFor="format-pdf" className="flex items-center gap-2 cursor-pointer font-normal">
                   <FileText className="h-4 w-4" />
                   PDF Document
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="xlsx" id="format-xlsx" />
-                <Label htmlFor="format-xlsx" className="flex items-center gap-2 cursor-pointer">
+                <Label htmlFor="format-xlsx" className="flex items-center gap-2 cursor-pointer font-normal">
                   <FileSpreadsheet className="h-4 w-4" />
                   Excel Spreadsheet (.xlsx)
                 </Label>
@@ -113,7 +113,7 @@ export const MultiNonprofitExportDialog: React.FC<MultiNonprofitExportDialogProp
             </RadioGroup>
           </div>
           {/* Select All Checkbox */}
-          <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
             <Checkbox
               id="select-all"
               checked={allSelected}
@@ -129,12 +129,12 @@ export const MultiNonprofitExportDialog: React.FC<MultiNonprofitExportDialogProp
           </div>
 
           {/* Nonprofit List */}
-          <ScrollArea className="h-[50vh] max-h-[400px] pr-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-2">
+          <ScrollArea className="h-[300px] pr-4">
+            <div className="grid grid-cols-2 gap-2">
               {nonprofits.map((nonprofit) => (
                 <div
                   key={nonprofit.id}
-                  className="flex items-start space-x-2 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-start space-x-2 p-2 rounded-lg border hover:bg-muted/50 transition-colors"
                 >
                   <Checkbox
                     id={nonprofit.id}
@@ -143,7 +143,7 @@ export const MultiNonprofitExportDialog: React.FC<MultiNonprofitExportDialogProp
                   />
                   <label
                     htmlFor={nonprofit.id}
-                    className="text-sm cursor-pointer flex-1 select-none pt-0.5"
+                    className="text-sm cursor-pointer flex-1 select-none pt-0.5 leading-tight"
                   >
                     {nonprofit.name}
                   </label>
@@ -153,7 +153,7 @@ export const MultiNonprofitExportDialog: React.FC<MultiNonprofitExportDialogProp
           </ScrollArea>
         </div>
 
-        <DialogFooter className="flex items-center justify-between sm:justify-between mt-4">
+        <DialogFooter className="flex items-center justify-between sm:justify-between mt-2">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {selectedNonprofits.length} nonprofit{selectedNonprofits.length !== 1 ? 's' : ''} selected
           </p>

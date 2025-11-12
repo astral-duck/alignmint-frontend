@@ -137,10 +137,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setCurrentPage('settings')}>
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setCurrentPage('settings')}>
                 Settings
               </DropdownMenuItem>
               <DropdownMenuItem>Logout</DropdownMenuItem>

@@ -92,8 +92,8 @@ export const Settings: React.FC = () => {
         {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
                 <User className="h-5 w-5" />
                 Profile Information
               </CardTitle>
@@ -170,8 +170,8 @@ export const Settings: React.FC = () => {
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
                 <Bell className="h-5 w-5" />
                 Notification Settings
               </CardTitle>
@@ -282,8 +282,8 @@ export const Settings: React.FC = () => {
         {/* Security Tab */}
         <TabsContent value="security" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
                 <Lock className="h-5 w-5" />
                 Password & Security
               </CardTitle>
@@ -368,8 +368,8 @@ export const Settings: React.FC = () => {
         {/* Preferences Tab */}
         <TabsContent value="preferences" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
                 <Palette className="h-5 w-5" />
                 Appearance & Preferences
               </CardTitle>
@@ -458,8 +458,8 @@ export const Settings: React.FC = () => {
         {/* Organization Tab */}
         <TabsContent value="organization" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
                 <Building2 className="h-5 w-5" />
                 Organization Settings
               </CardTitle>
