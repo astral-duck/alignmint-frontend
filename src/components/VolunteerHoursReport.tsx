@@ -143,7 +143,7 @@ export const VolunteerHoursReport: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col items-center gap-4">
         <PageHeader 
           title="Volunteer Hours Report"
           subtitle={isInFocus ? 'Consolidated view across all nonprofits' : entityName}
@@ -322,6 +322,14 @@ export const VolunteerHoursReport: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Multi-Nonprofit Export Dialog */}
+      <MultiNonprofitExportDialog
+        open={exportDialogOpen}
+        onOpenChange={setExportDialogOpen}
+        onExport={handleMultiNonprofitExport}
+        reportType="volunteer-hours"
+      />
     </div>
   );
 };
