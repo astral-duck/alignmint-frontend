@@ -26,6 +26,14 @@ Complete documentation is available in the `/documentation` folder:
 - **[Migration Plan](documentation/MIGRATION-PLAN.md)** - 34-week phased implementation
 - **[Page Documentation](documentation/pages/)** - 50 detailed component docs
 
+### Recent Updates
+
+- **[Financial Reports Standardization](documentation/IMPLEMENTATION-COMPLETE.md)** - ✅ COMPLETE (Nov 2025)
+  - Balance Sheet with 38 fund balances
+  - Income Statement by Fund (multi-column)
+  - Complete Chart of Accounts (79 accounts)
+  - Multi-fund accounting support
+
 ## Tech Stack
 
 ### Frontend
