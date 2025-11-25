@@ -370,33 +370,14 @@ export const Settings: React.FC = () => {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-2">
-                <Palette className="h-5 w-5" />
-                Appearance & Preferences
+                <Globe className="h-5 w-5" />
+                Preferences
               </CardTitle>
               <CardDescription>
                 Customize your dashboard experience
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Theme */}
-              <div className="space-y-4">
-                <h3 className="font-medium">Appearance</h3>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Dark Mode</Label>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Toggle between light and dark theme
-                    </p>
-                  </div>
-                  <Switch
-                    checked={theme === 'dark'}
-                    onCheckedChange={toggleTheme}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
               {/* Language & Region */}
               <div className="space-y-4">
                 <h3 className="font-medium flex items-center gap-2">

@@ -73,7 +73,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose })
   return (
     <div
       ref={panelRef}
-      className="absolute right-0 top-12 w-80 sm:w-96 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50"
+      className="absolute right-0 top-12 w-80 sm:w-96 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-[100]"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-card">

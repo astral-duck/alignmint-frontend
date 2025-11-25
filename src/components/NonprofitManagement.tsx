@@ -188,12 +188,12 @@ export const NonprofitManagement: React.FC = () => {
       </Button>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col items-center text-center gap-4">
         <PageHeader 
           title="Nonprofit Management"
           subtitle="Manage nonprofits on the platform and control visibility"
         />
-        <Button onClick={openAddDialog} className="gap-2 w-full sm:w-auto">
+        <Button onClick={openAddDialog} className="gap-2">
           <Plus className="h-4 w-4" />
           Add Nonprofit
         </Button>

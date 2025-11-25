@@ -469,7 +469,7 @@ export const ChartOfAccountsManager: React.FC = () => {
 
       {/* Tabs */}
       <Tabs defaultValue="accounts" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-md">
+        <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
           <TabsTrigger value="accounts">Account Categories</TabsTrigger>
           <TabsTrigger value="banks">Bank Accounts</TabsTrigger>
         </TabsList>
