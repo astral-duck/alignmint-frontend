@@ -18,7 +18,6 @@ import { DonorPaymentManagement } from './components/DonorPaymentManagement';
 import { PersonnelHub } from './components/PersonnelHub';
 import { PersonnelCRM } from './components/PersonnelCRM';
 import { VolunteersCRM } from './components/VolunteersCRM';
-import { UserManagement } from './components/UserManagement';
 import { HourTracking } from './components/HourTracking';
 import { MarketingHub } from './components/MarketingHub';
 import { MarketingCampaigns } from './components/MarketingCampaigns';
@@ -44,6 +43,7 @@ import { AdministrationHub } from './components/AdministrationHub';
 import { DraggableComponent } from './components/DraggableComponent';
 import { NonprofitManagement } from './components/NonprofitManagement';
 import { ChartOfAccountsManager } from './components/ChartOfAccountsManager';
+import { DonorReporting } from './components/DonorReporting';
 import { Settings } from './components/Settings';
 import { getMetrics } from './lib/mockData';
 import { Toaster } from './components/ui/sonner';
@@ -279,14 +279,14 @@ const DashboardContent: React.FC = () => {
             ) : currentPage === 'administration-hub' ? (
               administrationTool === null ? (
                 <AdministrationHub onSelectTool={setAdministrationTool} />
-              ) : administrationTool === 'users' ? (
-                <UserManagement />
               ) : administrationTool === 'donor-management' ? (
                 <DonorPaymentManagement />
               ) : administrationTool === 'nonprofit-management' ? (
                 <NonprofitManagement />
               ) : administrationTool === 'chart-of-accounts' ? (
                 <ChartOfAccountsManager />
+              ) : administrationTool === 'donor-reporting' ? (
+                <DonorReporting />
               ) : null
             ) : currentPage === 'settings' ? (
               <Settings />

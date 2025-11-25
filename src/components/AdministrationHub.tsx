@@ -1,25 +1,16 @@
 import React from 'react';
-import { Users2, Building2, Users, BookOpen } from 'lucide-react';
+import { Building2, Users, BookOpen, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useApp } from '../contexts/AppContext';
 import { PageHeader } from './PageHeader';
 
 interface AdministrationHubProps {
-  onSelectTool: (tool: 'users' | 'donor-management' | 'nonprofit-management' | 'chart-of-accounts') => void;
+  onSelectTool: (tool: 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | 'donor-reporting') => void;
 }
 
 export const AdministrationHub: React.FC<AdministrationHubProps> = ({ onSelectTool }) => {
   const { selectedEntity } = useApp();
   const allTools = [
-    {
-      id: 'users' as const,
-      title: 'User Management',
-      description: 'Manage user accounts and permissions',
-      icon: Users2,
-      color: 'text-blue-600 dark:text-blue-400',
-      bgColor: 'bg-blue-50 dark:bg-blue-950/20',
-      requiresInFocus: true, // Only available for InFocus Ministries
-    },
     {
       id: 'donor-management' as const,
       title: 'Donor Management',
@@ -47,12 +38,21 @@ export const AdministrationHub: React.FC<AdministrationHubProps> = ({ onSelectTo
       bgColor: 'bg-orange-50 dark:bg-orange-950/20',
       requiresInFocus: false,
     },
+    {
+      id: 'donor-reporting' as const,
+      title: 'Donor Reporting',
+      description: 'Send end-of-year tax reports to donors',
+      icon: FileText,
+      color: 'text-indigo-600 dark:text-indigo-400',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-950/20',
+      requiresInFocus: false, // Available for all entities
+    },
   ];
 
   // Filter tools based on selected entity - User Management only for InFocus Ministries
   const tools = allTools.filter(tool => {
     if (tool.requiresInFocus) {
-      return selectedEntity === 'infocus-ministries';
+      return selectedEntity === 'infocus';
     }
     return true;
   });

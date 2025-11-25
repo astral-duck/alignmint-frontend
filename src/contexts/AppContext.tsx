@@ -46,7 +46,7 @@ export type AccountingTool = 'reconciliation' | 'expenses' | 'reimbursements' | 
 
 export type ReportTool = 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours' | null;
 
-export type AdministrationTool = 'users' | 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | null;
+export type AdministrationTool = 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | 'donor-reporting' | null;
 
 export type DashboardComponent = 'donations-chart' | 'recent-donations' | 'todo-list' | 'top-donors';
 
