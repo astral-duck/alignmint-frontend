@@ -38,7 +38,7 @@ export const DepositHub: React.FC<DepositHubProps> = ({ onSelectTool, onBack }) 
         className="gap-2 -ml-2"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Accounting Hub
+        Back to Fund Accounting
       </Button>
 
       <PageHeader 

@@ -14,7 +14,16 @@ import {
   AlertCircle,
   DollarSign,
   Calendar,
+  Eye,
+  Image,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
 import {
   Select,
   SelectContent,
@@ -84,8 +93,10 @@ interface ManualExpense {
 export const ExpensesManager: React.FC = () => {
   const { selectedEntity, setAccountingTool } = useApp();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
+  const [receiptViewOpen, setReceiptViewOpen] = useState(false);
+  const [selectedExpenseReceipts, setSelectedExpenseReceipts] = useState<{vendor: string; attachments: string[]}>({vendor: '', attachments: []});
   
-  // Mock expense data
+  // Mock expense data - some with receipt attachments from reimbursement submissions
   const [expenses, setExpenses] = useState<ManualExpense[]>([
     {
       id: 'exp-001',
@@ -98,6 +109,7 @@ export const ExpensesManager: React.FC = () => {
       status: 'pending',
       submittedBy: 'John Doe',
       submittedAt: '2024-01-15T10:30:00',
+      attachments: ['receipt_office_depot_1.jpg', 'receipt_office_depot_2.jpg'], // Has receipts
     },
     {
       id: 'exp-002',
@@ -110,6 +122,7 @@ export const ExpensesManager: React.FC = () => {
       status: 'pending',
       submittedBy: 'Jane Smith',
       submittedAt: '2024-01-14T14:20:00',
+      attachments: ['receipt_staples.jpg'], // Has receipt
     },
     {
       id: 'exp-003',
@@ -122,6 +135,7 @@ export const ExpensesManager: React.FC = () => {
       status: 'pending',
       submittedBy: 'Mike Johnson',
       submittedAt: '2024-01-14T09:15:00',
+      // No attachments - manual entry
     },
     {
       id: 'exp-004',
@@ -136,6 +150,7 @@ export const ExpensesManager: React.FC = () => {
       submittedAt: '2024-01-13T11:00:00',
       approvedBy: 'Admin',
       approvedAt: '2024-01-13T15:30:00',
+      attachments: ['receipt_amazon.jpg'], // Has receipt
     },
     {
       id: 'exp-005',
@@ -150,8 +165,17 @@ export const ExpensesManager: React.FC = () => {
       submittedAt: '2024-01-12T08:00:00',
       approvedBy: 'Admin',
       approvedAt: '2024-01-12T16:00:00',
+      // No attachments - utility bill
     },
   ]);
+
+  const handleViewReceipts = (expense: ManualExpense) => {
+    setSelectedExpenseReceipts({
+      vendor: expense.vendor,
+      attachments: expense.attachments || []
+    });
+    setReceiptViewOpen(true);
+  };
 
   // Filter expenses based on selected entity and status
   const filteredExpenses = expenses.filter(exp => {
@@ -275,7 +299,7 @@ export const ExpensesManager: React.FC = () => {
           className="gap-2 -ml-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Accounting Hub
+          Back to Fund Accounting
         </Button>
 
         {/* Header */}
@@ -354,7 +378,7 @@ export const ExpensesManager: React.FC = () => {
           <CardTitle>Expense Tracking</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'pending' | 'approved')}>
+          <Tabs value={activeTab} onValueChange={(v: string) => setActiveTab(v as 'pending' | 'approved')}>
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="pending" className="gap-2">
                 <AlertCircle className="h-4 w-4" />
@@ -379,6 +403,7 @@ export const ExpensesManager: React.FC = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-[50px]">Receipts</TableHead>
                         <TableHead className="min-w-[100px]">Date</TableHead>
                         <TableHead className="min-w-[150px]">Vendor</TableHead>
                         <TableHead className="min-w-[200px]">Description</TableHead>
@@ -392,6 +417,21 @@ export const ExpensesManager: React.FC = () => {
                     <TableBody>
                       {pendingExpenses.map((expense) => (
                         <TableRow key={expense.id}>
+                          <TableCell className="py-1 px-2">
+                            {expense.attachments && expense.attachments.length > 0 ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleViewReceipts(expense)}
+                                className="h-7 w-7 p-0"
+                                title={`View ${expense.attachments.length} receipt(s)`}
+                              >
+                                <Eye className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                              </Button>
+                            ) : (
+                              <span className="text-gray-400 text-xs">-</span>
+                            )}
+                          </TableCell>
                           <TableCell className="py-1 px-2">
                             <Input
                               type="date"
@@ -451,7 +491,7 @@ export const ExpensesManager: React.FC = () => {
                           <TableCell className="py-1 px-2">
                             <Select
                               value={expense.entityId || ''}
-                              onValueChange={(value) => updateExpense(expense.id, 'entityId', value)}
+                              onValueChange={(value: string) => updateExpense(expense.id, 'entityId', value)}
                             >
                               <SelectTrigger className="h-7 text-xs">
                                 <SelectValue placeholder="Select..." />
@@ -506,6 +546,7 @@ export const ExpensesManager: React.FC = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-[50px]">Receipts</TableHead>
                         <TableHead className="min-w-[100px]">Date</TableHead>
                         <TableHead className="min-w-[150px]">Vendor</TableHead>
                         <TableHead className="min-w-[200px]">Description</TableHead>
@@ -520,6 +561,21 @@ export const ExpensesManager: React.FC = () => {
                     <TableBody>
                       {approvedExpenses.map((expense) => (
                         <TableRow key={expense.id} className="bg-green-50/50 dark:bg-green-950/10">
+                          <TableCell className="py-1 px-2">
+                            {expense.attachments && expense.attachments.length > 0 ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleViewReceipts(expense)}
+                                className="h-7 w-7 p-0"
+                                title={`View ${expense.attachments.length} receipt(s)`}
+                              >
+                                <Eye className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                              </Button>
+                            ) : (
+                              <span className="text-gray-400 text-xs">-</span>
+                            )}
+                          </TableCell>
                           <TableCell className="text-xs">{expense.date}</TableCell>
                           <TableCell className="text-xs">{expense.vendor}</TableCell>
                           <TableCell className="text-xs">{expense.description}</TableCell>
@@ -577,6 +633,49 @@ export const ExpensesManager: React.FC = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Receipt Viewer Dialog */}
+      <Dialog open={receiptViewOpen} onOpenChange={setReceiptViewOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Image className="h-5 w-5" />
+              Receipt Images
+            </DialogTitle>
+            <DialogDescription>
+              {selectedExpenseReceipts.attachments.length} receipt(s) attached for {selectedExpenseReceipts.vendor}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {selectedExpenseReceipts.attachments.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <Image className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p>No receipts attached</p>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {selectedExpenseReceipts.attachments.map((attachment, index) => (
+                  <div key={index} className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Receipt {index + 1}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{attachment}</span>
+                    </div>
+                    {/* Placeholder for actual image - in production this would be an <img> tag */}
+                    <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                      <div className="text-center text-gray-500 dark:text-gray-400">
+                        <Image className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Receipt Image</p>
+                        <p className="text-xs mt-1">{attachment}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
     </div>
   );

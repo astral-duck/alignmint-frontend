@@ -1,11 +1,11 @@
 import React from 'react';
-import { Building2, Users, BookOpen, FileText } from 'lucide-react';
+import { Building2, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useApp } from '../contexts/AppContext';
 import { PageHeader } from './PageHeader';
 
 interface AdministrationHubProps {
-  onSelectTool: (tool: 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | 'donor-reporting') => void;
+  onSelectTool: (tool: 'donor-management' | 'nonprofit-management' | 'chart-of-accounts') => void;
 }
 
 export const AdministrationHub: React.FC<AdministrationHubProps> = ({ onSelectTool }) => {
@@ -37,15 +37,6 @@ export const AdministrationHub: React.FC<AdministrationHubProps> = ({ onSelectTo
       color: 'text-orange-600 dark:text-orange-400',
       bgColor: 'bg-orange-50 dark:bg-orange-950/20',
       requiresInFocus: false,
-    },
-    {
-      id: 'donor-reporting' as const,
-      title: 'Donor Reporting',
-      description: 'Send end-of-year tax reports to donors',
-      icon: FileText,
-      color: 'text-indigo-600 dark:text-indigo-400',
-      bgColor: 'bg-indigo-50 dark:bg-indigo-950/20',
-      requiresInFocus: false, // Available for all entities
     },
   ];
 

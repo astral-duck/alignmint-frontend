@@ -9,11 +9,12 @@ The Reports Hub is a navigation landing page that provides access to all financi
 
 ## UI Features
 
-### Report Cards (4 reports)
+### Report Cards (5 reports)
 1. **Balance Sheet** - View assets, liabilities, and net assets
 2. **P&L Statement** - Revenue and expenses statement
 3. **Income Statement** - Revenue minus expenses for net income
 4. **Volunteer Hours** - Track and report volunteer time
+5. **Donor Reporting** - Send end-of-year tax reports to donors
 
 ### Features
 - Grid layout (responsive: 1/2/3 columns)
@@ -30,6 +31,7 @@ The Reports Hub is a navigation landing page that provides access to all financi
 | `profit-loss` | Reports → P&L | ProfitLossReport |
 | `income-statement` | Reports → Income Statement | IncomeStatementReport |
 | `volunteer-hours` | Reports → Volunteer Hours | VolunteerHoursReport |
+| `donor-reporting` | Reports → Donor Reporting | DonorReporting |
 
 ## State Management
 
@@ -46,3 +48,4 @@ None required
 - [../reports/04-FUND-ACCOUNTING-REPORT.md](../reports/04-FUND-ACCOUNTING-REPORT.md)
 - [../reports/05-VOLUNTEER-HOURS-REPORT.md](../reports/05-VOLUNTEER-HOURS-REPORT.md)
 - [../reports/06-INCOME-STATEMENT-BY-FUND.md](../reports/06-INCOME-STATEMENT-BY-FUND.md)
+- [../../docs/DONOR_REPORTING_MODULE.md](../../docs/DONOR_REPORTING_MODULE.md)

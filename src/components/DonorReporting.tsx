@@ -53,7 +53,7 @@ interface DonorWithSelection extends DonorProfile {
 }
 
 export const DonorReporting: React.FC = () => {
-  const { setAdministrationTool } = useApp();
+  const { setReportTool } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDonors, setSelectedDonors] = useState<Set<string>>(new Set());
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -161,7 +161,7 @@ export const DonorReporting: React.FC = () => {
       <DesktopOnlyWarning 
         toolName="Donor Reporting"
         description="The Donor Reporting tool requires a desktop computer for managing donor selections, previewing reports, and batch email operations. Please access this feature from a larger screen."
-        onBack={() => setAdministrationTool(null)}
+        onBack={() => setReportTool(null)}
       />
 
       {/* Desktop Content */}
@@ -169,11 +169,11 @@ export const DonorReporting: React.FC = () => {
       {/* Back Button */}
       <Button
         variant="ghost"
-        onClick={() => setAdministrationTool(null)}
+        onClick={() => setReportTool(null)}
         className="gap-2 -ml-2"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Administration Hub
+        Back to Reports Hub
       </Button>
 
       {/* Page Header */}

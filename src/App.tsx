@@ -32,6 +32,7 @@ import { RegularDepositManager } from './components/RegularDepositManager';
 import { DepositHub } from './components/DepositHub';
 import { GeneralLedger } from './components/GeneralLedger';
 import { JournalEntryManager } from './components/JournalEntryManager';
+import { MemorizedTransactions } from './components/MemorizedTransactions';
 
 import { SponsorFeeAllocation } from './components/SponsorFeeAllocation';
 import { ReportsHub } from './components/ReportsHub';
@@ -263,6 +264,8 @@ const DashboardContent: React.FC = () => {
                 <SponsorFeeAllocation />
               ) : accountingTool === 'journal-entry' ? (
                 <JournalEntryManager />
+              ) : accountingTool === 'memorized-transactions' ? (
+                <MemorizedTransactions />
               ) : null
             ) : currentPage === 'reports' ? (
               reportTool === null ? (
@@ -275,6 +278,8 @@ const DashboardContent: React.FC = () => {
                 <IncomeStatementReport />
               ) : reportTool === 'volunteer-hours' ? (
                 <VolunteerHoursReport />
+              ) : reportTool === 'donor-reporting' ? (
+                <DonorReporting />
               ) : null
             ) : currentPage === 'administration-hub' ? (
               administrationTool === null ? (
@@ -285,8 +290,6 @@ const DashboardContent: React.FC = () => {
                 <NonprofitManagement />
               ) : administrationTool === 'chart-of-accounts' ? (
                 <ChartOfAccountsManager />
-              ) : administrationTool === 'donor-reporting' ? (
-                <DonorReporting />
               ) : null
             ) : currentPage === 'settings' ? (
               <Settings />

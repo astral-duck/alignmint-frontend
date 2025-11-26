@@ -42,11 +42,11 @@ export type DonorTool = 'donors' | 'donations' | 'donor-page' | 'donor-portal' |
 
 export type PersonnelTool = 'groups' | 'volunteers' | 'hour-tracking' | null;
 
-export type AccountingTool = 'reconciliation' | 'expenses' | 'reimbursements' | 'income-by-fund' | 'check-deposit' | 'general-ledger' | 'journal-entry' | null;
+export type AccountingTool = 'reconciliation' | 'expenses' | 'reimbursements' | 'income-by-fund' | 'deposits' | 'check-deposit' | 'regular-deposit' | 'general-ledger' | 'journal-entry' | 'memorized-transactions' | null;
 
-export type ReportTool = 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours' | null;
+export type ReportTool = 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | null;
 
-export type AdministrationTool = 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | 'donor-reporting' | null;
+export type AdministrationTool = 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | null;
 
 export type DashboardComponent = 'donations-chart' | 'recent-donations' | 'todo-list' | 'top-donors';
 

@@ -34,7 +34,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
     { name: 'Donor Hub', icon: Users, page: 'donor-hub' as const },
     { name: 'People', icon: UsersRound, page: 'personnel-hub' as const },
     { name: 'Marketing', icon: Mail, page: 'marketing' as const },
-    { name: 'Accounting', icon: Calculator, page: 'accounting-hub' as const },
+    { name: 'Fund Accounting', icon: Calculator, page: 'accounting-hub' as const },
     { name: 'Reports', icon: FileText, page: 'reports' as const },
     { name: 'Administration', icon: Settings, page: 'administration-hub' as const },
   ];

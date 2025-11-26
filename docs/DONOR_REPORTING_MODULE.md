@@ -2,11 +2,11 @@
 
 ## Overview
 
-The Donor Reporting module is an administration tool that enables fiscal sponsors (parent organizations like InFocus Ministries) to generate and send end-of-year tax receipts to donors across all sponsored nonprofits.
+The Donor Reporting module is a reporting tool that enables fiscal sponsors (parent organizations like InFocus Ministries) to generate and send end-of-year tax receipts to donors across all sponsored nonprofits.
 
 ## Access
 
-- **Location**: Administration Hub → Donor Reporting
+- **Location**: Reports Hub → Donor Reporting
 - **Availability**: Available for all entities
 - **User Permissions**: Requires administrative access
 - **Device**: Desktop only (mobile users see a warning to use desktop)

@@ -1,10 +1,10 @@
 import React from 'react';
-import { FileText, TrendingUp, BarChart3, Clock } from 'lucide-react';
+import { FileText, TrendingUp, BarChart3, Clock, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { PageHeader } from './PageHeader';
 
 interface ReportsHubProps {
-  onSelectReport: (report: 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours') => void;
+  onSelectReport: (report: 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours' | 'donor-reporting') => void;
 }
 
 export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
@@ -40,6 +40,14 @@ export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
       icon: Clock,
       color: 'text-orange-600 dark:text-orange-400',
       bgColor: 'bg-orange-50 dark:bg-orange-950/20',
+    },
+    {
+      id: 'donor-reporting' as const,
+      title: 'Donor Reporting',
+      description: 'Send end-of-year tax reports to donors',
+      icon: Users,
+      color: 'text-indigo-600 dark:text-indigo-400',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-950/20',
     },
   ];
 

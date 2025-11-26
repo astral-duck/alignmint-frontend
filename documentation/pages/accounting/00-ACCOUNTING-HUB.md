@@ -1,11 +1,11 @@
-# Accounting Hub
+# Fund Accounting Hub
 
 **Component File:** `src/components/AccountingHub.tsx`  
 **Route:** `/accounting`  
 **Access Level:** Admin, Manager, Accounting Staff
 
 ## Overview
-The Accounting Hub is a navigation landing page that provides access to all accounting-related tools. It displays a grid of tool cards, each linking to a specific accounting function. The hub supports visibility customization, allowing users to show/hide tools based on their needs.
+The Fund Accounting Hub is a navigation landing page that provides access to all fund accounting-related tools. It displays a grid of tool cards, each linking to a specific accounting function. The hub supports visibility customization, allowing users to show/hide tools based on their needs.
 
 ## UI Features
 
@@ -30,13 +30,13 @@ The Accounting Hub is a navigation landing page that provides access to all acco
 
 | Tool ID | Routes To | Component |
 |---------|-----------|-----------|
-| `reconciliation` | Accounting → Reconciliation | ReconciliationManager |
-| `expenses` | Accounting → Expenses | ExpensesManager |
-| `reimbursements` | Accounting → Reimbursements | ReimbursementsManager |
-| `income-by-fund` | Accounting → Fee Allocation | IncomeStatementByFund |
-| `deposits` | Accounting → Deposit Hub | DepositHub (sub-hub) |
-| `general-ledger` | Accounting → General Ledger | GeneralLedger |
-| `journal-entry` | Accounting → Journal Entry | JournalEntryManager |
+| `reconciliation` | Fund Accounting → Reconciliation | ReconciliationManager |
+| `expenses` | Fund Accounting → Expenses | ExpensesManager |
+| `reimbursements` | Fund Accounting → Reimbursements | ReimbursementsManager |
+| `income-by-fund` | Fund Accounting → Fee Allocation | IncomeStatementByFund |
+| `deposits` | Fund Accounting → Deposit Hub | DepositHub (sub-hub) |
+| `general-ledger` | Fund Accounting → General Ledger | GeneralLedger |
+| `journal-entry` | Fund Accounting → Journal Entry | JournalEntryManager |
 
 ## State Management
 

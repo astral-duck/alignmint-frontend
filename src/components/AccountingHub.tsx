@@ -1,12 +1,12 @@
 import React from 'react';
-import { RefreshCw, Receipt, DollarSign, PieChart, Banknote, BookOpen, FileText } from 'lucide-react';
+import { RefreshCw, Receipt, DollarSign, PieChart, Banknote, BookOpen, FileText, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { useApp } from '../contexts/AppContext';
 import { PageHeader } from './PageHeader';
 
 interface AccountingHubProps {
-  onSelectTool: (tool: 'reconciliation' | 'expenses' | 'reimbursements' | 'income-by-fund' | 'deposits' | 'general-ledger' | 'journal-entry') => void;
+  onSelectTool: (tool: 'reconciliation' | 'expenses' | 'reimbursements' | 'income-by-fund' | 'deposits' | 'general-ledger' | 'journal-entry' | 'memorized-transactions') => void;
 }
 
 export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) => {
@@ -70,12 +70,20 @@ export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) =>
       color: 'text-teal-600 dark:text-teal-400',
       bgColor: 'bg-teal-50 dark:bg-teal-950/20',
     },
+    {
+      id: 'memorized-transactions' as const,
+      title: 'Memorized Transactions',
+      description: 'Manage recurring journal entry templates',
+      icon: Clock,
+      color: 'text-rose-600 dark:text-rose-400',
+      bgColor: 'bg-rose-50 dark:bg-rose-950/20',
+    },
   ];
 
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Accounting"
+        title="Fund Accounting"
         subtitle="Manage transactions, expenses, and fund distribution"
       />
 
@@ -100,7 +108,7 @@ export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) =>
                     <Switch
                       checked={isVisible}
                       onCheckedChange={() => toggleTileVisibility(pageId, tool.id)}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e: React.MouseEvent) => e.stopPropagation()}
                     />
                   )}
                 </div>
