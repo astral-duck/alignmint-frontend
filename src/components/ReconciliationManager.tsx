@@ -210,7 +210,7 @@ const generateMockLedgerTransactions = (): LedgerTransaction[] => {
 };
 
 export const ReconciliationManager: React.FC = () => {
-  const { setAccountingTool } = useApp();
+  const { setToolsTool } = useApp();
   const [hasUploadedFile, setHasUploadedFile] = useState(false);
   const [bankTransactions, setBankTransactions] = useState<BankTransaction[]>([]);
   const [ledgerTransactions, setLedgerTransactions] = useState<LedgerTransaction[]>([]);
@@ -404,7 +404,7 @@ export const ReconciliationManager: React.FC = () => {
       <DesktopOnlyWarning 
         toolName="Reconciliation Manager"
         description="The Reconciliation Manager requires a desktop computer for complex transaction matching, batch processing, and detailed analysis. Please access this feature from a larger screen."
-        onBack={() => setAccountingTool(null)}
+        onBack={() => setToolsTool(null)}
       />
 
       {/* Desktop Content */}
@@ -412,11 +412,11 @@ export const ReconciliationManager: React.FC = () => {
         {/* Back Button */}
         <Button
           variant="ghost"
-          onClick={() => setAccountingTool(null)}
+          onClick={() => setToolsTool(null)}
           className="gap-2 -ml-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Fund Accounting
+          Back to Tools
         </Button>
 
       {/* Header */}

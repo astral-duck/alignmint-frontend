@@ -63,7 +63,7 @@ interface SponsorFeeAllocationProps {
 }
 
 export const SponsorFeeAllocation: React.FC<SponsorFeeAllocationProps> = ({ readOnly = false }) => {
-  const { selectedEntity, setAccountingTool } = useApp();
+  const { selectedEntity, setToolsTool } = useApp();
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
   const [allocations, setAllocations] = useState<FundAllocation[]>(() => {
     // Generate mock data for all nonprofits (excluding InFocus)
@@ -434,7 +434,7 @@ export const SponsorFeeAllocation: React.FC<SponsorFeeAllocationProps> = ({ read
       <DesktopOnlyWarning 
         toolName="Sponsor Fee Allocation"
         description="The Sponsor Fee Allocation tool requires a desktop computer for complex multi-entity calculations, detailed breakdowns, and journal entry generation. Please access this feature from a larger screen."
-        onBack={() => setAccountingTool(null)}
+        onBack={() => setToolsTool(null)}
       />
 
       {/* Desktop Content */}
@@ -442,11 +442,11 @@ export const SponsorFeeAllocation: React.FC<SponsorFeeAllocationProps> = ({ read
         {/* Back Button */}
         <Button
           variant="ghost"
-          onClick={() => setAccountingTool(null)}
+          onClick={() => setToolsTool(null)}
           className="gap-2 -ml-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Fund Accounting
+          Back to Tools
         </Button>
 
         {/* Header */}

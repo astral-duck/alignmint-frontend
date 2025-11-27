@@ -34,7 +34,7 @@ export interface Notification {
   timestamp: Date;
 }
 
-export type PageView = 'dashboard' | 'donor-hub' | 'personnel-hub' | 'marketing' | 'accounting-hub' | 'reports' | 'administration-hub' | 'settings';
+export type PageView = 'dashboard' | 'donor-hub' | 'personnel-hub' | 'marketing' | 'accounting-hub' | 'reports' | 'tools-hub' | 'administration-hub' | 'settings';
 
 export type MarketingTool = 'email-blast' | 'video-bomb' | 'prospects' | null;
 
@@ -42,11 +42,13 @@ export type DonorTool = 'donors' | 'donations' | 'donor-page' | 'donor-portal' |
 
 export type PersonnelTool = 'groups' | 'volunteers' | 'hour-tracking' | null;
 
-export type AccountingTool = 'reconciliation' | 'expenses' | 'reimbursements' | 'income-by-fund' | 'deposits' | 'check-deposit' | 'regular-deposit' | 'general-ledger' | 'journal-entry' | 'memorized-transactions' | null;
+export type AccountingTool = 'expenses' | 'reimbursements' | 'deposits' | 'check-deposit' | 'regular-deposit' | 'general-ledger' | 'journal-entry' | null;
 
-export type ReportTool = 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | null;
+export type ReportTool = 'balance-sheet' | 'cash-flow' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | 'comparative' | null;
 
 export type AdministrationTool = 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | null;
+
+export type ToolsTool = 'reconciliation' | 'sponsor-fee-allocation' | 'memorized-transactions' | null;
 
 export type DashboardComponent = 'donations-chart' | 'recent-donations' | 'todo-list' | 'top-donors';
 
@@ -105,6 +107,8 @@ interface AppContextType {
   setReportTool: (tool: ReportTool) => void;
   administrationTool: AdministrationTool;
   setAdministrationTool: (tool: AdministrationTool) => void;
+  toolsTool: ToolsTool;
+  setToolsTool: (tool: ToolsTool) => void;
   prospects: Prospect[];
   addProspect: (prospect: Omit<Prospect, 'id' | 'addedDate'>) => void;
   deleteProspect: (id: string) => void;
@@ -340,6 +344,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [accountingTool, setAccountingTool] = useState<AccountingTool>(null);
   const [reportTool, setReportTool] = useState<ReportTool>(null);
   const [administrationTool, setAdministrationTool] = useState<AdministrationTool>(null);
+  const [toolsTool, setToolsTool] = useState<ToolsTool>(null);
   const [prospects, setProspects] = useState<Prospect[]>(initialProspects);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
@@ -605,6 +610,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setReportTool,
         administrationTool,
         setAdministrationTool,
+        toolsTool,
+        setToolsTool,
         prospects,
         addProspect,
         deleteProspect,

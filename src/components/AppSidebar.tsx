@@ -13,6 +13,7 @@ import {
   Heart,
   Calendar,
   Settings,
+  Wrench,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
@@ -24,7 +25,7 @@ interface AppSidebarProps {
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
-  const { currentPage, setCurrentPage, setMarketingTool, setDonorTool, setPersonnelTool, setAccountingTool, setReportTool, setAdministrationTool, selectedEntity, sidebarCollapsed, setSidebarCollapsed, visibilityEditMode, isSidebarItemVisible, toggleSidebarItemVisibility } = useApp();
+  const { currentPage, setCurrentPage, setMarketingTool, setDonorTool, setPersonnelTool, setAccountingTool, setReportTool, setToolsTool, setAdministrationTool, selectedEntity, sidebarCollapsed, setSidebarCollapsed, visibilityEditMode, isSidebarItemVisible, toggleSidebarItemVisibility } = useApp();
   
   // Get the display name based on selected entity
   const displayName = entities.find(e => e.id === selectedEntity)?.name || 'InFocus Ministries';
@@ -36,6 +37,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
     { name: 'Marketing', icon: Mail, page: 'marketing' as const },
     { name: 'Fund Accounting', icon: Calculator, page: 'accounting-hub' as const },
     { name: 'Reports', icon: FileText, page: 'reports' as const },
+    { name: 'Tools', icon: Wrench, page: 'tools-hub' as const },
     { name: 'Administration', icon: Settings, page: 'administration-hub' as const },
   ];
 
@@ -130,6 +132,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                         // Reset administration tool when navigating to administration hub
                         if (item.page === 'administration-hub') {
                           setAdministrationTool(null);
+                        }
+                        // Reset tools tool when navigating to tools hub
+                        if (item.page === 'tools-hub') {
+                          setToolsTool(null);
                         }
                         
                         // Auto-close sidebar on mobile after navigation

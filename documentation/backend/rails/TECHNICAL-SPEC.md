@@ -1,8 +1,8 @@
 # IFM MVP - Technical Specifications
 
-**Version:** 2.0  
-**Last Updated:** November 10, 2025  
-**Status:** Backend Integration Phase
+**Version:** 2.1  
+**Last Updated:** November 26, 2025  
+**Status:** Backend Integration Phase (Rails)
 
 ---
 
@@ -608,15 +608,10 @@ end
 
 ## Related Documentation
 
-- **`PROJECT-GUIDE.md`** - Product overview and requirements
-- **`01-DATA-SCHEMA.md`** - Complete database schema
-- **`02-API-REQUIREMENTS.md`** - Complete API specifications
-- **`03-COMPONENT-INTEGRATIONS.md`** - Integration workflows
-- **`04-USER-ROLES-AND-PERMISSIONS.md`** - Permission specifications
-- **`GENERAL-LEDGER-REFACTOR.md`** - General Ledger refactor details
-- **`STYLING-GUIDE.md`** - UI/UX styling guide
-- **`DATABASE-SCHEMA.sql`** - SQL schema file
-- **`pages/`** - Page-specific documentation
+- **`../database/DATABASE-SCHEMA.sql`** - SQL schema file
+- **`../database/GL-INTEGRATION.md`** - General Ledger integration
+- **`../frontend/STYLING-GUIDE.md`** - UI/UX styling guide
+- **`../pages/`** - Page-specific documentation
 
 ---
 

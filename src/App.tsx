@@ -37,10 +37,12 @@ import { MemorizedTransactions } from './components/MemorizedTransactions';
 import { SponsorFeeAllocation } from './components/SponsorFeeAllocation';
 import { ReportsHub } from './components/ReportsHub';
 import { BalanceSheetReport } from './components/BalanceSheetReport';
-import { ProfitLossReport } from './components/ProfitLossReport';
+import { CashFlowReport } from './components/CashFlowReport';
 import { IncomeStatementReport } from './components/IncomeStatementReport';
 import { VolunteerHoursReport } from './components/VolunteerHoursReport';
+import { ComparativeReport } from './components/ComparativeReport';
 import { AdministrationHub } from './components/AdministrationHub';
+import { ToolsHub } from './components/ToolsHub';
 import { DraggableComponent } from './components/DraggableComponent';
 import { NonprofitManagement } from './components/NonprofitManagement';
 import { ChartOfAccountsManager } from './components/ChartOfAccountsManager';
@@ -80,6 +82,8 @@ const DashboardContent: React.FC = () => {
     setReportTool,
     administrationTool,
     setAdministrationTool,
+    toolsTool,
+    setToolsTool,
     sidebarCollapsed,
   } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -243,8 +247,6 @@ const DashboardContent: React.FC = () => {
             ) : currentPage === 'accounting-hub' ? (
               accountingTool === null ? (
                 <AccountingHub onSelectTool={setAccountingTool} />
-              ) : accountingTool === 'reconciliation' ? (
-                <ReconciliationManager />
               ) : accountingTool === 'expenses' ? (
                 <ExpensesManager />
               ) : accountingTool === 'reimbursements' ? (
@@ -260,26 +262,34 @@ const DashboardContent: React.FC = () => {
                 <RegularDepositManager />
               ) : accountingTool === 'general-ledger' ? (
                 <GeneralLedger />
-              ) : accountingTool === 'income-by-fund' ? (
-                <SponsorFeeAllocation />
               ) : accountingTool === 'journal-entry' ? (
                 <JournalEntryManager />
-              ) : accountingTool === 'memorized-transactions' ? (
-                <MemorizedTransactions />
               ) : null
             ) : currentPage === 'reports' ? (
               reportTool === null ? (
                 <ReportsHub onSelectReport={setReportTool} />
               ) : reportTool === 'balance-sheet' ? (
                 <BalanceSheetReport />
-              ) : reportTool === 'profit-loss' ? (
-                <ProfitLossReport />
+              ) : reportTool === 'cash-flow' ? (
+                <CashFlowReport />
               ) : reportTool === 'income-statement' ? (
                 <IncomeStatementReport />
               ) : reportTool === 'volunteer-hours' ? (
                 <VolunteerHoursReport />
               ) : reportTool === 'donor-reporting' ? (
                 <DonorReporting />
+              ) : reportTool === 'comparative' ? (
+                <ComparativeReport />
+              ) : null
+            ) : currentPage === 'tools-hub' ? (
+              toolsTool === null ? (
+                <ToolsHub onSelectTool={setToolsTool} />
+              ) : toolsTool === 'reconciliation' ? (
+                <ReconciliationManager />
+              ) : toolsTool === 'sponsor-fee-allocation' ? (
+                <SponsorFeeAllocation />
+              ) : toolsTool === 'memorized-transactions' ? (
+                <MemorizedTransactions />
               ) : null
             ) : currentPage === 'administration-hub' ? (
               administrationTool === null ? (

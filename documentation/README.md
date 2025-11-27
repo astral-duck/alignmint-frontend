@@ -1,7 +1,7 @@
 # IFM MVP Documentation
 
-**Version:** 2.0  
-**Last Updated:** November 12, 2025  
+**Version:** 2.1  
+**Last Updated:** November 26, 2025  
 **Status:** Complete & Production Ready
 
 ---
@@ -14,14 +14,8 @@ documentation/
 ├── PROJECT-GUIDE.md              ← Start here for product overview
 │
 ├── backend/                       ← Backend implementation guides
-│   ├── BACKEND-COMPARISON.md     ← Rails vs Django comparison
-│   ├── python/                   ← Python/Django implementation
-│   │   ├── PYTHON-BACKEND-OVERVIEW.md
-│   │   ├── PYTHON-MODELS.md
-│   │   ├── PYTHON-API.md
-│   │   └── PYTHON-BUSINESS-LOGIC.md
 │   ├── rails/                    ← Ruby on Rails implementation
-│   │   └── TECHNICAL-SPEC.md
+│   │   └── TECHNICAL-SPEC.md     ← Complete Rails specifications
 │   └── shared/                   ← Framework-agnostic specs
 │       ├── 01-DATA-SCHEMA.md
 │       ├── 02-API-REQUIREMENTS.md
@@ -36,22 +30,20 @@ documentation/
 │   ├── DATABASE-SCHEMA.sql       ← PostgreSQL schema
 │   └── GL-INTEGRATION.md         ← General Ledger integration
 │
-├── reports/                       ← Financial reports docs
-│   ├── REPORTS-IMPLEMENTATION-PLAN.md
-│   └── REPORTS-TASK-BREAKDOWN.md
-│
-├── implementation/                ← Implementation notes
-│   ├── IMPLEMENTATION-COMPLETE.md
-│   └── COMMIT-SUMMARY.md
+├── deployment/                    ← Deployment guides
+│   ├── DEPLOYMENT-GUIDE.md
+│   └── ROLLOUT-PLAN.md
 │
 └── pages/                         ← Component-specific docs
-    ├── accounting/
-    ├── administration/
-    ├── dashboard/
-    ├── donor-hub/
-    ├── marketing/
-    ├── personnel/
-    └── reports/
+    ├── accounting/               ← 11 accounting components
+    ├── administration/           ← 4 admin components
+    ├── components/               ← 10 shared UI components
+    ├── dashboard/                ← Dashboard docs
+    ├── donor-hub/                ← 8 donor components
+    ├── marketing/                ← 4 marketing components
+    ├── people/                   ← 4 personnel components
+    ├── reports/                  ← 9 report components + planning docs
+    └── tools/                    ← 3 tool components
 ```
 
 ---
@@ -62,25 +54,12 @@ documentation/
 1. **`PROJECT-GUIDE.md`** - Product vision, requirements, and roadmap
 2. **`backend/shared/04-USER-ROLES-AND-PERMISSIONS.md`** - User roles and access control
 
-### For Backend Developers
-
-#### Choosing a Framework
-1. **`backend/BACKEND-COMPARISON.md`** - Compare Rails vs Django
-
-#### Python/Django Path
-1. **`backend/python/PYTHON-BACKEND-OVERVIEW.md`** - Setup and configuration
-2. **`backend/python/PYTHON-MODELS.md`** - Database models
-3. **`backend/python/PYTHON-API.md`** - REST API implementation
-4. **`backend/python/PYTHON-BUSINESS-LOGIC.md`** - Business logic services
-
-#### Ruby on Rails Path
+### For Backend Developers (Ruby on Rails)
 1. **`backend/rails/TECHNICAL-SPEC.md`** - Complete Rails specifications
-
-#### Shared Resources (Both Frameworks)
-- **`backend/shared/01-DATA-SCHEMA.md`** - Database schema (28+ tables)
-- **`backend/shared/02-API-REQUIREMENTS.md`** - API endpoints (~180+)
-- **`backend/shared/03-COMPONENT-INTEGRATIONS.md`** - Integration workflows
-- **`database/DATABASE-SCHEMA.sql`** - PostgreSQL DDL
+2. **`backend/shared/01-DATA-SCHEMA.md`** - Database schema (28+ tables)
+3. **`backend/shared/02-API-REQUIREMENTS.md`** - API endpoints (~180+)
+4. **`backend/shared/03-COMPONENT-INTEGRATIONS.md`** - Integration workflows
+5. **`database/DATABASE-SCHEMA.sql`** - PostgreSQL DDL
 
 ### For Frontend Developers
 1. **`frontend/RESPONSIVE_DESIGN.md`** - Mobile responsive implementation
@@ -168,21 +147,13 @@ documentation/
 - **Charts:** Recharts
 - **Icons:** Lucide React
 
-### Backend Options
-
-#### Python/Django (Recommended)
-- **Framework:** Django 5.0+ with Django REST Framework
-- **Database:** PostgreSQL 14+
-- **Authentication:** JWT (Simple JWT)
-- **Background Jobs:** Celery + Redis
-- **Advantages:** Built-in admin, best REST framework, type safety
-
-#### Ruby on Rails (Alternative)
+### Backend (Ruby on Rails)
 - **Framework:** Ruby on Rails 7+
 - **Database:** PostgreSQL 14+
 - **Authentication:** JWT or Devise
 - **Background Jobs:** Sidekiq + Redis
-- **Advantages:** Convention over configuration, rapid development
+- **File Storage:** AWS S3
+- **Email:** SendGrid or Mailgun
 
 ### Database
 - **Primary:** PostgreSQL 14+
@@ -197,24 +168,12 @@ documentation/
 | Document | Description | Location |
 |----------|-------------|----------|
 | **Project Guide** | Product overview and roadmap | `PROJECT-GUIDE.md` |
-| **Backend Comparison** | Rails vs Django guide | `backend/BACKEND-COMPARISON.md` |
+| **Technical Spec** | Complete Rails specifications | `backend/rails/TECHNICAL-SPEC.md` |
 
-### Backend - Python/Django
-| Document | Description | Location |
-|----------|-------------|----------|
-| **Overview** | Setup and configuration | `backend/python/PYTHON-BACKEND-OVERVIEW.md` |
-| **Models** | Django ORM models | `backend/python/PYTHON-MODELS.md` |
-| **API** | DRF ViewSets and serializers | `backend/python/PYTHON-API.md` |
-| **Business Logic** | Services layer | `backend/python/PYTHON-BUSINESS-LOGIC.md` |
-
-### Backend - Ruby on Rails
+### Backend (Rails)
 | Document | Description | Location |
 |----------|-------------|----------|
 | **Technical Spec** | Complete Rails guide | `backend/rails/TECHNICAL-SPEC.md` |
-
-### Backend - Shared
-| Document | Description | Location |
-|----------|-------------|----------|
 | **Data Schema** | Database schema (28+ tables) | `backend/shared/01-DATA-SCHEMA.md` |
 | **API Requirements** | API endpoints (~180+) | `backend/shared/02-API-REQUIREMENTS.md` |
 | **Integrations** | Component workflows | `backend/shared/03-COMPONENT-INTEGRATIONS.md` |
@@ -232,17 +191,22 @@ documentation/
 | **SQL Schema** | PostgreSQL DDL | `database/DATABASE-SCHEMA.sql` |
 | **GL Integration** | Ledger integration | `database/GL-INTEGRATION.md` |
 
-### Reports
+### Deployment
 | Document | Description | Location |
 |----------|-------------|----------|
-| **Implementation Plan** | Reports strategy | `reports/REPORTS-IMPLEMENTATION-PLAN.md` |
-| **Task Breakdown** | Detailed tasks | `reports/REPORTS-TASK-BREAKDOWN.md` |
+| **Deployment Guide** | Production deployment | `deployment/DEPLOYMENT-GUIDE.md` |
+| **Rollout Plan** | Launch strategy | `deployment/ROLLOUT-PLAN.md` |
 
-### Implementation Notes
-| Document | Description | Location |
-|----------|-------------|----------|
-| **Implementation Complete** | Reports completion | `implementation/IMPLEMENTATION-COMPLETE.md` |
-| **Commit Summary** | Development history | `implementation/COMMIT-SUMMARY.md` |
+### Pages (Component Documentation)
+| Folder | Components | Location |
+|--------|------------|----------|
+| **Accounting** | 11 components | `pages/accounting/` |
+| **Administration** | 4 components | `pages/administration/` |
+| **Donor Hub** | 8 components | `pages/donor-hub/` |
+| **Marketing** | 4 components | `pages/marketing/` |
+| **People** | 4 components | `pages/people/` |
+| **Reports** | 9 components | `pages/reports/` |
+| **Tools** | 3 components | `pages/tools/` |
 
 ---
 
@@ -259,11 +223,10 @@ documentation/
 For questions or issues:
 1. Review relevant documentation above
 2. Check component-specific docs in `pages/`
-3. Review implementation notes in `implementation/`
-4. Contact the development team
+3. Contact the development team
 
 ---
 
-**Last Updated:** November 12, 2025  
-**Documentation Version:** 2.0  
+**Last Updated:** November 26, 2025  
+**Documentation Version:** 2.1  
 **Maintained By:** IFM MVP Development Team

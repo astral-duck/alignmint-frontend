@@ -1,10 +1,10 @@
 import React from 'react';
-import { FileText, TrendingUp, BarChart3, Clock, Users } from 'lucide-react';
+import { FileText, TrendingUp, BarChart3, Clock, Users, GitCompare } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { PageHeader } from './PageHeader';
 
 interface ReportsHubProps {
-  onSelectReport: (report: 'balance-sheet' | 'profit-loss' | 'income-statement' | 'volunteer-hours' | 'donor-reporting') => void;
+  onSelectReport: (report: 'balance-sheet' | 'cash-flow' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | 'comparative') => void;
 }
 
 export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
@@ -18,9 +18,9 @@ export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
       bgColor: 'bg-blue-50 dark:bg-blue-950/20',
     },
     {
-      id: 'profit-loss' as const,
-      title: 'P&L Statement',
-      description: 'Revenue and expenses statement',
+      id: 'cash-flow' as const,
+      title: 'Cash Flow Statement',
+      description: 'Track cash inflows and outflows by activity',
       icon: TrendingUp,
       color: 'text-green-600 dark:text-green-400',
       bgColor: 'bg-green-50 dark:bg-green-950/20',
@@ -48,6 +48,14 @@ export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
       icon: Users,
       color: 'text-indigo-600 dark:text-indigo-400',
       bgColor: 'bg-indigo-50 dark:bg-indigo-950/20',
+    },
+    {
+      id: 'comparative' as const,
+      title: 'Comparative Report',
+      description: 'Compare reports side by side across periods',
+      icon: GitCompare,
+      color: 'text-rose-600 dark:text-rose-400',
+      bgColor: 'bg-rose-50 dark:bg-rose-950/20',
     },
   ];
 

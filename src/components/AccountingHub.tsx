@@ -1,12 +1,12 @@
 import React from 'react';
-import { RefreshCw, Receipt, DollarSign, PieChart, Banknote, BookOpen, FileText, Clock } from 'lucide-react';
+import { Receipt, DollarSign, Banknote, BookOpen, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { useApp } from '../contexts/AppContext';
 import { PageHeader } from './PageHeader';
 
 interface AccountingHubProps {
-  onSelectTool: (tool: 'reconciliation' | 'expenses' | 'reimbursements' | 'income-by-fund' | 'deposits' | 'general-ledger' | 'journal-entry' | 'memorized-transactions') => void;
+  onSelectTool: (tool: 'expenses' | 'reimbursements' | 'deposits' | 'general-ledger' | 'journal-entry') => void;
 }
 
 export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) => {
@@ -14,14 +14,6 @@ export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) =>
   const pageId = 'accounting-hub';
   
   const tools = [
-    {
-      id: 'reconciliation' as const,
-      title: 'Reconciliation',
-      description: 'Match and categorize bank transactions',
-      icon: RefreshCw,
-      color: 'text-orange-600 dark:text-orange-400',
-      bgColor: 'bg-orange-50 dark:bg-orange-950/20',
-    },
     {
       id: 'expenses' as const,
       title: 'Expenses',
@@ -37,14 +29,6 @@ export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) =>
       icon: DollarSign,
       color: 'text-blue-600 dark:text-blue-400',
       bgColor: 'bg-blue-50 dark:bg-blue-950/20',
-    },
-    {
-      id: 'income-by-fund' as const,
-      title: 'Sponsor Fee Allocation',
-      description: 'Review and confirm monthly admin fees',
-      icon: PieChart,
-      color: 'text-purple-600 dark:text-purple-400',
-      bgColor: 'bg-purple-50 dark:bg-purple-950/20',
     },
     {
       id: 'deposits' as const,
@@ -70,15 +54,7 @@ export const AccountingHub: React.FC<AccountingHubProps> = ({ onSelectTool }) =>
       color: 'text-teal-600 dark:text-teal-400',
       bgColor: 'bg-teal-50 dark:bg-teal-950/20',
     },
-    {
-      id: 'memorized-transactions' as const,
-      title: 'Memorized Transactions',
-      description: 'Manage recurring journal entry templates',
-      icon: Clock,
-      color: 'text-rose-600 dark:text-rose-400',
-      bgColor: 'bg-rose-50 dark:bg-rose-950/20',
-    },
-  ];
+    ];
 
   return (
     <div className="space-y-6">

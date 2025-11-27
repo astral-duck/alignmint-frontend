@@ -149,7 +149,7 @@ const mockMemorizedTransactions: MemorizedTransaction[] = [
 ];
 
 export const MemorizedTransactions: React.FC = () => {
-  const { selectedEntity, setAccountingTool } = useApp();
+  const { selectedEntity, setToolsTool } = useApp();
   const [transactions, setTransactions] = useState<MemorizedTransaction[]>(mockMemorizedTransactions);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<MemorizedTransaction | null>(null);
@@ -301,13 +301,13 @@ export const MemorizedTransactions: React.FC = () => {
       <DesktopOnlyWarning 
         toolName="Memorized Transactions"
         description="Memorized Transactions requires a desktop for managing recurring journal entries."
-        onBack={() => setAccountingTool(null)}
+        onBack={() => setToolsTool(null)}
       />
 
       <div className="hidden md:block space-y-4 sm:space-y-6">
-        <Button variant="ghost" onClick={() => setAccountingTool(null)} className="gap-2 -ml-2">
+        <Button variant="ghost" onClick={() => setToolsTool(null)} className="gap-2 -ml-2">
           <ArrowLeft className="h-4 w-4" />
-          Back to Fund Accounting
+          Back to Tools
         </Button>
 
         <div className="text-center">
@@ -417,107 +417,202 @@ export const MemorizedTransactions: React.FC = () => {
 
         {/* Create/Edit Sheet */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetContent className="sm:max-w-[600px] overflow-y-auto">
-            <SheetHeader>
+          <SheetContent side="right" className="w-full sm:max-w-2xl flex flex-col p-0">
+            <SheetHeader className="px-6 py-4 border-b">
               <SheetTitle>{editingTransaction ? 'Edit' : 'New'} Memorized Transaction</SheetTitle>
               <SheetDescription>Define a transaction template for recurring entries</SheetDescription>
             </SheetHeader>
 
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <Label>Transaction Name</Label>
-                  <Input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="e.g., Monthly Rent" />
-                </div>
-                <div className="col-span-2">
-                  <Label>Description</Label>
-                  <Textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} placeholder="Optional description" />
-                </div>
-                <div>
-                  <Label>Nonprofit</Label>
-                  <Select value={formEntityId} onValueChange={setFormEntityId}>
-                    <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
-                    <SelectContent>
-                      {entities.filter(e => e.id !== 'all').map(e => (
-                        <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Schedule</Label>
-                  <Select value={formScheduleType} onValueChange={(v: string) => setFormScheduleType(v as 'monthly' | 'quarterly' | 'manual')}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="manual">Manual</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="quarterly">Quarterly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {formScheduleType !== 'manual' && (
-                  <div className="col-span-2">
-                    <Label>Next Run Date</Label>
-                    <Input type="date" value={formNextRunDate} onChange={(e) => setFormNextRunDate(e.target.value)} />
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="transaction-name">Transaction Name</Label>
+                    <Input 
+                      id="transaction-name"
+                      value={formName} 
+                      onChange={(e) => setFormName(e.target.value)} 
+                      placeholder="e.g., Monthly Rent" 
+                    />
                   </div>
-                )}
-              </div>
 
-              {/* Journal Entry Lines */}
-              <div className="border-t pt-4">
-                <div className="flex justify-between items-center mb-2">
-                  <Label className="text-base font-semibold">Journal Entry Lines</Label>
-                  <Button variant="outline" size="sm" onClick={addLine}><Plus className="h-3 w-3 mr-1" /> Add Line</Button>
-                </div>
-                <div className="space-y-2">
-                  {formLines.map((line, idx) => (
-                    <div key={line.id} className="grid grid-cols-12 gap-2 items-center">
-                      <div className="col-span-4">
-                        <Select value={line.account.id} onValueChange={(v: string) => {
-                          const acc = MOCK_ACCOUNTS.find(a => a.id === v);
-                          if (acc) updateLine(line.id, 'account', acc);
-                        }}>
-                          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {MOCK_ACCOUNTS.map(a => (
-                              <SelectItem key={a.id} value={a.id} className="text-xs">{a.full_name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="col-span-3">
-                        <Input className="h-8 text-xs" placeholder="Description" value={line.description} onChange={(e) => updateLine(line.id, 'description', e.target.value)} />
-                      </div>
-                      <div className="col-span-2">
-                        <Input className="h-8 text-xs" type="number" step="0.01" placeholder="Debit" value={line.debit_amount || ''} onChange={(e) => updateLine(line.id, 'debit_amount', parseFloat(e.target.value) || 0)} />
-                      </div>
-                      <div className="col-span-2">
-                        <Input className="h-8 text-xs" type="number" step="0.01" placeholder="Credit" value={line.credit_amount || ''} onChange={(e) => updateLine(line.id, 'credit_amount', parseFloat(e.target.value) || 0)} />
-                      </div>
-                      <div className="col-span-1">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => removeLine(line.id)}>
-                          <Trash2 className="h-3 w-3 text-red-500" />
-                        </Button>
-                      </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea 
+                      id="description"
+                      value={formDescription} 
+                      onChange={(e) => setFormDescription(e.target.value)} 
+                      placeholder="Optional description"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="nonprofit">Nonprofit</Label>
+                      <Select value={formEntityId} onValueChange={setFormEntityId}>
+                        <SelectTrigger id="nonprofit">
+                          <SelectValue placeholder="Select nonprofit..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {entities.filter(e => e.id !== 'all').map(e => (
+                            <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  ))}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="schedule">Schedule</Label>
+                      <Select 
+                        value={formScheduleType} 
+                        onValueChange={(v: string) => setFormScheduleType(v as 'monthly' | 'quarterly' | 'manual')}
+                      >
+                        <SelectTrigger id="schedule">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="manual">Manual</SelectItem>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                          <SelectItem value="quarterly">Quarterly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {formScheduleType !== 'manual' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="next-run-date">Next Run Date</Label>
+                      <Input 
+                        id="next-run-date"
+                        type="date" 
+                        value={formNextRunDate} 
+                        onChange={(e) => setFormNextRunDate(e.target.value)} 
+                      />
+                    </div>
+                  )}
                 </div>
-                {/* Totals */}
-                <div className="grid grid-cols-12 gap-2 mt-2 pt-2 border-t font-medium text-sm">
-                  <div className="col-span-7 text-right">Totals:</div>
-                  <div className="col-span-2 text-right">${totalDebits.toFixed(2)}</div>
-                  <div className="col-span-2 text-right">${totalCredits.toFixed(2)}</div>
-                  <div className="col-span-1"></div>
+
+                {/* Journal Entry Lines */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base font-semibold">Journal Entry Lines</Label>
+                    <Button variant="outline" size="sm" onClick={addLine} className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Line
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {formLines.map((line) => (
+                      <Card key={line.id}>
+                        <CardContent className="p-4">
+                          <div className="space-y-3">
+                            <div className="space-y-2">
+                              <Label className="text-sm">Account</Label>
+                              <Select 
+                                value={line.account.id} 
+                                onValueChange={(v: string) => {
+                                  const acc = MOCK_ACCOUNTS.find(a => a.id === v);
+                                  if (acc) updateLine(line.id, 'account', acc);
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {MOCK_ACCOUNTS.map(a => (
+                                    <SelectItem key={a.id} value={a.id}>{a.full_name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label className="text-sm">Description</Label>
+                              <Input 
+                                placeholder="Line description" 
+                                value={line.description} 
+                                onChange={(e) => updateLine(line.id, 'description', e.target.value)} 
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label className="text-sm">Debit</Label>
+                                <Input 
+                                  type="number" 
+                                  step="0.01" 
+                                  placeholder="0.00" 
+                                  value={line.debit_amount || ''} 
+                                  onChange={(e) => updateLine(line.id, 'debit_amount', parseFloat(e.target.value) || 0)} 
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm">Credit</Label>
+                                <Input 
+                                  type="number" 
+                                  step="0.01" 
+                                  placeholder="0.00" 
+                                  value={line.credit_amount || ''} 
+                                  onChange={(e) => updateLine(line.id, 'credit_amount', parseFloat(e.target.value) || 0)} 
+                                />
+                              </div>
+                            </div>
+
+                            <div className="flex justify-end">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => removeLine(line.id)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Remove Line
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Totals */}
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between font-semibold">
+                        <span>Totals:</span>
+                        <div className="flex gap-8">
+                          <div className="text-right">
+                            <div className="text-sm text-muted-foreground">Debits</div>
+                            <div className="font-mono">${totalDebits.toFixed(2)}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-muted-foreground">Credits</div>
+                            <div className="font-mono">${totalCredits.toFixed(2)}</div>
+                          </div>
+                        </div>
+                      </div>
+                      {!isBalanced && totalDebits + totalCredits > 0 && (
+                        <p className="text-red-500 text-sm mt-2">⚠️ Debits must equal credits</p>
+                      )}
+                      {isBalanced && (
+                        <p className="text-green-600 dark:text-green-400 text-sm mt-2">✓ Entry is balanced</p>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
-                {!isBalanced && totalDebits + totalCredits > 0 && (
-                  <p className="text-red-500 text-xs mt-1">Debits must equal credits</p>
-                )}
               </div>
             </div>
 
-            <SheetFooter>
-              <Button variant="outline" onClick={() => setSheetOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave} disabled={!isBalanced}>Save Transaction</Button>
+            <SheetFooter className="px-6 py-4 border-t mt-auto">
+              <Button variant="outline" onClick={() => setSheetOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={!isBalanced}>
+                {editingTransaction ? 'Update' : 'Create'} Transaction
+              </Button>
             </SheetFooter>
           </SheetContent>
         </Sheet>

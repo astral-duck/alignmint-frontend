@@ -1,8 +1,8 @@
 # IFM MVP - Project Guide
 
-**Version:** 2.0  
-**Last Updated:** November 10, 2025  
-**Status:** Backend Integration Phase
+**Version:** 2.1  
+**Last Updated:** November 26, 2025  
+**Status:** Backend Integration Phase (Rails)
 
 ---
 
@@ -403,12 +403,12 @@ The application supports multiple nonprofits. Backend needs to:
 
 ## Related Documentation
 
-- `TECHNICAL-SPEC.md` - Complete technical specifications
-- `GENERAL-LEDGER-REFACTOR.md` - General Ledger refactor details
-- `STYLING-GUIDE.md` - UI/UX styling guide
-- `DATABASE-SCHEMA.sql` - Database schema file
+- `backend/rails/TECHNICAL-SPEC.md` - Complete Rails technical specifications
+- `frontend/STYLING-GUIDE.md` - UI/UX styling guide
+- `database/DATABASE-SCHEMA.sql` - Database schema file
+- `database/GL-INTEGRATION.md` - General Ledger integration
 - `pages/` - Page-specific documentation
 
 ---
 
-*This guide serves as the primary reference for understanding the IFM MVP platform. For detailed technical specifications, see TECHNICAL-SPEC.md.*
+*This guide serves as the primary reference for understanding the IFM MVP platform. For detailed technical specifications, see `backend/rails/TECHNICAL-SPEC.md`.*
