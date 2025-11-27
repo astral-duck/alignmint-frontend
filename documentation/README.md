@@ -84,7 +84,7 @@ documentation/
 - **UI/UX Design:** 100% complete (glassmorphic design system)
 
 ### 🔄 In Progress
-- **Backend API:** Ready for implementation (choose Python or Rails)
+- **Backend API:** Ready for Rails implementation
 - **Authentication:** Specifications complete, implementation pending
 - **Payment Processing:** Stripe integration documented
 
