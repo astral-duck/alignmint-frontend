@@ -9,14 +9,12 @@ The Fund Accounting Hub is a navigation landing page that provides access to all
 
 ## UI Features
 
-### Tool Cards (7 tools)
-1. **Reconciliation** - Match and categorize bank transactions
-2. **Expenses** - Submit and approve expense requests
-3. **Reimbursements** - Manage reimbursement requests and approvals
-4. **Sponsor Fee Allocation** - Review and confirm monthly admin fees
-5. **Deposits** - Record regular deposits or scan checks
-6. **General Ledger** - Complete transaction history with debits and credits
-7. **Journal Entries** - Create manual journal entries and adjustments
+### Tool Cards (5 tools)
+1. **Expenses** - Submit and approve expense requests
+2. **Reimbursements** - Manage reimbursement requests and approvals
+3. **Deposits** - Record regular deposits or scan checks
+4. **General Ledger** - Complete transaction history with debits and credits
+5. **Journal Entries** - Create manual journal entries and adjustments
 
 ### Features
 - Grid layout (responsive: 1/2/3 columns)
@@ -30,10 +28,8 @@ The Fund Accounting Hub is a navigation landing page that provides access to all
 
 | Tool ID | Routes To | Component |
 |---------|-----------|-----------|
-| `reconciliation` | Fund Accounting → Reconciliation | ReconciliationManager |
 | `expenses` | Fund Accounting → Expenses | ExpensesManager |
 | `reimbursements` | Fund Accounting → Reimbursements | ReimbursementsManager |
-| `income-by-fund` | Fund Accounting → Fee Allocation | IncomeStatementByFund |
 | `deposits` | Fund Accounting → Deposit Hub | DepositHub (sub-hub) |
 | `general-ledger` | Fund Accounting → General Ledger | GeneralLedger |
 | `journal-entry` | Fund Accounting → Journal Entry | JournalEntryManager |

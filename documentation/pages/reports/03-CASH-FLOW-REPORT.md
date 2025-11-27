@@ -1,11 +1,11 @@
-# Profit & Loss Report (Income Statement by Fund)
+# Cash Flow Statement
 
-**Component File:** `src/components/ProfitLossReport.tsx`  
-**Route:** `/reports` (with tool='profit-loss')  
+**Component File:** `src/components/CashFlowReport.tsx`  
+**Route:** `/reports` (with tool='cash-flow')  
 **Access Level:** Admin, Manager
 
 ## Overview
-The Profit & Loss Report (also called Income Statement by Fund) provides a detailed breakdown of income and expenses using specific GL account codes. This report follows standard nonprofit accounting practices with account codes (4000-series for income, 5000-series for expenses) and supports drill-down to view individual transactions for each line item. It's similar to the Income Statement but uses more granular account-level detail.
+The Cash Flow Statement provides a detailed breakdown of cash inflows and outflows organized by activity type. This report follows standard nonprofit fund accounting practices, tracking cash movements from Operating Activities, with support for drill-down to view individual transactions for each line item. The statement shows how cash is received and disbursed during the reporting period.
 
 ## UI Features
 
@@ -15,14 +15,15 @@ The Profit & Loss Report (also called Income Statement by Fund) provides a detai
   - Date range selector (start and end dates)
   - Export button (Excel, PDF)
   - Back to Reports Hub button
-- **Income Section:**
-  - 4500 - Direct Public Support (Donations)
-  - 4510 - Initial Fee
-  - 4520 - Interest Income
-  - 4530 - Miscellaneous Revenue
-  - 4600 - Sales from Inventories
-  - Total Income
-- **Expense Section:**
+- **Cash Flows from Operating Activities:**
+  - Cash Received:
+    - 4500 - Direct Public Support (Donations)
+    - 4510 - Initial Fee
+    - 4520 - Interest Income
+    - 4530 - Miscellaneous Revenue
+    - 4600 - Sales from Inventories
+    - Cash Received from Operations (subtotal)
+  - Cash Disbursements:
   - 5001 - Advertising Expenses
   - 5002 - Bank Fees
   - 5003 - Board Education
@@ -43,9 +44,10 @@ The Profit & Loss Report (also called Income Statement by Fund) provides a detai
   - 6001 - Reconciliation Discrepancies
   - 6004 - Ask My Accountant
   - Total Expenses
-- **Net Income/Loss:**
-  - Total Income - Total Expenses
-  - Color-coded display
+- **Net Cash Flow:**
+  - Net Cash Provided by (Used in) Operating Activities
+  - Net Increase (Decrease) in Cash
+  - Color-coded display (green for positive, red for negative)
 - **Drill-Down Feature:**
   - Click any line item to view transactions
   - Transaction detail sheet with:
@@ -58,16 +60,18 @@ The Profit & Loss Report (also called Income Statement by Fund) provides a detai
 
 ### Account Code Structure
 ```
-INCOME (4000-4999)
+CASH FLOWS FROM OPERATING ACTIVITIES
+
+Cash Received:
   4500 - Direct Public Support          $47,204.68
   4510 - Initial Fee                     $2,500.00
   4520 - Interest Income                   $150.00
   4530 - Miscellaneous Revenue             $300.00
   4600 - Sales from Inventories          $1,200.00
   ───────────────────────────────────────────────
-  Total Income                          $51,354.68
+  Cash Received from Operations         $51,354.68
 
-EXPENSES (5000-6999)
+Cash Disbursements:
   5001 - Advertising Expenses            $2,855.35
   5002 - Bank Fees                       $1,432.01
   5003 - Board Education                     $0.00
@@ -88,9 +92,11 @@ EXPENSES (5000-6999)
   6001 - Reconciliation Discrepancies        $0.00
   6004 - Ask My Accountant                   $0.00
   ───────────────────────────────────────────────
-  Total Expenses                        $18,818.43
+  Total Cash Disbursements             ($18,818.43)
 
-NET INCOME                              $32,536.25
+Net Cash Provided by Operating Activities  $32,536.25
+
+NET INCREASE IN CASH                    $32,536.25
 ```
 
 ## Data Requirements
