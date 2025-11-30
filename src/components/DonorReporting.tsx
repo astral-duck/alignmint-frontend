@@ -42,7 +42,7 @@ import {
   SelectValue,
 } from './ui/select';
 import { Label } from './ui/label';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { PageHeader } from './PageHeader';
 import { Download } from 'lucide-react';
 import { DesktopOnlyWarning } from './DesktopOnlyWarning';

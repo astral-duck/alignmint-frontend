@@ -327,23 +327,23 @@ export const MemorizedTransactions: React.FC = () => {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Total Memorized</CardTitle></CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{filteredTransactions.length}</p>
+            <CardContent className="pt-6 text-center">
+              <p className="text-sm text-muted-foreground mb-2">Total Memorized</p>
+              <p className="text-3xl font-bold">{filteredTransactions.length}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Scheduled</CardTitle></CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <CardContent className="pt-6 text-center">
+              <p className="text-sm text-muted-foreground mb-2">Scheduled</p>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                 {filteredTransactions.filter(t => t.schedule_type !== 'manual').length}
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Manual</CardTitle></CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-gray-600 dark:text-gray-400">
+            <CardContent className="pt-6 text-center">
+              <p className="text-sm text-muted-foreground mb-2">Manual</p>
+              <p className="text-3xl font-bold text-gray-600 dark:text-gray-400">
                 {filteredTransactions.filter(t => t.schedule_type === 'manual').length}
               </p>
             </CardContent>

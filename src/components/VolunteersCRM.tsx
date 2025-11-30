@@ -60,7 +60,7 @@ import {
   SelectValue,
 } from './ui/select';
 import { Label } from './ui/label';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 type SortOption = 'name-asc' | 'name-desc' | 'hours-high' | 'hours-low' | 'date-newest' | 'date-oldest';
 type TypeFilter = 'all' | 'regular' | 'occasional' | 'event-based';

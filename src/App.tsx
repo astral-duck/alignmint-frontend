@@ -41,6 +41,8 @@ import { CashFlowReport } from './components/CashFlowReport';
 import { IncomeStatementReport } from './components/IncomeStatementReport';
 import { VolunteerHoursReport } from './components/VolunteerHoursReport';
 import { ComparativeReport } from './components/ComparativeReport';
+import { MileageTracker } from './components/MileageTracker';
+import { MileageReport } from './components/MileageReport';
 import { AdministrationHub } from './components/AdministrationHub';
 import { ToolsHub } from './components/ToolsHub';
 import { DraggableComponent } from './components/DraggableComponent';
@@ -280,6 +282,8 @@ const DashboardContent: React.FC = () => {
                 <DonorReporting />
               ) : reportTool === 'comparative' ? (
                 <ComparativeReport />
+              ) : reportTool === 'mileage' ? (
+                <MileageReport />
               ) : null
             ) : currentPage === 'tools-hub' ? (
               toolsTool === null ? (
@@ -290,6 +294,8 @@ const DashboardContent: React.FC = () => {
                 <SponsorFeeAllocation />
               ) : toolsTool === 'memorized-transactions' ? (
                 <MemorizedTransactions />
+              ) : toolsTool === 'mileage-tracker' ? (
+                <MileageTracker />
               ) : null
             ) : currentPage === 'administration-hub' ? (
               administrationTool === null ? (

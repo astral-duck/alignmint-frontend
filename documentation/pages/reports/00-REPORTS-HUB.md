@@ -9,13 +9,14 @@ The Reports Hub is a navigation landing page that provides access to all financi
 
 ## UI Features
 
-### Report Cards (6 reports)
+### Report Cards (7 reports)
 1. **Balance Sheet** - View assets, liabilities, and net assets
 2. **Cash Flow Statement** - Track cash inflows and outflows by activity
 3. **Income Statement** - Revenue minus expenses for net income
 4. **Volunteer Hours** - Track and report volunteer time
-5. **Donor Reporting** - Send end-of-year tax reports to donors
-6. **Comparative Report** - Compare reports side by side across periods
+5. **Mileage Report** - Annual mileage summary for tax deductions
+6. **Donor Reporting** - Send end-of-year tax reports to donors
+7. **Comparative Report** - Compare reports side by side across periods
 
 ### Features
 - Grid layout (responsive: 1/2/3 columns)
@@ -32,6 +33,7 @@ The Reports Hub is a navigation landing page that provides access to all financi
 | `cash-flow` | Reports → Cash Flow | CashFlowReport |
 | `income-statement` | Reports → Income Statement | IncomeStatementReport |
 | `volunteer-hours` | Reports → Volunteer Hours | VolunteerHoursReport |
+| `mileage` | Reports → Mileage Report | MileageReport |
 | `donor-reporting` | Reports → Donor Reporting | DonorReporting |
 | `comparative` | Reports → Comparative Report | ComparativeReport |
 
@@ -52,3 +54,4 @@ None required
 - [06-INCOME-STATEMENT-BY-FUND.md](./06-INCOME-STATEMENT-BY-FUND.md)
 - [07-DONOR-REPORTING.md](./07-DONOR-REPORTING.md)
 - [08-COMPARATIVE-REPORT.md](./08-COMPARATIVE-REPORT.md)
+- [09-MILEAGE-REPORT.md](./09-MILEAGE-REPORT.md)

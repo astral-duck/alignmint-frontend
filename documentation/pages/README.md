@@ -14,6 +14,7 @@ This documentation is organized by sidebar categories to match the application's
 7. **administration/** - System administration and settings
 
 ### Supporting Folders
+- **tools/** - Utility tools (Reconciliation, Sponsor Fees, Memorized Transactions, Mileage Tracker)
 - **components/** - Reusable UI component documentation
 - **PAGE-TEMPLATE.md** - Template for creating new documentation pages
 
@@ -31,7 +32,8 @@ Hub pages document the navigation landing pages that provide access to tools wit
 - **People Hub** (`/people`) - Groups & Teams, Volunteers, Hour Tracking
 - **Marketing Hub** (`/marketing`) - Campaigns, Prospects, Video Bomb
 - **Accounting Hub** (`/accounting`) - Chart of Accounts, Ledger, Journals, Expenses, etc.
-- **Reports Hub** (`/reports`) - Balance Sheet, Income Statement, P&L, etc.
+- **Reports Hub** (`/reports`) - Balance Sheet, Income Statement, Mileage Report, etc.
+- **Tools Hub** (`/tools`) - Reconciliation, Sponsor Fees, Memorized Transactions, Mileage Tracker
 - **Administration Hub** (`/administration`) - Nonprofit Management, User Management, Settings
 
 ## Tool Pages

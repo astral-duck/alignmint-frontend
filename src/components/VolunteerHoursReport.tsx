@@ -6,7 +6,7 @@ import { PageHeader } from './PageHeader';
 import { Download, ArrowLeft } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { MultiNonprofitExportDialog } from './MultiNonprofitExportDialog';
 import { exportToExcel, exportToPDF, prepareVolunteerHoursForExport } from '../lib/exportUtils';
 import {

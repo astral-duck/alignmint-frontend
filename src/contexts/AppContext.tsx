@@ -44,11 +44,11 @@ export type PersonnelTool = 'groups' | 'volunteers' | 'hour-tracking' | null;
 
 export type AccountingTool = 'expenses' | 'reimbursements' | 'deposits' | 'check-deposit' | 'regular-deposit' | 'general-ledger' | 'journal-entry' | null;
 
-export type ReportTool = 'balance-sheet' | 'cash-flow' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | 'comparative' | null;
+export type ReportTool = 'balance-sheet' | 'cash-flow' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | 'comparative' | 'mileage' | null;
 
 export type AdministrationTool = 'donor-management' | 'nonprofit-management' | 'chart-of-accounts' | null;
 
-export type ToolsTool = 'reconciliation' | 'sponsor-fee-allocation' | 'memorized-transactions' | null;
+export type ToolsTool = 'reconciliation' | 'sponsor-fee-allocation' | 'memorized-transactions' | 'mileage-tracker' | null;
 
 export type DashboardComponent = 'donations-chart' | 'recent-donations' | 'todo-list' | 'top-donors';
 

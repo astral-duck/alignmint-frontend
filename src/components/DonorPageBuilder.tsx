@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from './ui/select';
 import { ArrowLeft, Eye, Save } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 export interface DonorPageConfig {
   id: string;
@@ -26,12 +26,6 @@ export interface DonorPageConfig {
   suggestedAmounts: number[];
   allowCustomAmount: boolean;
   allowRecurring: boolean;
-  acceptCrypto: boolean;
-  cryptoAddresses: {
-    bitcoin?: string;
-    ethereum?: string;
-    usdc?: string;
-  };
   thankYouMessage: string;
   createdAt: string;
 }
@@ -53,12 +47,6 @@ export const DonorPageBuilder: React.FC<DonorPageBuilderProps> = ({ onClose, onS
     suggestedAmounts: [25, 50, 100, 250, 500, 1000],
     allowCustomAmount: true,
     allowRecurring: true,
-    acceptCrypto: true,
-    cryptoAddresses: {
-      bitcoin: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-      ethereum: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-      usdc: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-    },
     thankYouMessage: 'Thank you for your generous donation! Your support means the world to us and helps us continue our important work.',
   });
 
@@ -258,76 +246,6 @@ export const DonorPageBuilder: React.FC<DonorPageBuilderProps> = ({ onClose, onS
             </CardContent>
           </Card>
 
-          {/* Cryptocurrency Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Cryptocurrency Payments</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="acceptCrypto"
-                  checked={config.acceptCrypto}
-                  onChange={(e) => setConfig({ ...config, acceptCrypto: e.target.checked })}
-                  className="rounded"
-                />
-                <Label htmlFor="acceptCrypto" className="font-normal">
-                  Accept cryptocurrency donations
-                </Label>
-              </div>
-
-              {config.acceptCrypto && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="bitcoin">Bitcoin Address</Label>
-                    <Input
-                      id="bitcoin"
-                      value={config.cryptoAddresses.bitcoin || ''}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          cryptoAddresses: { ...config.cryptoAddresses, bitcoin: e.target.value },
-                        })
-                      }
-                      placeholder="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="ethereum">Ethereum Address</Label>
-                    <Input
-                      id="ethereum"
-                      value={config.cryptoAddresses.ethereum || ''}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          cryptoAddresses: { ...config.cryptoAddresses, ethereum: e.target.value },
-                        })
-                      }
-                      placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="usdc">USDC Address</Label>
-                    <Input
-                      id="usdc"
-                      value={config.cryptoAddresses.usdc || ''}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          cryptoAddresses: { ...config.cryptoAddresses, usdc: e.target.value },
-                        })
-                      }
-                      placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-                    />
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Thank You Message */}
           <Card>
             <CardHeader>
@@ -384,11 +302,6 @@ export const DonorPageBuilder: React.FC<DonorPageBuilderProps> = ({ onClose, onS
                     </Button>
                   ))}
                 </div>
-                {config.acceptCrypto && (
-                  <div className="pt-2 border-t text-xs text-gray-600 dark:text-gray-400">
-                    ✓ Cryptocurrency accepted
-                  </div>
-                )}
                 {config.allowRecurring && (
                   <div className="text-xs text-gray-600 dark:text-gray-400">
                     ✓ Monthly recurring available

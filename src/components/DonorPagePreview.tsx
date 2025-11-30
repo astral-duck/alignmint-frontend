@@ -10,12 +10,10 @@ import {
   ArrowLeft,
   Heart,
   CreditCard,
-  Bitcoin,
-  Check,
-  Copy,
   Calendar,
+  Check,
 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface DonorPagePreviewProps {
   config: DonorPageConfig;
@@ -26,10 +24,7 @@ export const DonorPagePreview: React.FC<DonorPagePreviewProps> = ({ config, onBa
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState('');
   const [isRecurring, setIsRecurring] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto'>('card');
-  const [cryptoCurrency, setCryptoCurrency] = useState<'bitcoin' | 'ethereum' | 'usdc'>('bitcoin');
   const [showSuccess, setShowSuccess] = useState(false);
-  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
 
   // Form states
   const [donorInfo, setDonorInfo] = useState({
@@ -55,24 +50,15 @@ export const DonorPagePreview: React.FC<DonorPagePreviewProps> = ({ config, onBa
     setSelectedAmount(null);
   };
 
-  const handleCopyAddress = (address: string, currency: string) => {
-    navigator.clipboard.writeText(address);
-    setCopiedAddress(currency);
-    toast.success(`${currency} address copied to clipboard`);
-    setTimeout(() => setCopiedAddress(null), 2000);
-  };
-
   const handleDonate = () => {
     if (!currentAmount || currentAmount <= 0) {
       toast.error('Please select or enter a donation amount');
       return;
     }
 
-    if (paymentMethod === 'card') {
-      if (!donorInfo.firstName || !donorInfo.lastName || !donorInfo.email) {
-        toast.error('Please fill in all required fields');
-        return;
-      }
+    if (!donorInfo.firstName || !donorInfo.lastName || !donorInfo.email) {
+      toast.error('Please fill in all required fields');
+      return;
     }
 
     // Show success message
@@ -272,34 +258,8 @@ export const DonorPagePreview: React.FC<DonorPagePreviewProps> = ({ config, onBa
                   </div>
                 )}
 
-                {/* Payment Method Selection */}
-                <div className="space-y-3">
-                  <Label>Payment Method</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      variant={paymentMethod === 'card' ? 'default' : 'outline'}
-                      onClick={() => setPaymentMethod('card')}
-                      className="gap-2"
-                    >
-                      <CreditCard className="h-4 w-4" />
-                      Card
-                    </Button>
-                    {config.acceptCrypto && (
-                      <Button
-                        variant={paymentMethod === 'crypto' ? 'default' : 'outline'}
-                        onClick={() => setPaymentMethod('crypto')}
-                        className="gap-2"
-                      >
-                        <Bitcoin className="h-4 w-4" />
-                        Crypto
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
                 {/* Payment Form - Credit Card */}
-                {paymentMethod === 'card' && (
-                  <div className="space-y-4 pt-2">
+                <div className="space-y-4 pt-2">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name *</Label>
@@ -369,88 +329,6 @@ export const DonorPagePreview: React.FC<DonorPagePreviewProps> = ({ config, onBa
                       </div>
                     </div>
                   </div>
-                )}
-
-                {/* Payment Form - Cryptocurrency */}
-                {paymentMethod === 'crypto' && config.acceptCrypto && (
-                  <div className="space-y-4 pt-2">
-                    <div className="space-y-2">
-                      <Label>Select Cryptocurrency</Label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <Button
-                          variant={cryptoCurrency === 'bitcoin' ? 'default' : 'outline'}
-                          onClick={() => setCryptoCurrency('bitcoin')}
-                          size="sm"
-                        >
-                          Bitcoin
-                        </Button>
-                        <Button
-                          variant={cryptoCurrency === 'ethereum' ? 'default' : 'outline'}
-                          onClick={() => setCryptoCurrency('ethereum')}
-                          size="sm"
-                        >
-                          Ethereum
-                        </Button>
-                        <Button
-                          variant={cryptoCurrency === 'usdc' ? 'default' : 'outline'}
-                          onClick={() => setCryptoCurrency('usdc')}
-                          size="sm"
-                        >
-                          USDC
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Send to this address:</Label>
-                      <div className="p-3 bg-gray-100 dark:bg-[#1F1F1F] rounded-lg">
-                        <div className="flex items-center justify-between gap-2">
-                          <code className="text-xs break-all">
-                            {cryptoCurrency === 'bitcoin' && config.cryptoAddresses.bitcoin}
-                            {cryptoCurrency === 'ethereum' && config.cryptoAddresses.ethereum}
-                            {cryptoCurrency === 'usdc' && config.cryptoAddresses.usdc}
-                          </code>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              const address =
-                                cryptoCurrency === 'bitcoin'
-                                  ? config.cryptoAddresses.bitcoin
-                                  : cryptoCurrency === 'ethereum'
-                                  ? config.cryptoAddresses.ethereum
-                                  : config.cryptoAddresses.usdc;
-                              if (address) {
-                                handleCopyAddress(address, cryptoCurrency.toUpperCase());
-                              }
-                            }}
-                          >
-                            {copiedAddress === cryptoCurrency.toUpperCase() ? (
-                              <Check className="h-4 w-4" />
-                            ) : (
-                              <Copy className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        After sending, please allow a few minutes for confirmation. You'll receive an
-                        email receipt once the transaction is confirmed.
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="cryptoEmail">Email for receipt *</Label>
-                      <Input
-                        id="cryptoEmail"
-                        type="email"
-                        value={donorInfo.email}
-                        onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
-                        placeholder="john@example.com"
-                      />
-                    </div>
-                  </div>
-                )}
 
                 {/* Donate Button */}
                 <Button
@@ -459,8 +337,7 @@ export const DonorPagePreview: React.FC<DonorPagePreviewProps> = ({ config, onBa
                   disabled={!currentAmount || currentAmount <= 0}
                 >
                   <Heart className="h-4 w-4" />
-                  {paymentMethod === 'card' ? 'Donate' : 'Confirm Transfer'}{' '}
-                  {currentAmount > 0 && `$${currentAmount}`}
+                  Donate {currentAmount > 0 && `$${currentAmount}`}
                   {isRecurring && '/mo'}
                 </Button>
 

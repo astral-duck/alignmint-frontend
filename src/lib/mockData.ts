@@ -1,4 +1,4 @@
-import { EntityId, TimePeriod } from '../contexts/AppContext';
+import { EntityId, TimePeriod, entities } from '../contexts/AppContext';
 
 // Metrics Data
 export interface MetricData {
@@ -176,14 +176,14 @@ export const getRecentDonations = (entityId: EntityId, timePeriod: TimePeriod = 
     return date.toISOString().split('T')[0];
   };
   const allDonations: Donation[] = [
-    { id: 'DN-1001', donor: 'Sarah Johnson', amount: '$500', type: 'recurring', date: generateDate(0), purpose: 'General Fund' },
-    { id: 'DN-1002', donor: 'Michael Chen', amount: '$2,500', type: 'one-time', date: generateDate(0), purpose: 'Building Project' },
-    { id: 'DN-1003', donor: 'Emily Rodriguez', amount: '$100', type: 'recurring', date: generateDate(1), purpose: 'Youth Programs' },
-    { id: 'DN-1004', donor: 'David Thompson', amount: '$1,000', type: 'event', date: generateDate(1), purpose: 'Annual Gala' },
-    { id: 'DN-1005', donor: 'Jennifer Lee', amount: '$250', type: 'one-time', date: generateDate(2), purpose: 'Food Pantry' },
-    { id: 'DN-1006', donor: 'Robert Martinez', amount: '$5,000', type: 'one-time', date: generateDate(2), purpose: 'Scholarship Fund' },
-    { id: 'DN-1007', donor: 'Lisa Anderson', amount: '$150', type: 'recurring', date: generateDate(3), purpose: 'General Fund' },
-    { id: 'DN-1008', donor: 'James Wilson', amount: '$750', type: 'one-time', date: generateDate(3), purpose: 'Community Outreach' },
+    { id: 'DN-1001', donor: 'Sarah Johnson', amount: '$500', type: 'recurring' as const, date: generateDate(0), purpose: 'General Fund' },
+    { id: 'DN-1002', donor: 'Michael Chen', amount: '$2,500', type: 'one-time' as const, date: generateDate(0), purpose: 'Building Project' },
+    { id: 'DN-1003', donor: 'Emily Rodriguez', amount: '$100', type: 'recurring' as const, date: generateDate(1), purpose: 'Youth Programs' },
+    { id: 'DN-1004', donor: 'David Thompson', amount: '$1,000', type: 'event' as const, date: generateDate(1), purpose: 'Annual Gala' },
+    { id: 'DN-1005', donor: 'Jennifer Lee', amount: '$250', type: 'one-time' as const, date: generateDate(2), purpose: 'Food Pantry' },
+    { id: 'DN-1006', donor: 'Robert Martinez', amount: '$5,000', type: 'one-time' as const, date: generateDate(2), purpose: 'Scholarship Fund' },
+    { id: 'DN-1007', donor: 'Lisa Anderson', amount: '$150', type: 'recurring' as const, date: generateDate(3), purpose: 'General Fund' },
+    { id: 'DN-1008', donor: 'James Wilson', amount: '$750', type: 'one-time' as const, date: generateDate(3), purpose: 'Community Outreach' },
   ].filter(d => {
     const donationDate = new Date(d.date);
     const cutoffDate = new Date(today);
@@ -422,9 +422,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Long-term Sustainer', 'Community Leader', 'Volunteer'],
     notes: 'One of our earliest supporters. Very involved in community events.',
     donationHistory: [
-      { date: '2025-10-10', amount: 500, type: 'recurring', cause: 'General Fund', method: 'Credit Card' },
-      { date: '2025-09-10', amount: 500, type: 'recurring', cause: 'General Fund', method: 'Credit Card' },
-      { date: '2025-08-10', amount: 500, type: 'recurring', cause: 'General Fund', method: 'Credit Card' },
+      { date: '2025-10-10', amount: 500, type: 'recurring', purpose: 'General Fund', method: 'Credit Card' },
+      { date: '2025-09-10', amount: 500, type: 'recurring', purpose: 'General Fund', method: 'Credit Card' },
+      { date: '2025-08-10', amount: 500, type: 'recurring', purpose: 'General Fund', method: 'Credit Card' },
     ],
     engagementScore: 97,
     lastContact: '2025-10-07',
@@ -444,9 +444,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Major Donor', 'Youth Programs'],
     notes: 'Especially interested in youth mentorship programs.',
     donationHistory: [
-      { date: '2025-10-05', amount: 1000, type: 'one-time', cause: 'Youth Mentorship', method: 'Credit Card' },
-      { date: '2025-07-12', amount: 1500, type: 'one-time', cause: 'Summer Camp', method: 'Check' },
-      { date: '2025-03-20', amount: 2000, type: 'one-time', cause: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-10-05', amount: 1000, type: 'one-time', purpose: 'Youth Mentorship', method: 'Credit Card' },
+      { date: '2025-07-12', amount: 1500, type: 'one-time', purpose: 'Summer Camp', method: 'Check' },
+      { date: '2025-03-20', amount: 2000, type: 'one-time', purpose: 'General Fund', method: 'Bank Transfer' },
     ],
     engagementScore: 82,
     lastContact: '2025-09-30',
@@ -470,9 +470,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Education Advocate'],
     notes: 'Teacher by profession. Very supportive of educational initiatives.',
     donationHistory: [
-      { date: '2025-10-09', amount: 300, type: 'recurring', cause: 'Education Programs', method: 'Credit Card' },
-      { date: '2025-09-09', amount: 300, type: 'recurring', cause: 'Education Programs', method: 'Credit Card' },
-      { date: '2025-08-09', amount: 300, type: 'recurring', cause: 'Education Programs', method: 'Credit Card' },
+      { date: '2025-10-09', amount: 300, type: 'recurring', purpose: 'Education Programs', method: 'Credit Card' },
+      { date: '2025-09-09', amount: 300, type: 'recurring', purpose: 'Education Programs', method: 'Credit Card' },
+      { date: '2025-08-09', amount: 300, type: 'recurring', purpose: 'Education Programs', method: 'Credit Card' },
     ],
     engagementScore: 88,
     lastContact: '2025-10-01',
@@ -492,9 +492,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Major Donor', 'Scholarship Fund'],
     notes: 'Funds scholarships for underprivileged students. Very generous supporter.',
     donationHistory: [
-      { date: '2025-08-22', amount: 2000, type: 'one-time', cause: 'Scholarship Fund', method: 'Check' },
-      { date: '2025-03-15', amount: 1500, type: 'one-time', cause: 'Scholarship Fund', method: 'Bank Transfer' },
-      { date: '2024-11-10', amount: 2000, type: 'one-time', cause: 'General Fund', method: 'Check' },
+      { date: '2025-08-22', amount: 2000, type: 'one-time', purpose: 'Scholarship Fund', method: 'Check' },
+      { date: '2025-03-15', amount: 1500, type: 'one-time', purpose: 'Scholarship Fund', method: 'Bank Transfer' },
+      { date: '2024-11-10', amount: 2000, type: 'one-time', purpose: 'General Fund', method: 'Check' },
     ],
     engagementScore: 86,
     lastContact: '2025-08-15',
@@ -518,9 +518,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Major Donor', 'Board Member', 'Child Advocate'],
     notes: 'Board member and major supporter. Deeply committed to child welfare.',
     donationHistory: [
-      { date: '2025-10-08', amount: 1000, type: 'recurring', cause: 'General Fund', method: 'Bank Transfer' },
-      { date: '2025-09-08', amount: 1000, type: 'recurring', cause: 'General Fund', method: 'Bank Transfer' },
-      { date: '2025-06-15', amount: 5000, type: 'one-time', cause: 'Emergency Fund', method: 'Check' },
+      { date: '2025-10-08', amount: 1000, type: 'recurring', purpose: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-09-08', amount: 1000, type: 'recurring', purpose: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-06-15', amount: 5000, type: 'one-time', purpose: 'Emergency Fund', method: 'Check' },
     ],
     engagementScore: 99,
     lastContact: '2025-10-06',
@@ -542,8 +542,8 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Foster Care Supporter'],
     notes: 'Former foster parent. Passionate about supporting youth in care.',
     donationHistory: [
-      { date: '2025-10-07', amount: 300, type: 'recurring', cause: 'Foster Care Program', method: 'Credit Card' },
-      { date: '2025-09-07', amount: 300, type: 'recurring', cause: 'Foster Care Program', method: 'Credit Card' },
+      { date: '2025-10-07', amount: 300, type: 'recurring', purpose: 'Foster Care Program', method: 'Credit Card' },
+      { date: '2025-09-07', amount: 300, type: 'recurring', purpose: 'Foster Care Program', method: 'Credit Card' },
     ],
     engagementScore: 91,
     lastContact: '2025-09-25',
@@ -567,10 +567,10 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Major Donor', 'International Programs', 'Monthly Sustainer'],
     notes: 'Visited Nepal in 2023. Very committed to international development.',
     donationHistory: [
-      { date: '2025-10-10', amount: 750, type: 'recurring', cause: 'General Fund', method: 'Credit Card' },
-      { date: '2025-09-10', amount: 750, type: 'recurring', cause: 'General Fund', method: 'Credit Card' },
-      { date: '2025-08-25', amount: 500, type: 'refund', cause: 'Duplicate Charge', method: 'Credit Card' },
-      { date: '2025-05-20', amount: 3000, type: 'one-time', cause: 'Building Project', method: 'Bank Transfer' },
+      { date: '2025-10-10', amount: 750, type: 'recurring', purpose: 'General Fund', method: 'Credit Card' },
+      { date: '2025-09-10', amount: 750, type: 'recurring', purpose: 'General Fund', method: 'Credit Card' },
+      { date: '2025-08-25', amount: 500, type: 'refund', purpose: 'Duplicate Charge', method: 'Credit Card' },
+      { date: '2025-05-20', amount: 3000, type: 'one-time', purpose: 'Building Project', method: 'Bank Transfer' },
     ],
     engagementScore: 94,
     lastContact: '2025-10-04',
@@ -592,8 +592,8 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Long-term Sustainer', 'Education Focus'],
     notes: 'Supports education initiatives in Nepal. Very reliable donor.',
     donationHistory: [
-      { date: '2025-10-05', amount: 300, type: 'recurring', cause: 'Education Fund', method: 'Credit Card' },
-      { date: '2025-09-05', amount: 300, type: 'recurring', cause: 'Education Fund', method: 'Credit Card' },
+      { date: '2025-10-05', amount: 300, type: 'recurring', purpose: 'Education Fund', method: 'Credit Card' },
+      { date: '2025-09-05', amount: 300, type: 'recurring', purpose: 'Education Fund', method: 'Credit Card' },
     ],
     engagementScore: 89,
     lastContact: '2025-09-28',
@@ -615,10 +615,10 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Major Donor', 'Water Access Advocate', 'Engineer'],
     notes: 'Civil engineer with expertise in water systems. Provides technical advice.',
     donationHistory: [
-      { date: '2025-09-30', amount: 5000, type: 'one-time', cause: 'Well Construction', method: 'Bank Transfer' },
-      { date: '2025-07-10', amount: 2000, type: 'refund', cause: 'Project Cancelled', method: 'Bank Transfer' },
-      { date: '2025-06-15', amount: 5000, type: 'one-time', cause: 'Water Filtration', method: 'Check' },
-      { date: '2025-01-20', amount: 5000, type: 'one-time', cause: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-09-30', amount: 5000, type: 'one-time', purpose: 'Well Construction', method: 'Bank Transfer' },
+      { date: '2025-07-10', amount: 2000, type: 'refund', purpose: 'Project Cancelled', method: 'Bank Transfer' },
+      { date: '2025-06-15', amount: 5000, type: 'one-time', purpose: 'Water Filtration', method: 'Check' },
+      { date: '2025-01-20', amount: 5000, type: 'one-time', purpose: 'General Fund', method: 'Bank Transfer' },
     ],
     engagementScore: 96,
     lastContact: '2025-09-22',
@@ -640,8 +640,8 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Global Health Advocate'],
     notes: 'Healthcare professional. Understands importance of clean water access.',
     donationHistory: [
-      { date: '2025-10-09', amount: 600, type: 'recurring', cause: 'Water Projects', method: 'Credit Card' },
-      { date: '2025-09-09', amount: 600, type: 'recurring', cause: 'Water Projects', method: 'Credit Card' },
+      { date: '2025-10-09', amount: 600, type: 'recurring', purpose: 'Water Projects', method: 'Credit Card' },
+      { date: '2025-09-09', amount: 600, type: 'recurring', purpose: 'Water Projects', method: 'Credit Card' },
     ],
     engagementScore: 92,
     lastContact: '2025-10-03',
@@ -665,10 +665,10 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Child Advocate', 'Former Teacher'],
     notes: 'Retired teacher passionate about youth development. Volunteers regularly.',
     donationHistory: [
-      { date: '2025-10-12', amount: 500, type: 'recurring', cause: 'Youth Programs', method: 'Credit Card' },
-      { date: '2025-09-12', amount: 500, type: 'recurring', cause: 'Youth Programs', method: 'Credit Card' },
-      { date: '2025-08-12', amount: 500, type: 'recurring', cause: 'Youth Programs', method: 'Credit Card' },
-      { date: '2025-07-12', amount: 500, type: 'recurring', cause: 'Youth Programs', method: 'Credit Card' },
+      { date: '2025-10-12', amount: 500, type: 'recurring', purpose: 'Youth Programs', method: 'Credit Card' },
+      { date: '2025-09-12', amount: 500, type: 'recurring', purpose: 'Youth Programs', method: 'Credit Card' },
+      { date: '2025-08-12', amount: 500, type: 'recurring', purpose: 'Youth Programs', method: 'Credit Card' },
+      { date: '2025-07-12', amount: 500, type: 'recurring', purpose: 'Youth Programs', method: 'Credit Card' },
     ],
     engagementScore: 94,
     lastContact: '2025-10-08',
@@ -688,9 +688,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Event Donor', 'Parent'],
     notes: 'Parent of youth program participant. Gives during fundraising events.',
     donationHistory: [
-      { date: '2025-09-28', amount: 1000, type: 'event', cause: 'Summer Camp Fund', method: 'Credit Card' },
-      { date: '2025-06-10', amount: 1000, type: 'event', cause: 'General Fund', method: 'Check' },
-      { date: '2025-03-15', amount: 1000, type: 'one-time', cause: 'Equipment Fund', method: 'Credit Card' },
+      { date: '2025-09-28', amount: 1000, type: 'event', purpose: 'Summer Camp Fund', method: 'Credit Card' },
+      { date: '2025-06-10', amount: 1000, type: 'event', purpose: 'General Fund', method: 'Check' },
+      { date: '2025-03-15', amount: 1000, type: 'one-time', purpose: 'Equipment Fund', method: 'Credit Card' },
     ],
     engagementScore: 87,
     lastContact: '2025-09-20',
@@ -714,10 +714,10 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Major Donor', 'Monthly Sustainer', 'Community Leader'],
     notes: 'Business owner who actively promotes the center in the community.',
     donationHistory: [
-      { date: '2025-10-14', amount: 750, type: 'recurring', cause: 'General Fund', method: 'Bank Transfer' },
-      { date: '2025-09-14', amount: 750, type: 'recurring', cause: 'General Fund', method: 'Bank Transfer' },
-      { date: '2025-08-14', amount: 750, type: 'recurring', cause: 'General Fund', method: 'Bank Transfer' },
-      { date: '2025-07-14', amount: 750, type: 'recurring', cause: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-10-14', amount: 750, type: 'recurring', purpose: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-09-14', amount: 750, type: 'recurring', purpose: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-08-14', amount: 750, type: 'recurring', purpose: 'General Fund', method: 'Bank Transfer' },
+      { date: '2025-07-14', amount: 750, type: 'recurring', purpose: 'General Fund', method: 'Bank Transfer' },
     ],
     engagementScore: 98,
     lastContact: '2025-10-10',
@@ -741,9 +741,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Men\'s Ministry'],
     notes: 'Active participant in men\'s groups. Strong advocate for the ministry.',
     donationHistory: [
-      { date: '2025-10-11', amount: 400, type: 'recurring', cause: 'Men\'s Programs', method: 'Credit Card' },
-      { date: '2025-09-11', amount: 400, type: 'recurring', cause: 'Men\'s Programs', method: 'Credit Card' },
-      { date: '2025-08-11', amount: 400, type: 'recurring', cause: 'Men\'s Programs', method: 'Credit Card' },
+      { date: '2025-10-11', amount: 400, type: 'recurring', purpose: 'Men\'s Programs', method: 'Credit Card' },
+      { date: '2025-09-11', amount: 400, type: 'recurring', purpose: 'Men\'s Programs', method: 'Credit Card' },
+      { date: '2025-08-11', amount: 400, type: 'recurring', purpose: 'Men\'s Programs', method: 'Credit Card' },
     ],
     engagementScore: 91,
     lastContact: '2025-10-05',
@@ -767,9 +767,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Grandparent', 'Volunteer'],
     notes: 'Grandparent who volunteers weekly. Very engaged with the kids.',
     donationHistory: [
-      { date: '2025-10-13', amount: 400, type: 'recurring', cause: 'Kids Ministry', method: 'Credit Card' },
-      { date: '2025-09-13', amount: 400, type: 'recurring', cause: 'Kids Ministry', method: 'Credit Card' },
-      { date: '2025-08-13', amount: 400, type: 'recurring', cause: 'Kids Ministry', method: 'Credit Card' },
+      { date: '2025-10-13', amount: 400, type: 'recurring', purpose: 'Kids Ministry', method: 'Credit Card' },
+      { date: '2025-09-13', amount: 400, type: 'recurring', purpose: 'Kids Ministry', method: 'Credit Card' },
+      { date: '2025-08-13', amount: 400, type: 'recurring', purpose: 'Kids Ministry', method: 'Credit Card' },
     ],
     engagementScore: 95,
     lastContact: '2025-10-11',
@@ -793,9 +793,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Young Professional'],
     notes: 'Young professional interested in mentorship programs.',
     donationHistory: [
-      { date: '2025-10-15', amount: 400, type: 'recurring', cause: 'Mentorship Fund', method: 'Credit Card' },
-      { date: '2025-09-15', amount: 400, type: 'recurring', cause: 'Mentorship Fund', method: 'Credit Card' },
-      { date: '2025-08-15', amount: 400, type: 'recurring', cause: 'Mentorship Fund', method: 'Credit Card' },
+      { date: '2025-10-15', amount: 400, type: 'recurring', purpose: 'Mentorship Fund', method: 'Credit Card' },
+      { date: '2025-09-15', amount: 400, type: 'recurring', purpose: 'Mentorship Fund', method: 'Credit Card' },
+      { date: '2025-08-15', amount: 400, type: 'recurring', purpose: 'Mentorship Fund', method: 'Credit Card' },
     ],
     engagementScore: 89,
     lastContact: '2025-10-12',
@@ -819,9 +819,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Community Service'],
     notes: 'Active volunteer in community outreach programs.',
     donationHistory: [
-      { date: '2025-10-09', amount: 500, type: 'recurring', cause: 'Community Outreach', method: 'Credit Card' },
-      { date: '2025-09-09', amount: 500, type: 'recurring', cause: 'Community Outreach', method: 'Credit Card' },
-      { date: '2025-08-09', amount: 500, type: 'recurring', cause: 'Community Outreach', method: 'Credit Card' },
+      { date: '2025-10-09', amount: 500, type: 'recurring', purpose: 'Community Outreach', method: 'Credit Card' },
+      { date: '2025-09-09', amount: 500, type: 'recurring', purpose: 'Community Outreach', method: 'Credit Card' },
+      { date: '2025-08-09', amount: 500, type: 'recurring', purpose: 'Community Outreach', method: 'Credit Card' },
     ],
     engagementScore: 93,
     lastContact: '2025-10-06',
@@ -845,9 +845,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Couple', 'Marriage Enrichment'],
     notes: 'Married couple who have benefited from marriage programs.',
     donationHistory: [
-      { date: '2025-10-14', amount: 400, type: 'recurring', cause: 'Marriage Programs', method: 'Credit Card' },
-      { date: '2025-09-14', amount: 400, type: 'recurring', cause: 'Marriage Programs', method: 'Credit Card' },
-      { date: '2025-08-14', amount: 400, type: 'recurring', cause: 'Marriage Programs', method: 'Credit Card' },
+      { date: '2025-10-14', amount: 400, type: 'recurring', purpose: 'Marriage Programs', method: 'Credit Card' },
+      { date: '2025-09-14', amount: 400, type: 'recurring', purpose: 'Marriage Programs', method: 'Credit Card' },
+      { date: '2025-08-14', amount: 400, type: 'recurring', purpose: 'Marriage Programs', method: 'Credit Card' },
     ],
     engagementScore: 88,
     lastContact: '2025-10-08',
@@ -871,9 +871,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Recovery Support'],
     notes: 'Supporter of recovery and breakthrough programs.',
     donationHistory: [
-      { date: '2025-09-30', amount: 400, type: 'recurring', cause: 'Recovery Programs', method: 'Credit Card' },
-      { date: '2025-08-30', amount: 400, type: 'recurring', cause: 'Recovery Programs', method: 'Credit Card' },
-      { date: '2025-07-30', amount: 400, type: 'recurring', cause: 'Recovery Programs', method: 'Credit Card' },
+      { date: '2025-09-30', amount: 400, type: 'recurring', purpose: 'Recovery Programs', method: 'Credit Card' },
+      { date: '2025-08-30', amount: 400, type: 'recurring', purpose: 'Recovery Programs', method: 'Credit Card' },
+      { date: '2025-07-30', amount: 400, type: 'recurring', purpose: 'Recovery Programs', method: 'Credit Card' },
     ],
     engagementScore: 86,
     lastContact: '2025-09-25',
@@ -897,9 +897,9 @@ const allDonorProfiles: DonorProfile[] = [
     tags: ['Monthly Sustainer', 'Worship Leader', 'Prayer Ministry'],
     notes: 'Active in worship and prayer ministries. Very spiritual.',
     donationHistory: [
-      { date: '2025-10-10', amount: 300, type: 'recurring', cause: 'Worship Ministry', method: 'Credit Card' },
-      { date: '2025-09-10', amount: 300, type: 'recurring', cause: 'Worship Ministry', method: 'Credit Card' },
-      { date: '2025-08-10', amount: 300, type: 'recurring', cause: 'Worship Ministry', method: 'Credit Card' },
+      { date: '2025-10-10', amount: 300, type: 'recurring', purpose: 'Worship Ministry', method: 'Credit Card' },
+      { date: '2025-09-10', amount: 300, type: 'recurring', purpose: 'Worship Ministry', method: 'Credit Card' },
+      { date: '2025-08-10', amount: 300, type: 'recurring', purpose: 'Worship Ministry', method: 'Credit Card' },
     ],
     engagementScore: 92,
     lastContact: '2025-10-07',
@@ -1373,7 +1373,7 @@ export interface DonationRecord {
   type: 'one-time' | 'recurring' | 'event';
   method: 'credit-card' | 'bank-transfer' | 'check' | 'cash' | 'paypal' | 'other';
   status: 'completed' | 'pending' | 'failed' | 'refunded';
-  cause: string;
+  purpose: string;
   campaign?: string;
   notes?: string;
   receiptSent: boolean;
@@ -1391,7 +1391,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: true,
     entityId: 'awakenings',
     taxDeductible: true,
@@ -1405,7 +1405,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'check',
     status: 'completed',
-    cause: 'Building Project',
+    purpose: 'Building Project',
     campaign: 'New Facility Fund',
     receiptSent: true,
     entityId: 'awakenings',
@@ -1419,7 +1419,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: true,
     entityId: 'awakenings',
     taxDeductible: true,
@@ -1432,7 +1432,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'cash',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: false,
     entityId: 'awakenings',
     taxDeductible: true,
@@ -1446,7 +1446,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: true,
     entityId: 'awakenings',
     taxDeductible: true,
@@ -1461,7 +1461,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'Mental Health Programs',
+    purpose: 'Mental Health Programs',
     receiptSent: true,
     entityId: 'bloom-strong',
     taxDeductible: true,
@@ -1474,7 +1474,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'bank-transfer',
     status: 'completed',
-    cause: 'Wellness Retreat',
+    purpose: 'Wellness Retreat',
     campaign: 'Annual Wellness Retreat 2025',
     receiptSent: true,
     entityId: 'bloom-strong',
@@ -1488,7 +1488,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'paypal',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: false,
     entityId: 'bloom-strong',
     taxDeductible: true,
@@ -1504,7 +1504,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: true,
     entityId: 'bonfire',
     taxDeductible: true,
@@ -1517,7 +1517,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'credit-card',
     status: 'completed',
-    cause: 'Youth Mentorship',
+    purpose: 'Youth Mentorship',
     receiptSent: true,
     entityId: 'bonfire',
     taxDeductible: true,
@@ -1530,7 +1530,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'check',
     status: 'completed',
-    cause: 'Summer Camp',
+    purpose: 'Summer Camp',
     campaign: 'Summer Camp Scholarship Fund',
     receiptSent: true,
     entityId: 'bonfire',
@@ -1546,7 +1546,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'Education Programs',
+    purpose: 'Education Programs',
     receiptSent: true,
     entityId: 'breakthrough',
     taxDeductible: true,
@@ -1559,7 +1559,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'check',
     status: 'completed',
-    cause: 'Scholarship Fund',
+    purpose: 'Scholarship Fund',
     receiptSent: true,
     entityId: 'breakthrough',
     taxDeductible: true,
@@ -1572,7 +1572,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'other',
     status: 'pending',
-    cause: 'Scholarship Fund',
+    purpose: 'Scholarship Fund',
     receiptSent: false,
     entityId: 'breakthrough',
     taxDeductible: true,
@@ -1588,7 +1588,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'bank-transfer',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: true,
     entityId: 'child-youth-care',
     taxDeductible: true,
@@ -1601,7 +1601,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'Foster Care Program',
+    purpose: 'Foster Care Program',
     receiptSent: true,
     entityId: 'child-youth-care',
     taxDeductible: true,
@@ -1614,7 +1614,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'check',
     status: 'completed',
-    cause: 'Emergency Fund',
+    purpose: 'Emergency Fund',
     campaign: 'Emergency Family Support',
     receiptSent: true,
     entityId: 'child-youth-care',
@@ -1630,7 +1630,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: true,
     entityId: 'hugs-center',
     taxDeductible: true,
@@ -1643,7 +1643,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'Education Fund',
+    purpose: 'Education Fund',
     receiptSent: true,
     entityId: 'hugs-center',
     taxDeductible: true,
@@ -1656,7 +1656,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'bank-transfer',
     status: 'completed',
-    cause: 'Building Project',
+    purpose: 'Building Project',
     campaign: 'New School Building',
     receiptSent: true,
     entityId: 'hugs-center',
@@ -1672,7 +1672,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'bank-transfer',
     status: 'completed',
-    cause: 'Well Construction',
+    purpose: 'Well Construction',
     receiptSent: true,
     entityId: 'pure-water',
     taxDeductible: true,
@@ -1685,7 +1685,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'recurring',
     method: 'credit-card',
     status: 'completed',
-    cause: 'Water Projects',
+    purpose: 'Water Projects',
     receiptSent: true,
     entityId: 'pure-water',
     taxDeductible: true,
@@ -1698,7 +1698,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'check',
     status: 'completed',
-    cause: 'Water Filtration',
+    purpose: 'Water Filtration',
     campaign: 'Clean Water Initiative',
     receiptSent: true,
     entityId: 'pure-water',
@@ -1712,7 +1712,7 @@ const allDonationRecords: DonationRecord[] = [
     type: 'one-time',
     method: 'other',
     status: 'completed',
-    cause: 'General Fund',
+    purpose: 'General Fund',
     receiptSent: false,
     entityId: 'pure-water',
     taxDeductible: true,
@@ -2531,4 +2531,91 @@ export const getReimbursementRequests = (entityId: EntityId, status?: Reimbursem
 
 export const getExpenseById = (expenseId: string): Expense | null => {
   return allExpenses.find(e => e.id === expenseId) || null;
+};
+
+// Mileage Data
+export interface MileageEntry {
+  id: string;
+  date: string;
+  miles: number;
+  purpose: string;
+  startLocation?: string;
+  endLocation?: string;
+  entityId: string;
+  entityName: string;
+  createdAt: string;
+}
+
+const mileagePurposes = [
+  'Client visit',
+  'Supply pickup',
+  'Meeting with partner organization',
+  'Event setup',
+  'Bank deposit',
+  'Post office run',
+  'Volunteer coordination',
+  'Community outreach',
+];
+
+// Generate consistent mileage data using a seed based on entity ID
+const generateMileageEntriesForEntity = (entityId: string, entityName: string, seed: number): MileageEntry[] => {
+  const entries: MileageEntry[] = [];
+  const numEntries = (seed % 10) + 8; // 8-17 entries per entity
+  
+  for (let i = 0; i < numEntries; i++) {
+    // Use deterministic "random" based on seed
+    const dayOffset = ((seed * (i + 1) * 7) % 365);
+    const date = new Date();
+    date.setDate(date.getDate() - dayOffset);
+    
+    const miles = ((seed * (i + 1) * 13) % 45) + 5; // 5-50 miles
+    const purposeIndex = (seed * (i + 1)) % mileagePurposes.length;
+    
+    entries.push({
+      id: `mileage-${entityId}-${i}`,
+      date: date.toISOString().split('T')[0],
+      miles,
+      purpose: mileagePurposes[purposeIndex],
+      startLocation: 'Office',
+      endLocation: 'Various',
+      entityId,
+      entityName,
+      createdAt: date.toISOString(),
+    });
+  }
+  
+  return entries;
+};
+
+// Cache the mileage data so it's consistent across components
+let cachedMileageData: MileageEntry[] | null = null;
+
+export const getAllMileageEntries = (): MileageEntry[] => {
+  if (cachedMileageData) return cachedMileageData;
+  
+  const nonprofits = entities.filter(e => e.id !== 'all' && e.id !== 'infocus' && e.type === 'nonprofit');
+  
+  const allEntries: MileageEntry[] = [];
+  
+  nonprofits.forEach((nonprofit, index) => {
+    const seed = nonprofit.id.charCodeAt(0) + index + 1;
+    const entries = generateMileageEntriesForEntity(nonprofit.id, nonprofit.name, seed);
+    allEntries.push(...entries);
+  });
+  
+  // Sort by date descending
+  allEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  cachedMileageData = allEntries;
+  return allEntries;
+};
+
+export const getMileageEntries = (entityId: EntityId): MileageEntry[] => {
+  const allEntries = getAllMileageEntries();
+  
+  if (entityId === 'all' || entityId === 'infocus') {
+    return allEntries;
+  }
+  
+  return allEntries.filter(e => e.entityId === entityId);
 };

@@ -1,10 +1,10 @@
 import React from 'react';
-import { FileText, TrendingUp, BarChart3, Clock, Users, GitCompare } from 'lucide-react';
+import { FileText, TrendingUp, BarChart3, Clock, Users, GitCompare, Car } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { PageHeader } from './PageHeader';
 
 interface ReportsHubProps {
-  onSelectReport: (report: 'balance-sheet' | 'cash-flow' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | 'comparative') => void;
+  onSelectReport: (report: 'balance-sheet' | 'cash-flow' | 'income-statement' | 'volunteer-hours' | 'donor-reporting' | 'comparative' | 'mileage') => void;
 }
 
 export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
@@ -57,13 +57,21 @@ export const ReportsHub: React.FC<ReportsHubProps> = ({ onSelectReport }) => {
       color: 'text-rose-600 dark:text-rose-400',
       bgColor: 'bg-rose-50 dark:bg-rose-950/20',
     },
+    {
+      id: 'mileage' as const,
+      title: 'Mileage Report',
+      description: 'Annual mileage summary for tax deductions',
+      icon: Car,
+      color: 'text-cyan-600 dark:text-cyan-400',
+      bgColor: 'bg-cyan-50 dark:bg-cyan-950/20',
+    },
   ];
 
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Financial Reports"
-        subtitle="View and export comprehensive financial reports"
+        title="Reports"
+        subtitle="View and export comprehensive reports"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

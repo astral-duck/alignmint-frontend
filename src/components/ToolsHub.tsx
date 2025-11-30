@@ -1,10 +1,10 @@
 import React from 'react';
-import { RefreshCw, PieChart, Clock } from 'lucide-react';
+import { RefreshCw, PieChart, Clock, Car } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { PageHeader } from './PageHeader';
 
 interface ToolsHubProps {
-  onSelectTool: (tool: 'reconciliation' | 'sponsor-fee-allocation' | 'memorized-transactions') => void;
+  onSelectTool: (tool: 'reconciliation' | 'sponsor-fee-allocation' | 'memorized-transactions' | 'mileage-tracker') => void;
 }
 
 export const ToolsHub: React.FC<ToolsHubProps> = ({ onSelectTool }) => {
@@ -32,6 +32,14 @@ export const ToolsHub: React.FC<ToolsHubProps> = ({ onSelectTool }) => {
       icon: Clock,
       color: 'text-rose-600 dark:text-rose-400',
       bgColor: 'bg-rose-50 dark:bg-rose-950/20',
+    },
+    {
+      id: 'mileage-tracker' as const,
+      title: 'Mileage Tracker',
+      description: 'Track business miles for tax deductions',
+      icon: Car,
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-50 dark:bg-blue-950/20',
     },
   ];
 
