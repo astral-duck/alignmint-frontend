@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp, entities } from '../contexts/AppContext';
+import { useApp, entities, EntityId } from '../contexts/AppContext';
 import { getProfitLoss } from '../lib/financialData';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -7,7 +7,7 @@ import { Separator } from './ui/separator';
 import { Download, ArrowLeft, ChevronRight } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { exportToExcel, exportToPDF, prepareProfitLossForExport } from '../lib/exportUtils';
 import { PageHeader } from './PageHeader';
 import {
@@ -585,7 +585,7 @@ export const CashFlowReport: React.FC = () => {
       if (!nonprofit) return;
 
       // Get the P&L data for this nonprofit
-      const profitLossData = getProfitLoss(nonprofitId);
+      const profitLossData = getProfitLoss(nonprofitId as EntityId);
       if (!profitLossData) return;
       
       if (format === 'xlsx') {
@@ -1146,7 +1146,7 @@ export const CashFlowReport: React.FC = () => {
       <MultiNonprofitExportDialog
         open={exportDialogOpen}
         onOpenChange={setExportDialogOpen}
-        reportType="cash-flow"
+        reportType="profit-loss"
         onExport={handleMultiNonprofitExport}
       />
     </div>

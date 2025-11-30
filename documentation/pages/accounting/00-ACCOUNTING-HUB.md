@@ -2,10 +2,14 @@
 
 **Component File:** `src/components/AccountingHub.tsx`  
 **Route:** `/accounting`  
-**Access Level:** Admin, Manager, Accounting Staff
+**Access Level:** Admin, Manager, Accounting Staff  
+**Last Updated:** November 30, 2025
 
 ## Overview
+
 The Fund Accounting Hub is a navigation landing page that provides access to all fund accounting-related tools. It displays a grid of tool cards, each linking to a specific accounting function. The hub supports visibility customization, allowing users to show/hide tools based on their needs.
+
+**For system integration details, see:** [02-ACCOUNTING-SYSTEM-INTEGRATION.md](./02-ACCOUNTING-SYSTEM-INTEGRATION.md)
 
 ## UI Features
 
@@ -45,11 +49,17 @@ None - pure navigation component
 - `toggleTileVisibility(pageId, toolId)` - Toggle tool visibility
 
 ## Related Documentation
-- [../accounting/03-CHART-OF-ACCOUNTS.md](../accounting/03-CHART-OF-ACCOUNTS.md)
-- [../accounting/04-GENERAL-LEDGER.md](../accounting/04-GENERAL-LEDGER.md)
-- [../accounting/05-JOURNAL-ENTRY-MANAGER.md](../accounting/05-JOURNAL-ENTRY-MANAGER.md)
-- [../accounting/06-EXPENSES-MANAGER.md](../accounting/06-EXPENSES-MANAGER.md)
-- [../accounting/07-REIMBURSEMENTS-MANAGER.md](../accounting/07-REIMBURSEMENTS-MANAGER.md)
-- [../accounting/08-CHECK-DEPOSIT-MANAGER.md](../accounting/08-CHECK-DEPOSIT-MANAGER.md)
-- [../accounting/09-RECONCILIATION-MANAGER.md](../accounting/09-RECONCILIATION-MANAGER.md)
-- [../accounting/10-REGULAR-DEPOSIT-MANAGER.md](../accounting/10-REGULAR-DEPOSIT-MANAGER.md)
+
+### System Integration (Start Here)
+- [02-ACCOUNTING-SYSTEM-INTEGRATION.md](./02-ACCOUNTING-SYSTEM-INTEGRATION.md) - **How all modules work together**
+
+### Individual Module Documentation
+- [03-CHART-OF-ACCOUNTS.md](./03-CHART-OF-ACCOUNTS.md) - Account structure
+- [04-GENERAL-LEDGER.md](./04-GENERAL-LEDGER.md) - Transaction history
+- [05-JOURNAL-ENTRY-MANAGER.md](./05-JOURNAL-ENTRY-MANAGER.md) - Manual entries (central hub)
+- [06-EXPENSES-MANAGER.md](./06-EXPENSES-MANAGER.md) - Expense tracking
+- [07-REIMBURSEMENTS-MANAGER.md](./07-REIMBURSEMENTS-MANAGER.md) - Employee reimbursements
+- [08-CHECK-DEPOSIT-MANAGER.md](./08-CHECK-DEPOSIT-MANAGER.md) - Check deposits with OCR
+- [09-RECONCILIATION-MANAGER.md](./09-RECONCILIATION-MANAGER.md) - Bank reconciliation
+- [10-REGULAR-DEPOSIT-MANAGER.md](./10-REGULAR-DEPOSIT-MANAGER.md) - Manual deposits
+- [11-DISTRIBUTION-MANAGER.md](./11-DISTRIBUTION-MANAGER.md) - Fiscal sponsor distributions

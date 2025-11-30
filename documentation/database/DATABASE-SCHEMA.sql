@@ -302,119 +302,201 @@ CREATE TABLE bank_accounts (
 
 CREATE INDEX idx_bank_accounts_org ON bank_accounts(organization_id);
 
--- Ledger Entries (General Ledger)
+-- Ledger Entries (General Ledger - populated from posted Journal Entries)
+-- Each ledger entry corresponds to one journal entry line
 CREATE TABLE ledger_entries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    journal_entry_id UUID NOT NULL REFERENCES journal_entries(id),  -- Source journal entry
+    journal_entry_line_id UUID NOT NULL REFERENCES journal_entry_lines(id),  -- Source line
     account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+    fund_id UUID REFERENCES organizations(id),  -- Fund attribution (copied from JE line)
     transaction_date DATE NOT NULL,
     description TEXT NOT NULL,
+    memo TEXT,
     debit DECIMAL(12,2) DEFAULT 0,
     credit DECIMAL(12,2) DEFAULT 0,
-    balance DECIMAL(12,2),
-    reference_type VARCHAR(100), -- 'donation', 'expense', 'journal_entry', etc.
-    reference_id UUID,
-    created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    running_balance DECIMAL(12,2),  -- Calculated by backend per account
+    reference_type VARCHAR(100),  -- Source type for drill-down (copied from JE)
+    reference_id UUID,  -- Source ID for drill-down (copied from JE)
+    is_reconciled BOOLEAN DEFAULT false,
+    reconciled_at TIMESTAMP,
+    reconciled_by_id UUID REFERENCES users(id),
+    reconciliation_id UUID,  -- Will reference reconciliations table
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_ledger_entries_org ON ledger_entries(organization_id);
+CREATE INDEX idx_ledger_entries_journal ON ledger_entries(journal_entry_id);
 CREATE INDEX idx_ledger_entries_account ON ledger_entries(account_id);
+CREATE INDEX idx_ledger_entries_fund ON ledger_entries(fund_id);
 CREATE INDEX idx_ledger_entries_date ON ledger_entries(transaction_date);
 CREATE INDEX idx_ledger_entries_reference ON ledger_entries(reference_type, reference_id);
+CREATE INDEX idx_ledger_entries_reconciled ON ledger_entries(is_reconciled);
+CREATE INDEX idx_ledger_entries_reconciliation ON ledger_entries(reconciliation_id);
 
--- Journal Entries
+-- Journal Entries (Central Hub for All Accounting Transactions)
+-- See: documentation/pages/accounting/02-ACCOUNTING-SYSTEM-INTEGRATION.md
 CREATE TABLE journal_entries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    entry_number VARCHAR(50) UNIQUE NOT NULL,
+    entity_id UUID REFERENCES organizations(id),  -- Primary fund/nonprofit for this entry
+    entry_number VARCHAR(50) NOT NULL,  -- Auto-generated: JE-YYYY-NNN
     entry_date DATE NOT NULL,
     description TEXT NOT NULL,
-    status VARCHAR(50) DEFAULT 'draft', -- 'draft', 'posted', 'void'
-    created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    posted_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    memo TEXT,  -- Additional notes
+    status VARCHAR(50) DEFAULT 'draft',  -- 'draft', 'posted', 'voided'
+    source_type VARCHAR(50) DEFAULT 'manual',  -- 'manual', 'expense', 'reimbursement', 'deposit', 'distribution', 'void_reversal'
+    source_id UUID,  -- Reference to source transaction (expense_id, reimbursement_id, etc.)
+    created_by_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    posted_by_id UUID REFERENCES users(id) ON DELETE SET NULL,
     posted_at TIMESTAMP,
+    voided_by_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    voided_at TIMESTAMP,
+    void_reason TEXT,
+    reversing_entry_id UUID REFERENCES journal_entries(id),  -- Links to reversing entry when voided
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(organization_id, entry_number)
 );
 
 CREATE INDEX idx_journal_entries_org ON journal_entries(organization_id);
+CREATE INDEX idx_journal_entries_entity ON journal_entries(entity_id);
 CREATE INDEX idx_journal_entries_date ON journal_entries(entry_date);
 CREATE INDEX idx_journal_entries_status ON journal_entries(status);
+CREATE INDEX idx_journal_entries_source ON journal_entries(source_type, source_id);
+CREATE INDEX idx_journal_entries_number ON journal_entries(entry_number);
 
--- Journal Entry Lines
+-- Journal Entry Lines (Detail lines for each journal entry)
 CREATE TABLE journal_entry_lines (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     journal_entry_id UUID NOT NULL REFERENCES journal_entries(id) ON DELETE CASCADE,
     account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+    fund_id UUID REFERENCES organizations(id),  -- Fund attribution per line (enables multi-fund entries)
+    line_number INTEGER NOT NULL DEFAULT 1,  -- Display order within entry
     description TEXT,
-    debit DECIMAL(12,2) DEFAULT 0,
-    credit DECIMAL(12,2) DEFAULT 0,
+    memo TEXT,
+    debit DECIMAL(12,2) DEFAULT 0 CHECK (debit >= 0),
+    credit DECIMAL(12,2) DEFAULT 0 CHECK (credit >= 0),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    -- Ensure each line has either debit or credit, not both
+    CONSTRAINT check_debit_or_credit CHECK (
+        (debit > 0 AND credit = 0) OR (debit = 0 AND credit > 0) OR (debit = 0 AND credit = 0)
+    )
 );
 
 CREATE INDEX idx_journal_entry_lines_entry ON journal_entry_lines(journal_entry_id);
 CREATE INDEX idx_journal_entry_lines_account ON journal_entry_lines(account_id);
+CREATE INDEX idx_journal_entry_lines_fund ON journal_entry_lines(fund_id);
 
--- Expenses
+-- Expenses (linked to Journal Entries when paid)
 CREATE TABLE expenses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     employee_id UUID REFERENCES personnel(id) ON DELETE SET NULL,
+    account_id UUID REFERENCES accounts(id),  -- Expense account from Chart of Accounts
+    fund_id UUID REFERENCES organizations(id),  -- Fund attribution
     category VARCHAR(100) NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
     expense_date DATE NOT NULL,
     vendor VARCHAR(255),
     description TEXT NOT NULL,
     receipt_url TEXT,
-    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'paid'
-    approved_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    payment_method VARCHAR(50),  -- 'check', 'credit_card', 'ach', 'cash', 'wire'
+    check_number VARCHAR(50),
+    reference_number VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'pending',  -- 'pending', 'approved', 'rejected', 'paid'
+    approved_by_id UUID REFERENCES users(id) ON DELETE SET NULL,
     approved_at TIMESTAMP,
+    paid_at TIMESTAMP,
+    journal_entry_id UUID REFERENCES journal_entries(id),  -- Created when marked as paid
+    created_by_id UUID REFERENCES users(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_expenses_org ON expenses(organization_id);
 CREATE INDEX idx_expenses_employee ON expenses(employee_id);
+CREATE INDEX idx_expenses_account ON expenses(account_id);
+CREATE INDEX idx_expenses_fund ON expenses(fund_id);
 CREATE INDEX idx_expenses_status ON expenses(status);
 CREATE INDEX idx_expenses_date ON expenses(expense_date);
+CREATE INDEX idx_expenses_journal ON expenses(journal_entry_id);
 
--- Reimbursements
+-- Reimbursements (linked to Journal Entries when paid)
 CREATE TABLE reimbursements (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-    employee_id UUID NOT NULL REFERENCES personnel(id) ON DELETE CASCADE,
-    total_amount DECIMAL(12,2) NOT NULL,
-    submission_date DATE NOT NULL,
-    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'paid'
-    approved_by UUID REFERENCES users(id) ON DELETE SET NULL,
-    approved_at TIMESTAMP,
-    paid_at TIMESTAMP,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,  -- Person requesting reimbursement
+    account_id UUID REFERENCES accounts(id),  -- Expense account from Chart of Accounts
+    fund_id UUID REFERENCES organizations(id),  -- Fund attribution
+    amount DECIMAL(12,2) NOT NULL,
+    expense_date DATE NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    receipt_url TEXT,
+    receipt_urls TEXT[],  -- Multiple receipts
+    payment_method VARCHAR(50),  -- 'check', 'direct_deposit', 'cash'
+    status VARCHAR(50) DEFAULT 'pending',  -- 'pending', 'approved', 'rejected', 'paid'
     notes TEXT,
+    approved_by_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    approved_at TIMESTAMP,
+    rejection_reason TEXT,
+    paid_at TIMESTAMP,
+    journal_entry_id UUID REFERENCES journal_entries(id),  -- Created when marked as paid
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_reimbursements_org ON reimbursements(organization_id);
-CREATE INDEX idx_reimbursements_employee ON reimbursements(employee_id);
+CREATE INDEX idx_reimbursements_user ON reimbursements(user_id);
+CREATE INDEX idx_reimbursements_account ON reimbursements(account_id);
+CREATE INDEX idx_reimbursements_fund ON reimbursements(fund_id);
 CREATE INDEX idx_reimbursements_status ON reimbursements(status);
+CREATE INDEX idx_reimbursements_journal ON reimbursements(journal_entry_id);
 
--- Reimbursement Items
-CREATE TABLE reimbursement_items (
+-- Deposit Batches (for Check Deposits and Regular Deposits)
+CREATE TABLE deposit_batches (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    reimbursement_id UUID NOT NULL REFERENCES reimbursements(id) ON DELETE CASCADE,
-    category VARCHAR(100) NOT NULL,
-    amount DECIMAL(12,2) NOT NULL,
-    expense_date DATE NOT NULL,
-    description TEXT NOT NULL,
-    receipt_url TEXT,
+    organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    deposit_type VARCHAR(50) NOT NULL,  -- 'check', 'regular'
+    deposit_date DATE NOT NULL,
+    bank_account_id UUID NOT NULL REFERENCES bank_accounts(id),
+    total_amount DECIMAL(12,2) NOT NULL,
+    item_count INTEGER NOT NULL DEFAULT 0,
+    status VARCHAR(50) DEFAULT 'pending',  -- 'pending', 'finalized'
+    journal_entry_id UUID REFERENCES journal_entries(id),  -- Created when finalized
+    finalized_by_id UUID REFERENCES users(id),
+    finalized_at TIMESTAMP,
+    created_by_id UUID NOT NULL REFERENCES users(id),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_reimbursement_items_reimbursement ON reimbursement_items(reimbursement_id);
+CREATE INDEX idx_deposit_batches_org ON deposit_batches(organization_id);
+CREATE INDEX idx_deposit_batches_status ON deposit_batches(status);
+CREATE INDEX idx_deposit_batches_date ON deposit_batches(deposit_date);
+CREATE INDEX idx_deposit_batches_journal ON deposit_batches(journal_entry_id);
+
+-- Deposit Items (individual checks or deposit line items)
+CREATE TABLE deposit_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    deposit_batch_id UUID NOT NULL REFERENCES deposit_batches(id) ON DELETE CASCADE,
+    fund_id UUID REFERENCES organizations(id),  -- Fund attribution
+    income_account_id UUID NOT NULL REFERENCES accounts(id),  -- Income account
+    payer_name VARCHAR(255) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    check_number VARCHAR(50),  -- For check deposits
+    memo TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_deposit_items_batch ON deposit_items(deposit_batch_id);
+CREATE INDEX idx_deposit_items_fund ON deposit_items(fund_id);
+CREATE INDEX idx_deposit_items_account ON deposit_items(income_account_id);
 
 -- Reconciliations
 CREATE TABLE reconciliations (

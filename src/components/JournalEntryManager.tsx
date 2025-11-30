@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp, entities } from '../contexts/AppContext';
+import { useApp, entities, EntityId } from '../contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -37,7 +37,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from './ui/dialog';
 import { Textarea } from './ui/textarea';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
@@ -102,6 +101,7 @@ interface JournalEntryLine {
   memo?: string;
   debit_amount: number;
   credit_amount: number;
+  fund_id?: string;               // Fund (entity) this line is attributed to
 }
 
 // Mock Chart of Accounts - in production this will come from backend API
@@ -295,6 +295,14 @@ export const JournalEntryManager: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editEntry, setEditEntry] = useState<{
+    date: string;
+    description: string;
+    memo: string;
+    entityId: string;
+    lines: JournalEntryLine[];
+  } | null>(null);
   
   // Create new journal entry state
   const [newEntry, setNewEntry] = useState({
@@ -302,7 +310,6 @@ export const JournalEntryManager: React.FC = () => {
     description: '',
     memo: '',
     entityId: selectedEntity === 'all' ? 'infocus' : selectedEntity,
-    referenceNumber: '',
     lines: [] as JournalEntryLine[],
   });
 
@@ -312,7 +319,99 @@ export const JournalEntryManager: React.FC = () => {
 
   const handleEntryClick = (entry: JournalEntry) => {
     setSelectedEntry(entry);
+    setIsEditMode(false);
+    setEditEntry(null);
     setIsDrawerOpen(true);
+  };
+
+  const startEditMode = () => {
+    if (selectedEntry) {
+      setEditEntry({
+        date: selectedEntry.entry_date,
+        description: selectedEntry.description,
+        memo: selectedEntry.memo || '',
+        entityId: selectedEntry.entity_id,
+        lines: [...selectedEntry.lines],
+      });
+      setIsEditMode(true);
+    }
+  };
+
+  const cancelEditMode = () => {
+    setIsEditMode(false);
+    setEditEntry(null);
+  };
+
+  const addEditLine = () => {
+    if (!editEntry) return;
+    const newLine: JournalEntryLine = {
+      id: `line-${Date.now()}`,
+      journal_entry_id: selectedEntry?.id || '',
+      account: MOCK_ACCOUNTS[0],
+      line_number: editEntry.lines.length + 1,
+      description: '',
+      memo: '',
+      debit_amount: 0,
+      credit_amount: 0,
+      fund_id: editEntry.entityId,
+    };
+    setEditEntry({ ...editEntry, lines: [...editEntry.lines, newLine] });
+  };
+
+  const updateEditLine = (lineId: string, field: string, value: any) => {
+    if (!editEntry) return;
+    const updatedLines = editEntry.lines.map(line =>
+      line.id === lineId ? { ...line, [field]: value } : line
+    );
+    setEditEntry({ ...editEntry, lines: updatedLines });
+  };
+
+  const removeEditLine = (lineId: string) => {
+    if (!editEntry) return;
+    setEditEntry({ ...editEntry, lines: editEntry.lines.filter(line => line.id !== lineId) });
+  };
+
+  const saveEditEntry = () => {
+    if (!selectedEntry || !editEntry) return;
+
+    // Validate that debits equal credits
+    const totalDebits = editEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0);
+    const totalCredits = editEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0);
+
+    if (Math.abs(totalDebits - totalCredits) > 0.01) {
+      toast.error('Debits must equal credits');
+      return;
+    }
+
+    if (editEntry.lines.length === 0) {
+      toast.error('Please add at least one line item');
+      return;
+    }
+
+    if (!editEntry.description.trim()) {
+      toast.error('Please enter a description');
+      return;
+    }
+
+    // Update the entry
+    const updatedEntry: JournalEntry = {
+      ...selectedEntry,
+      entry_date: editEntry.date,
+      description: editEntry.description,
+      memo: editEntry.memo,
+      entity_id: editEntry.entityId,
+      updated_at: new Date().toISOString(),
+      lines: editEntry.lines.map((line, index) => ({
+        ...line,
+        line_number: index + 1,
+      })),
+    };
+
+    setJournalEntries(journalEntries.map(e => e.id === selectedEntry.id ? updatedEntry : e));
+    setSelectedEntry(updatedEntry);
+    setIsEditMode(false);
+    setEditEntry(null);
+    toast.success('Journal entry updated successfully');
   };
 
   const addLine = () => {
@@ -325,6 +424,7 @@ export const JournalEntryManager: React.FC = () => {
       memo: '',
       debit_amount: 0,
       credit_amount: 0,
+      fund_id: newEntry.entityId, // Default to the entry's entity
     };
     setNewEntry({ ...newEntry, lines: [...newEntry.lines, newLine] });
   };
@@ -360,12 +460,23 @@ export const JournalEntryManager: React.FC = () => {
       return;
     }
 
+    // Generate next entry number (auto-increment based on existing entries)
+    const existingNumbers = journalEntries
+      .map(e => {
+        const match = e.entry_number.match(/JE-(\d{4})-(\d+)/);
+        return match ? parseInt(match[2], 10) : 0;
+      })
+      .filter(n => n > 0);
+    const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+    const currentYear = new Date().getFullYear();
+    const entryNumber = `JE-${currentYear}-${String(nextNumber).padStart(3, '0')}`;
+
     // Create proper journal entry
     const newJournalEntry: JournalEntry = {
       id: `je-${Date.now()}`,
       organization_id: 'org-1',
       entity_id: newEntry.entityId,
-      entry_number: newEntry.referenceNumber || `JE-${Date.now()}`,
+      entry_number: entryNumber,
       entry_date: newEntry.date,
       description: newEntry.description,
       memo: newEntry.memo,
@@ -391,7 +502,6 @@ export const JournalEntryManager: React.FC = () => {
       description: '',
       memo: '',
       entityId: selectedEntity === 'all' ? 'infocus' : selectedEntity,
-      referenceNumber: '',
       lines: [],
     });
 
@@ -511,7 +621,18 @@ export const JournalEntryManager: React.FC = () => {
       );
     }
 
-    filtered.sort((a, b) => new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime());
+    // Sort by entry number descending (newest/highest at top, oldest/smallest at bottom)
+    filtered.sort((a, b) => {
+      const aMatch = a.entry_number.match(/JE-(\d{4})-(\d+)/);
+      const bMatch = b.entry_number.match(/JE-(\d{4})-(\d+)/);
+      if (aMatch && bMatch) {
+        const aYear = parseInt(aMatch[1], 10);
+        const bYear = parseInt(bMatch[1], 10);
+        if (aYear !== bYear) return bYear - aYear;
+        return parseInt(bMatch[2], 10) - parseInt(aMatch[2], 10);
+      }
+      return b.entry_number.localeCompare(a.entry_number);
+    });
 
     return filtered;
   }, [journalEntries, selectedEntity, filterDateFrom, filterDateTo, searchTerm]);
@@ -567,230 +688,31 @@ export const JournalEntryManager: React.FC = () => {
             <Download className="h-4 w-4" />
             Export
           </Button>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                New Journal Entry
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Create Journal Entry
-                </DialogTitle>
-                <DialogDescription>
-                  Add multiple line items. Debits must equal credits.
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-6">
-                {/* Header Information */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
-                  <div className="space-y-2">
-                    <Label htmlFor="entry-date">Date</Label>
-                    <Input
-                      id="entry-date"
-                      type="date"
-                      value={newEntry.date}
-                      onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="entry-entity">Entity</Label>
-                    <Select value={newEntry.entityId} onValueChange={(value: string) => setNewEntry({ ...newEntry, entityId: value })}>
-                      <SelectTrigger id="entry-entity">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {entities.filter(e => e.id !== 'all').map(entity => (
-                          <SelectItem key={entity.id} value={entity.id}>
-                            {entity.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="entry-description">Description</Label>
-                    <Textarea
-                      id="entry-description"
-                      placeholder="Enter journal entry description"
-                      value={newEntry.description}
-                      onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
-                      rows={2}
-                    />
-                  </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="entry-memo">Memo (Optional)</Label>
-                    <Textarea
-                      id="entry-memo"
-                      placeholder="Additional notes for this journal entry"
-                      value={newEntry.memo || ''}
-                      onChange={(e) => setNewEntry({ ...newEntry, memo: e.target.value })}
-                      rows={2}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="entry-reference">Reference Number (Optional)</Label>
-                    <Input
-                      id="entry-reference"
-                      placeholder="JE-2025-001"
-                      value={newEntry.referenceNumber}
-                      onChange={(e) => setNewEntry({ ...newEntry, referenceNumber: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* Line Items */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100">Line Items</h3>
-                    <Button type="button" onClick={addLine} variant="outline" size="sm" className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add Line
-                    </Button>
-                  </div>
-
-                  {newEntry.lines.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 border-2 border-dashed rounded-lg">
-                      No line items added yet. Click "Add Line" to start.
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {newEntry.lines.map((line, index) => (
-                        <div key={line.id} className="p-4 border rounded-lg space-y-3 bg-card">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Line {index + 1}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeLine(line.id)}
-                              className="h-8 w-8 p-0"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-2 sm:col-span-2">
-                              <Label>Account</Label>
-                              <Select
-                                value={line.account.id}
-                                onValueChange={(value: string) => {
-                                  const selectedAccount = MOCK_ACCOUNTS.find(a => a.id === value);
-                                  if (selectedAccount) {
-                                    updateLine(line.id, 'account', selectedAccount);
-                                  }
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select account" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {MOCK_ACCOUNTS.map(account => (
-                                    <SelectItem key={account.id} value={account.id}>
-                                      {account.full_name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2 sm:col-span-2">
-                              <Label>Line Description</Label>
-                              <Input
-                                placeholder="Description for this line"
-                                value={line.description}
-                                onChange={(e) => updateLine(line.id, 'description', e.target.value)}
-                              />
-                            </div>
-                            <div className="space-y-2 sm:col-span-2">
-                              <Label>Line Memo (Optional)</Label>
-                              <Input
-                                placeholder="Additional notes for this line"
-                                value={line.memo || ''}
-                                onChange={(e) => updateLine(line.id, 'memo', e.target.value)}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Debit</Label>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                placeholder="0.00"
-                                value={line.debit_amount || ''}
-                                onChange={(e) => updateLine(line.id, 'debit_amount', parseFloat(e.target.value) || 0)}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Credit</Label>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                placeholder="0.00"
-                                value={line.credit_amount || ''}
-                                onChange={(e) => updateLine(line.id, 'credit_amount', parseFloat(e.target.value) || 0)}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {/* Add Line button at bottom */}
-                      {newEntry.lines.length > 0 && (
-                        <div className="flex justify-center pt-2">
-                          <Button type="button" onClick={addLine} variant="outline" size="sm" className="gap-2">
-                            <Plus className="h-4 w-4" />
-                            Add Line
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Totals */}
-                  {newEntry.lines.length > 0 && (
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Total Debits:</span>
-                          <span className="font-medium text-red-600 dark:text-red-400">
-                            ${totalDebits.toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Total Credits:</span>
-                          <span className="font-medium text-green-600 dark:text-green-400">
-                            ${totalCredits.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-3 pt-3 border-t">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Difference:</span>
-                          <span className={`font-medium ${isBalanced ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                            ${Math.abs(totalDebits - totalCredits).toFixed(2)}
-                            {isBalanced && <CheckCircle className="inline h-4 w-4 ml-2" />}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleCreateEntry} disabled={!isBalanced || newEntry.lines.length === 0}>
-                  Create Entry
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button className="gap-2" onClick={() => {
+            // Reset form and add one default line
+            const defaultEntityId = selectedEntity === 'all' ? 'infocus' : selectedEntity;
+            setNewEntry({
+              date: new Date().toISOString().split('T')[0],
+              description: '',
+              memo: '',
+              entityId: defaultEntityId,
+              lines: [{
+                id: `line-${Date.now()}`,
+                journal_entry_id: '',
+                account: MOCK_ACCOUNTS[0],
+                line_number: 1,
+                description: '',
+                memo: '',
+                debit_amount: 0,
+                credit_amount: 0,
+                fund_id: defaultEntityId,
+              }],
+            });
+            setIsCreateDialogOpen(true);
+          }}>
+            <Plus className="h-4 w-4" />
+            New Journal Entry
+          </Button>
         </div>
       </div>
 
@@ -986,21 +908,27 @@ export const JournalEntryManager: React.FC = () => {
       </Card>
 
       {/* Entry Detail Drawer */}
-      <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+      <Sheet open={isDrawerOpen} onOpenChange={(open: boolean) => {
+        if (!open) {
+          setIsEditMode(false);
+          setEditEntry(null);
+        }
+        setIsDrawerOpen(open);
+      }}>
         <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
           <SheetHeader className="pb-4 sm:pb-6 md:pb-8 border-b border-gray-200 dark:border-gray-700">
             <SheetTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
-              Journal Entry Details
+              {isEditMode ? 'Edit Journal Entry' : 'Journal Entry Details'}
             </SheetTitle>
             <SheetDescription className="text-sm">
-              View all details and lines for this journal entry.
+              {isEditMode ? 'Modify the journal entry details and line items.' : 'View and edit details for this journal entry.'}
             </SheetDescription>
           </SheetHeader>
 
-          {selectedEntry && (
+          {selectedEntry && !isEditMode && (
             <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
-              {/* Entry Header */}
+              {/* Entry Header - View Mode */}
               <div className="p-3 sm:p-4 bg-muted/50 rounded-lg space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm">
                   <div>
@@ -1075,7 +1003,7 @@ export const JournalEntryManager: React.FC = () => {
                 </div>
               </div>
 
-              {/* Entry Lines */}
+              {/* Entry Lines - View Mode */}
               <div>
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Entry Lines</h3>
                 <div className="border rounded-lg overflow-hidden">
@@ -1085,8 +1013,9 @@ export const JournalEntryManager: React.FC = () => {
                         <TableHead className="w-[60px]">Line</TableHead>
                         <TableHead>Account</TableHead>
                         <TableHead>Description</TableHead>
-                        <TableHead className="text-right w-[120px]">Debit</TableHead>
-                        <TableHead className="text-right w-[120px]">Credit</TableHead>
+                        <TableHead>Fund</TableHead>
+                        <TableHead className="text-right w-[100px]">Debit</TableHead>
+                        <TableHead className="text-right w-[100px]">Credit</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1104,6 +1033,11 @@ export const JournalEntryManager: React.FC = () => {
                             {line.memo && (
                               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{line.memo}</div>
                             )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              {entities.find(e => e.id === (line.fund_id || selectedEntry.entity_id))?.name || 'Unknown'}
+                            </div>
                           </TableCell>
                           <TableCell className="text-right font-mono">
                             {line.debit_amount > 0 ? (
@@ -1127,7 +1061,7 @@ export const JournalEntryManager: React.FC = () => {
                       ))}
                       {/* Totals Row */}
                       <TableRow className="bg-muted/50 font-medium">
-                        <TableCell colSpan={3} className="text-right">
+                        <TableCell colSpan={4} className="text-right">
                           <span className="text-gray-900 dark:text-gray-100">Totals:</span>
                         </TableCell>
                         <TableCell className="text-right font-mono">
@@ -1148,9 +1082,464 @@ export const JournalEntryManager: React.FC = () => {
             </div>
           )}
 
-          <SheetFooter className="mt-8">
-            <Button variant="outline" onClick={() => setIsDrawerOpen(false)}>
-              Close
+          {/* Edit Mode */}
+          {selectedEntry && isEditMode && editEntry && (
+            <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+              {/* Entry Header - Edit Mode */}
+              <div className="p-3 sm:p-4 bg-muted/50 rounded-lg space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Entry Number</Label>
+                    <div className="font-mono font-medium text-sm bg-muted px-3 py-2 rounded-md">
+                      {selectedEntry.entry_number}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-date">Date</Label>
+                    <Input
+                      id="edit-date"
+                      type="date"
+                      value={editEntry.date}
+                      onChange={(e) => setEditEntry({ ...editEntry, date: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="edit-entity">Entity</Label>
+                    <Select value={editEntry.entityId} onValueChange={(value: string) => setEditEntry({ ...editEntry, entityId: value })}>
+                      <SelectTrigger id="edit-entity">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {entities.filter(e => e.id !== 'all').map(entity => (
+                          <SelectItem key={entity.id} value={entity.id}>
+                            {entity.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="edit-description">Description</Label>
+                    <Textarea
+                      id="edit-description"
+                      value={editEntry.description}
+                      onChange={(e) => setEditEntry({ ...editEntry, description: e.target.value })}
+                      rows={2}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="edit-memo">Memo (Optional)</Label>
+                    <Textarea
+                      id="edit-memo"
+                      value={editEntry.memo}
+                      onChange={(e) => setEditEntry({ ...editEntry, memo: e.target.value })}
+                      rows={2}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Entry Lines - Edit Mode */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Entry Lines</h3>
+                  <Button type="button" onClick={addEditLine} variant="outline" size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Line
+                  </Button>
+                </div>
+
+                {editEntry.lines.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400 border-2 border-dashed rounded-lg">
+                    No line items. Click "Add Line" to start.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {editEntry.lines.map((line, index) => (
+                      <div key={line.id} className="p-4 border rounded-lg space-y-3 bg-card">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Line {index + 1}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeEditLine(line.id)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="space-y-2 sm:col-span-2">
+                            <Label>Account</Label>
+                            <Select
+                              value={line.account.id}
+                              onValueChange={(value: string) => {
+                                const selectedAccount = MOCK_ACCOUNTS.find(a => a.id === value);
+                                if (selectedAccount) {
+                                  updateEditLine(line.id, 'account', selectedAccount);
+                                }
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select account" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {MOCK_ACCOUNTS.map(account => (
+                                  <SelectItem key={account.id} value={account.id}>
+                                    {account.full_name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2 sm:col-span-2">
+                            <Label>Line Description</Label>
+                            <Input
+                              placeholder="Description for this line"
+                              value={line.description}
+                              onChange={(e) => updateEditLine(line.id, 'description', e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Debit</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder="0.00"
+                              value={line.debit_amount || ''}
+                              onChange={(e) => updateEditLine(line.id, 'debit_amount', parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Credit</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder="0.00"
+                              value={line.credit_amount || ''}
+                              onChange={(e) => updateEditLine(line.id, 'credit_amount', parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+                          <div className="space-y-2 sm:col-span-2">
+                            <Label>Fund</Label>
+                            <Select
+                              value={line.fund_id || editEntry.entityId}
+                              onValueChange={(value: string) => updateEditLine(line.id, 'fund_id', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select fund" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {entities.filter(e => e.id !== 'all').map(entity => (
+                                  <SelectItem key={entity.id} value={entity.id}>
+                                    {entity.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Totals */}
+                {editEntry.lines.length > 0 && (
+                  <div className="p-4 bg-muted/50 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Total Debits:</span>
+                        <span className="font-medium text-red-600 dark:text-red-400">
+                          ${editEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Total Credits:</span>
+                        <span className="font-medium text-green-600 dark:text-green-400">
+                          ${editEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Difference:</span>
+                        <span className={`font-medium ${Math.abs(editEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0) - editEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0)) < 0.01 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          ${Math.abs(editEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0) - editEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0)).toFixed(2)}
+                          {Math.abs(editEntry.lines.reduce((sum, line) => sum + line.debit_amount, 0) - editEntry.lines.reduce((sum, line) => sum + line.credit_amount, 0)) < 0.01 && <CheckCircle className="inline h-4 w-4 ml-2" />}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <SheetFooter className="mt-8 flex flex-col gap-2">
+            {!isEditMode ? (
+              <>
+                {selectedEntry && (
+                  <Button onClick={startEditMode} className="gap-2 w-full">
+                    <Edit className="h-4 w-4" />
+                    Edit Entry
+                  </Button>
+                )}
+                <Button variant="outline" onClick={() => setIsDrawerOpen(false)} className="w-full">
+                  Close
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={saveEditEntry} className="gap-2 w-full">
+                  <Save className="h-4 w-4" />
+                  Save Changes
+                </Button>
+                <Button variant="outline" onClick={cancelEditMode} className="w-full">
+                  Cancel
+                </Button>
+              </>
+            )}
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      {/* Create Journal Entry Drawer */}
+      <Sheet open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto p-4 sm:p-6 md:p-8">
+          <SheetHeader className="pb-4 sm:pb-6 md:pb-8 border-b border-gray-200 dark:border-gray-700">
+            <SheetTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+              Create Journal Entry
+            </SheetTitle>
+            <SheetDescription className="text-sm">
+              Add multiple line items. Debits must equal credits.
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+            {/* Header Information */}
+            <div className="p-3 sm:p-4 bg-muted/50 rounded-lg space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Entry Number</Label>
+                  <div className="font-mono font-medium text-sm bg-muted px-3 py-2 rounded-md">
+                    {(() => {
+                      const existingNumbers = journalEntries
+                        .map(e => {
+                          const match = e.entry_number.match(/JE-(\d{4})-(\d+)/);
+                          return match ? parseInt(match[2], 10) : 0;
+                        })
+                        .filter(n => n > 0);
+                      const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+                      const currentYear = new Date().getFullYear();
+                      return `JE-${currentYear}-${String(nextNumber).padStart(3, '0')}`;
+                    })()}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-date">Date</Label>
+                  <Input
+                    id="create-date"
+                    type="date"
+                    value={newEntry.date}
+                    onChange={(e) => setNewEntry({ ...newEntry, date: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="create-entity">Entity</Label>
+                  <Select value={newEntry.entityId} onValueChange={(value: string) => setNewEntry({ ...newEntry, entityId: value as Exclude<EntityId, 'all'> })}>
+                    <SelectTrigger id="create-entity">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {entities.filter(e => e.id !== 'all').map(entity => (
+                        <SelectItem key={entity.id} value={entity.id}>
+                          {entity.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="create-description">Description</Label>
+                  <Textarea
+                    id="create-description"
+                    placeholder="Enter journal entry description"
+                    value={newEntry.description}
+                    onChange={(e) => setNewEntry({ ...newEntry, description: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="create-memo">Memo (Optional)</Label>
+                  <Textarea
+                    id="create-memo"
+                    placeholder="Additional notes for this journal entry"
+                    value={newEntry.memo || ''}
+                    onChange={(e) => setNewEntry({ ...newEntry, memo: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Line Items */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Entry Lines</h3>
+                <Button type="button" onClick={addLine} variant="outline" size="sm" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add Line
+                </Button>
+              </div>
+
+              {newEntry.lines.length === 0 ? (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400 border-2 border-dashed rounded-lg">
+                  No line items added yet. Click "Add Line" to start.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {newEntry.lines.map((line, index) => (
+                    <div key={line.id} className="p-4 border rounded-lg space-y-3 bg-card">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Line {index + 1}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeLine(line.id)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-2 sm:col-span-2">
+                          <Label>Account</Label>
+                          <Select
+                            value={line.account.id}
+                            onValueChange={(value: string) => {
+                              const selectedAccount = MOCK_ACCOUNTS.find(a => a.id === value);
+                              if (selectedAccount) {
+                                updateLine(line.id, 'account', selectedAccount);
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select account" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {MOCK_ACCOUNTS.map(account => (
+                                <SelectItem key={account.id} value={account.id}>
+                                  {account.full_name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2 sm:col-span-2">
+                          <Label>Line Description</Label>
+                          <Input
+                            placeholder="Description for this line"
+                            value={line.description}
+                            onChange={(e) => updateLine(line.id, 'description', e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Debit</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="0.00"
+                            value={line.debit_amount || ''}
+                            onChange={(e) => updateLine(line.id, 'debit_amount', parseFloat(e.target.value) || 0)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Credit</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="0.00"
+                            value={line.credit_amount || ''}
+                            onChange={(e) => updateLine(line.id, 'credit_amount', parseFloat(e.target.value) || 0)}
+                          />
+                        </div>
+                        <div className="space-y-2 sm:col-span-2">
+                          <Label>Fund</Label>
+                          <Select
+                            value={line.fund_id || newEntry.entityId}
+                            onValueChange={(value: string) => updateLine(line.id, 'fund_id', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select fund" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {entities.filter(e => e.id !== 'all').map(entity => (
+                                <SelectItem key={entity.id} value={entity.id}>
+                                  {entity.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {/* Add Line button at bottom */}
+                  <div className="flex justify-center pt-2">
+                    <Button type="button" onClick={addLine} variant="outline" size="sm" className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Line
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Totals */}
+              {newEntry.lines.length > 0 && (
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Total Debits:</span>
+                      <span className="font-medium text-red-600 dark:text-red-400">
+                        ${totalDebits.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Total Credits:</span>
+                      <span className="font-medium text-green-600 dark:text-green-400">
+                        ${totalCredits.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Difference:</span>
+                      <span className={`font-medium ${isBalanced ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        ${Math.abs(totalDebits - totalCredits).toFixed(2)}
+                        {isBalanced && <CheckCircle className="inline h-4 w-4 ml-2" />}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <SheetFooter className="mt-8 flex flex-col gap-2">
+            <Button onClick={handleCreateEntry} disabled={!isBalanced || newEntry.lines.length === 0} className="gap-2 w-full">
+              <Save className="h-4 w-4" />
+              Create Entry
+            </Button>
+            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="w-full">
+              Cancel
             </Button>
           </SheetFooter>
         </SheetContent>

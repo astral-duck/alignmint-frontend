@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Mail,
   Heart,
+  HandHeart,
   Calendar,
   Settings,
   Wrench,
@@ -32,7 +33,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
   
   const navigation = [
     { name: 'Dashboard', icon: LayoutDashboard, page: 'dashboard' as const },
-    { name: 'Donor Hub', icon: Users, page: 'donor-hub' as const },
+    { name: 'Donor Hub', icon: HandHeart, page: 'donor-hub' as const },
     { name: 'People', icon: UsersRound, page: 'personnel-hub' as const },
     { name: 'Marketing', icon: Mail, page: 'marketing' as const },
     { name: 'Fund Accounting', icon: Calculator, page: 'accounting-hub' as const },

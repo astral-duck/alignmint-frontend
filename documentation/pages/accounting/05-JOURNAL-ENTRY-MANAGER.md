@@ -2,165 +2,258 @@
 
 **Component File:** `src/components/JournalEntryManager.tsx`  
 **Route:** `/accounting-hub` (with tool='journal-entry')  
-**Access Level:** Admin, Manager
-
-## ✨ Double-Entry Accounting System (NEW)
-
-**Status:** ✅ **FULLY IMPLEMENTED**
-
-The Journal Entry Manager has been completely refactored to support proper double-entry accounting with Chart of Accounts integration.
-
-### Key Features
-
-#### Proper Double-Entry Structure
-- **Grouped Entries:** Journal entries displayed as single records with multiple lines
-- **Balanced Entries:** Debits must equal credits (validated on creation)
-- **Line Items:** Each entry contains multiple debit/credit lines
-- **Chart of Accounts:** All lines reference accounts from the Chart of Accounts
-
-#### Entry Display
-- **Table View:** Shows one row per journal entry (not per line)
-- **Entry Totals:** Displays total debits and credits for each entry
-- **Line Count:** Shows number of lines in each entry
-- **Status Badges:** Draft/Posted/Voided status indicators
-- **Detail View:** Comprehensive drawer showing all lines and metadata
-
-#### Create Dialog
-- **Multi-Line Entry:** Add unlimited line items
-- **Account Selection:** Choose from Chart of Accounts (21 accounts)
-- **Memo Fields:** Entry-level and line-level memos
-- **Real-Time Validation:** Shows balance status as you type
-- **Dual Add Buttons:** Add lines from top or bottom of list
-
-#### Data Structure
-```typescript
-JournalEntry {
-  id, organization_id, entity_id
-  entry_number, entry_date
-  description, memo
-  status: 'draft' | 'posted' | 'voided'
-  source_type: 'manual' | 'system'
-  lines: JournalEntryLine[]
-}
-
-JournalEntryLine {
-  id, journal_entry_id, line_number
-  account: Account  // From Chart of Accounts
-  description, memo
-  debit_amount, credit_amount
-}
-```
-
-#### Export
-- **Grouped by Entry:** Each entry exports with all its lines
-- **Totals Row:** Automatic totals for each entry
-- **Full Details:** Account codes, names, descriptions, amounts
-- **CSV/XLSX:** Both formats supported
-
-### Benefits
-
-✅ **Proper Accounting:** True double-entry system  
-✅ **Chart of Accounts:** Standardized account structure  
-✅ **Audit Trail:** Complete entry history with metadata  
-✅ **User Friendly:** Clear visual feedback and validation  
-✅ **Flexible:** Unlimited lines per entry  
-✅ **Consistent:** Matches General Ledger styling  
+**Access Level:** Admin, Manager  
+**Desktop Only:** Yes (complex multi-line entry requires larger screen)  
+**Last Updated:** November 30, 2025
 
 ---
 
 ## Overview
-The Journal Entry Manager allows users to create, edit, and manage manual journal entries for adjustments, corrections, and other accounting transactions. Journal entries are the foundation of double-entry bookkeeping, ensuring debits equal credits for every transaction.
 
-## UI Features
+The Journal Entry Manager is the **central hub** for all accounting transactions. It allows users to create, edit, and manage journal entries for adjustments, corrections, and serves as the posting mechanism for all other accounting modules (expenses, reimbursements, deposits, distributions).
 
-### Main Features
-- **Journal Entry List:** View all journal entries with status
-- **Date Range Filter:** Filter by date range
-- **Status Filter:** Draft, Posted, Voided
-- **Search:** Search by description or reference number
-- **Create Entry:** Multi-line entry form with debit/credit validation
-- **Edit Entry:** Edit draft entries
-- **Post Entry:** Finalize entry (makes it immutable)
-- **Void Entry:** Void posted entries
-- **Balance Validation:** Real-time validation that debits = credits
+**See:** [02-ACCOUNTING-SYSTEM-INTEGRATION.md](./02-ACCOUNTING-SYSTEM-INTEGRATION.md) for how all accounting modules connect.
 
-### Journal Entry Table
-- Entry Number (e.g., JE-2025-001)
-- Date
-- Description
-- Total Debits
-- Total Credits
-- Status Badge (Draft, Posted, Voided)
-- Created By
-- Actions (View, Edit, Post, Void, Delete)
+---
 
-### Create/Edit Journal Entry Form
-- **Header:**
-  - Entry Date
-  - Reference Number (auto-generated or manual)
-  - Description
-  - Entity/Organization
-- **Lines (Multiple):**
-  - Account (searchable dropdown)
-  - Fund (optional)
-  - Description
-  - Debit Amount
-  - Credit Amount
-  - Add/Remove Line buttons
-- **Footer:**
-  - Total Debits (calculated)
-  - Total Credits (calculated)
-  - Difference (must be 0.00)
-  - Save as Draft / Post Entry buttons
+## ✨ Key Features
 
-### Entry Detail Sheet
-- Full entry details
-- All lines with accounts
-- Audit trail
-- Edit button (if draft)
-- Post button (if draft)
-- Void button (if posted)
+### Double-Entry Accounting
+- **Balanced Entries:** Debits must equal credits (validated in real-time)
+- **Multi-Line Support:** Unlimited line items per entry
+- **Chart of Accounts Integration:** All lines reference valid accounts
+- **Fund Attribution:** Each line can be attributed to a specific fund/nonprofit
 
-## Data Requirements
+### Entry Numbers
+- **Auto-Generated:** Format `JE-YYYY-NNN` (e.g., JE-2025-001)
+- **Immutable:** Cannot be changed after creation
+- **Sequential:** Automatically increments based on existing entries
+- **Year-Based:** Resets sequence each calendar year
 
-### Journal Entry Data
-- **id** (uuid) - Unique identifier
-- **organization_id** (uuid) - Organization owner
-- **entry_number** (string) - Auto-generated or manual (e.g., JE-2025-001)
-- **entry_date** (date) - Transaction date
-- **description** (text) - Entry description
-- **reference** (string, nullable) - Reference number, invoice, etc.
-- **status** (string) - 'draft', 'posted', 'voided'
-- **created_by_id** (uuid) - User who created
-- **posted_by_id** (uuid, nullable) - User who posted
-- **posted_at** (datetime, nullable) - When posted
-- **voided_by_id** (uuid, nullable) - User who voided
-- **voided_at** (datetime, nullable) - When voided
-- **void_reason** (text, nullable) - Reason for voiding
-- **created_at** (datetime) - When created
-- **updated_at** (datetime) - When updated
+### Entry Management
+- **Create via Drawer:** Slide-out panel for new entries
+- **Edit via Drawer:** Click any entry to view/edit in drawer
+- **All Entries Editable:** No draft/posted restriction in UI
+- **Real-Time Validation:** Balance check as you type
 
-### Journal Entry Line Data
-- **id** (uuid) - Unique identifier
-- **journal_entry_id** (uuid) - Parent entry
-- **account_id** (uuid) - Chart of accounts reference
-- **account_number** (string) - Account code
-- **account_name** (string) - Account name
-- **fund_id** (uuid, nullable) - Fund reference
-- **fund_name** (string, nullable) - Fund name
-- **debit_amount** (decimal) - Debit amount (default: 0)
-- **credit_amount** (decimal) - Credit amount (default: 0)
-- **description** (text, nullable) - Line description
-- **line_order** (integer) - Display order
-- **created_at** (datetime) - When created
-- **updated_at** (datetime) - When updated
+### Table Display
+- **Sorted by Entry Number:** Newest (highest) at top
+- **Entry Totals:** Shows total debits/credits per entry
+- **Line Count Badge:** Shows number of lines
+- **Status Indicators:** Visual status badges
+- **Click to Edit:** Any row opens the detail/edit drawer
 
-### Data Mutations
-- **Create Entry:** Create new journal entry with lines
-- **Update Entry:** Edit draft entry
-- **Delete Entry:** Delete draft entry
-- **Post Entry:** Finalize entry (makes immutable)
-- **Void Entry:** Void posted entry (creates reversing entry)
+---
+
+## Data Structure
+
+### JournalEntry Interface
+```typescript
+interface JournalEntry {
+  id: string;
+  organization_id: string;
+  entity_id: string;              // Primary fund/nonprofit
+  entry_number: string;           // Auto-generated: JE-YYYY-NNN
+  entry_date: string;
+  description: string;
+  memo?: string;
+  status: 'draft' | 'posted' | 'voided';
+  source_type: 'manual' | 'expense' | 'reimbursement' | 'deposit' | 'distribution';
+  source_id?: string;             // Reference to source transaction
+  posted_at?: string;
+  posted_by?: string;
+  voided_at?: string;
+  voided_by?: string;
+  void_reason?: string;
+  reversing_entry_id?: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  lines: JournalEntryLine[];
+}
+```
+
+### JournalEntryLine Interface
+```typescript
+interface JournalEntryLine {
+  id: string;
+  journal_entry_id: string;
+  account: Account;               // From Chart of Accounts
+  fund_id?: string;               // Fund attribution per line
+  line_number: number;
+  description: string;
+  memo?: string;
+  debit_amount: number;
+  credit_amount: number;
+}
+```
+
+### Account Interface
+```typescript
+interface Account {
+  id: string;
+  code: string;                   // e.g., "1000"
+  name: string;                   // e.g., "IFM Checking"
+  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  full_name: string;              // e.g., "1000 - IFM Checking"
+  is_active: boolean;
+}
+```
+
+---
+
+## UI Components
+
+### Main Table View
+| Column | Description |
+|--------|-------------|
+| Date | Entry date formatted |
+| Entry Number | JE-YYYY-NNN (monospace) |
+| Description | Entry description (truncated) |
+| Entity | Fund/nonprofit name |
+| Lines | Badge showing line count |
+| Total Debits | Red, formatted currency |
+| Total Credits | Green, formatted currency |
+| Status | Badge (Posted/Draft/Voided) |
+
+### Create Entry Drawer
+Opens from "New Journal Entry" button:
+- **Entry Number:** Read-only, shows what will be assigned
+- **Date:** Date picker
+- **Entity:** Dropdown of funds/nonprofits
+- **Description:** Required text area
+- **Memo:** Optional text area
+- **Line Items:** Expandable list with:
+  - Account dropdown
+  - Line description
+  - Debit amount
+  - Credit amount
+  - Fund dropdown (per line)
+  - Remove button
+- **Add Line Button:** Below last line
+- **Totals Section:** Shows debits, credits, difference
+- **Balance Indicator:** Green checkmark when balanced
+- **Create Entry Button:** Disabled until balanced
+
+### Edit Entry Drawer
+Opens when clicking any table row:
+- **View Mode:** Read-only display of all fields
+- **Edit Button:** Switches to edit mode
+- **Edit Mode:** Same fields as create, pre-populated
+- **Save Changes Button:** Validates and saves
+- **Cancel Button:** Discards changes
+
+---
+
+## Business Rules
+
+### Entry Number Generation
+```
+1. Extract year from entry_date
+2. Find highest existing number for that year
+3. Increment by 1
+4. Format as JE-YYYY-NNN (zero-padded)
+```
+
+### Validation Rules
+- Entry date required
+- Description required
+- At least one line item required
+- Total debits must equal total credits (within $0.01)
+- Each line must have valid account
+- Each line must have either debit OR credit (not both)
+- All amounts must be non-negative
+
+### Fund Attribution
+- Each line can have its own fund_id
+- Defaults to the entry's entity_id
+- Enables multi-fund entries (e.g., expense allocations)
+
+---
+
+## Export Functionality
+
+### Supported Formats
+- **CSV:** Comma-separated values
+- **XLSX:** Excel format with formatting
+
+### Export Structure
+Each entry exports with all its lines plus a totals row:
+```
+Entry Number | Date | Description | Entity | Line # | Account | Line Desc | Debit | Credit | Status
+JE-2025-001 | 2025-11-30 | Monthly depreciation | IFM | 1 | 5310 - Equipment | Depreciation | 450.00 | 0.00 | Posted
+JE-2025-001 | | | | 2 | 1700 - Accum Depr | Depreciation | 0.00 | 450.00 |
+JE-2025-001 | | | | | TOTAL | | 450.00 | 450.00 |
+```
+
+---
+
+## Integration with Other Modules
+
+### Source Types
+Journal entries can be created by:
+
+| Source Type | Created When | Description |
+|-------------|--------------|-------------|
+| `manual` | User creates directly | Adjustments, corrections |
+| `expense` | Expense marked as paid | Expense payment |
+| `reimbursement` | Reimbursement paid | Employee reimbursement |
+| `deposit` | Deposit finalized | Check or regular deposit |
+| `distribution` | Distribution paid | Fiscal sponsor distribution |
+| `void_reversal` | Entry voided | Automatic reversing entry |
+
+### Linking to Source
+When created by another module:
+- `source_type` identifies the module
+- `source_id` links to the source record
+- Enables drill-down from General Ledger
+
+---
+
+## State Management
+
+### Local State
+```typescript
+const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+const [isEditMode, setIsEditMode] = useState(false);
+const [newEntry, setNewEntry] = useState({...});
+const [editEntry, setEditEntry] = useState({...});
+```
+
+### Computed Values
+```typescript
+const totalDebits = lines.reduce((sum, line) => sum + line.debit_amount, 0);
+const totalCredits = lines.reduce((sum, line) => sum + line.credit_amount, 0);
+const isBalanced = Math.abs(totalDebits - totalCredits) < 0.01;
+```
+
+---
+
+## Related Documentation
+
+- [02-ACCOUNTING-SYSTEM-INTEGRATION.md](./02-ACCOUNTING-SYSTEM-INTEGRATION.md) - System integration guide
+- [03-CHART-OF-ACCOUNTS.md](./03-CHART-OF-ACCOUNTS.md) - Account structure
+- [04-GENERAL-LEDGER.md](./04-GENERAL-LEDGER.md) - Where posted entries appear
+
+---
+
+## API Endpoints
+
+### Summary
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/journal_entries` | List entries with filtering |
+| GET | `/api/v1/journal_entries/:id` | Get entry with lines |
+| POST | `/api/v1/journal_entries` | Create new entry |
+| PUT | `/api/v1/journal_entries/:id` | Update entry |
+| DELETE | `/api/v1/journal_entries/:id` | Delete entry |
+| POST | `/api/v1/journal_entries/:id/post` | Post entry |
+| POST | `/api/v1/journal_entries/:id/void` | Void entry |
+| GET | `/api/v1/journal_entries/next_number` | Get next entry number |
 
 ## API Endpoints Required
 
@@ -533,35 +626,11 @@ interface JournalEntryLine {
 - **Post entry:** Show confirmation dialog with spinner
 - **Void entry:** Show confirmation dialog with reason input
 
-## Mock Data to Remove
-- `JournalEntryManager.tsx` - `mockJournalEntries` array
-- Move interfaces to `src/types/journal-entry.ts`
-
 ## Migration Notes
 
-### Phase 1: API Integration
-1. Create `src/api/journal-entries.ts`
-2. Create `src/types/journal-entry.ts`
-3. Replace mock data with API calls
-4. Implement list view
-
-### Phase 2: CRUD Operations
-1. Implement create entry form
-2. Implement edit entry form
-3. Implement delete entry
-4. Test balance validation
-
-### Phase 3: Post/Void
-1. Implement post entry flow
-2. Implement void entry flow
-3. Test immutability rules
-
-### Phase 4: Integration
-1. Ensure posted entries appear in General Ledger
-2. Test with reconciliation
-3. Test with closed periods
-
-## Related Documentation
-- [04-GENERAL-LEDGER.md](./04-GENERAL-LEDGER.md) - Where entries appear
-- [03-CHART-OF-ACCOUNTS.md](./03-CHART-OF-ACCOUNTS.md) - Account selection
-- [01-DATA-SCHEMA.md](../01-DATA-SCHEMA.md) - Journal entry data model
+### Backend Implementation
+See [02-ACCOUNTING-SYSTEM-INTEGRATION.md](./02-ACCOUNTING-SYSTEM-INTEGRATION.md) for:
+- Complete Rails service implementations
+- Database schema with all fields
+- Integration patterns with other modules
+- Posting and voiding logic
